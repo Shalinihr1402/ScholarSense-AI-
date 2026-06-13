@@ -13,6 +13,7 @@ import {
   UserRound
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 import logo from "../assets/scholarsense-logo.jpeg";
 
 const navItems = [
@@ -29,6 +30,9 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const { user } = useAuth();
+  const visibleItems = navItems.filter((item) => item.path !== "/admin/dashboard" || user?.role === "admin");
+
   return (
     <aside className="sidebar">
       <div className="brand-lockup">
@@ -40,7 +44,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="nav-list" aria-label="Primary navigation">
-        {navItems.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = item.icon;
           return (
             <NavLink key={item.path} to={item.path} className="nav-link">

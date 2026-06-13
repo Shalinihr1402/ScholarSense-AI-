@@ -1,7 +1,10 @@
 import React from "react";
-import { Bell, Mic, Search } from "lucide-react";
+import { Bell, LogOut, Mic, Search } from "lucide-react";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Topbar() {
+  const { user, logout } = useAuth();
+
   return (
     <header className="topbar">
       <div>
@@ -18,6 +21,13 @@ export default function Topbar() {
         </button>
         <button className="icon-btn notification-dot" type="button" aria-label="Notifications">
           <Bell size={19} />
+        </button>
+        <div className="user-chip">
+          <span>{user?.name || "Student"}</span>
+          <small>{user?.role || "student"}</small>
+        </div>
+        <button className="icon-btn" type="button" aria-label="Logout" onClick={logout}>
+          <LogOut size={19} />
         </button>
       </div>
     </header>

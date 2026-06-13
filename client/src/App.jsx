@@ -13,6 +13,7 @@ import Chatbot from "./pages/Chatbot.jsx";
 import AwarenessGuide from "./pages/AwarenessGuide.jsx";
 import Notifications from "./pages/Notifications.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
   return (
@@ -20,7 +21,8 @@ export default function App() {
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route element={<AppLayout />}>
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/scholarships" element={<Scholarships />} />
@@ -30,7 +32,12 @@ export default function App() {
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/awareness" element={<AwarenessGuide />} />
         <Route path="/notifications" element={<Notifications />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        </Route>
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+        <Route element={<AppLayout />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        </Route>
       </Route>
     </Routes>
   );

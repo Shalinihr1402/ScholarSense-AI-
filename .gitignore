@@ -4,4 +4,7 @@ build/
 .env
 .env.local
 uploads/
+server/data/users.local.json
+server/data/profiles.local.json
+server/data/scholarships.local.json
 *.log

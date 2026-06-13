@@ -154,6 +154,33 @@ a {
   gap: 10px;
 }
 
+.user-chip {
+  min-height: 42px;
+  display: grid;
+  align-content: center;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+}
+
+.user-chip span,
+.user-chip small {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-chip span {
+  font-weight: 800;
+}
+
+.user-chip small {
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
 .search-box {
   width: min(380px, 36vw);
   min-height: 42px;
@@ -164,6 +191,10 @@ a {
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--bg);
+}
+
+.search-box.full {
+  width: 100%;
 }
 
 .search-box input {
@@ -311,6 +342,10 @@ a {
   border-top-color: var(--amber);
 }
 
+.stat-card.red {
+  border-top-color: var(--red);
+}
+
 .two-column {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -388,6 +423,62 @@ a {
   background: var(--blue);
   font-weight: 800;
   cursor: pointer;
+}
+
+.primary-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.form-alert {
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.form-alert.error {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.form-alert.success {
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.document-fieldset {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.document-fieldset legend {
+  padding: 0 8px;
+  color: #334155;
+  font-weight: 800;
+}
+
+.document-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.check-card {
+  min-height: 48px;
+  display: flex !important;
+  align-items: center;
+  gap: 9px !important;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  background: #f8fafc;
+}
+
+.check-card input {
+  min-height: auto;
 }
 
 .span-two {
@@ -516,11 +607,163 @@ a {
   height: 340px;
 }
 
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 180px 180px;
+  gap: 12px;
+  align-items: center;
+}
+
+.segmented-control {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.segmented-control button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 14px;
+  background: transparent;
+  color: #334155;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.segmented-control button.active {
+  background: white;
+  color: var(--blue);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.filter-row select {
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: white;
+}
+
+.scholarship-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.scholarship-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.06);
+}
+
+.scholarship-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scholarship-card h3,
+.scholarship-card p {
+  margin: 0;
+}
+
+.scholarship-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  color: #334155;
+  font-weight: 700;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-list span {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.document-list {
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+}
+
+.eligibility-strip {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+}
+
+.diagnosis-list {
+  display: grid;
+  gap: 7px;
+}
+
+.diagnosis-list p {
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.bad-text {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.warn-text {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.ok-text {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.document-list strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  font-weight: 800;
+}
+
 @media (max-width: 980px) {
   .app-shell,
   .two-column,
   .stats-grid,
   .card-grid,
+  .filter-row,
+  .scholarship-grid,
   .form-grid.three {
     grid-template-columns: 1fr;
   }
