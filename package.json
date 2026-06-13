@@ -1,0 +1,20 @@
+{
+  "name": "scholarsense-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ScholarSense AI web application",
+  "scripts": {
+    "dev": "concurrently \"npm.cmd run dev --workspace server\" \"npm.cmd run dev --workspace client\"",
+    "dev:client": "npm.cmd run dev --workspace client",
+    "dev:server": "npm.cmd run dev --workspace server",
+    "build": "npm.cmd run build --workspace client",
+    "start": "npm.cmd run start --workspace server"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
