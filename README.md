@@ -63,3 +63,44 @@ Readiness route:
 
 The score is calculated from profile completion, eligibility match, document
 readiness, DBT status, and deadline safety.
+
+## Day 7 Failure Diagnosis
+
+Diagnosis route:
+
+- `GET /api/diagnosis/me`
+
+The engine identifies profile, eligibility, document, DBT, bank, deadline, and
+readiness risks with a personalized action plan.
+
+## Day 8 OCR Screenshot Analyzer
+
+OCR route:
+
+- `POST /api/ocr/analyze`
+
+Upload form field: `screenshot`
+
+The analyzer extracts text from uploaded images, detects document/status type,
+flags OCR quality issues, and gives student-friendly guidance.
+
+## Day 10 Notifications
+
+Notification routes:
+
+- `GET /api/notifications`
+- `POST /api/notifications`
+- `PUT /api/notifications/:id/read`
+- `PUT /api/notifications/read-all`
+
+Notifications are generated from profile, readiness, diagnosis, and OCR events.
+
+## Day 11 Email Alerts
+
+Email status route:
+
+- `GET /api/email/status`
+
+High and critical notifications attempt email delivery when `EMAIL_USER` and
+`EMAIL_PASS` are configured. Without credentials, emails are safely logged as
+`skipped` for development.

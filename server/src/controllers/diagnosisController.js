@@ -1,12 +1,13 @@
 import Scholarship from "../models/Scholarship.js";
 import StudentProfile from "../models/StudentProfile.js";
+import { diagnoseScholarshipRisks } from "../services/diagnosisService.js";
 import { evaluateScholarships } from "../services/eligibilityService.js";
 import { getLocalProfile } from "../services/localProfileStore.js";
 import { getAllLocalScholarships } from "../services/localScholarshipStore.js";
-import { createReadinessNotifications } from "../services/notificationService.js";
+import { createDiagnosisNotifications } from "../services/notificationService.js";
 import { calculateReadiness } from "../services/readinessService.js";
 
-export async function getMyReadiness(req, res, next) {
+export async function getMyDiagnosis(req, res, next) {
   try {
     const userId = req.user.id || req.user._id?.toString();
     let profile = null;
@@ -22,11 +23,12 @@ export async function getMyReadiness(req, res, next) {
 
     const eligibilityResults = evaluateScholarships(profile, scholarships);
     const readiness = calculateReadiness(profile, eligibilityResults);
-    await createReadinessNotifications(req.user, readiness);
+    const diagnosis = diagnoseScholarshipRisks(profile, eligibilityResults, readiness);
+    await createDiagnosisNotifications(req.user, diagnosis);
 
     res.json({
       profileFound: Boolean(profile),
-      readiness
+      diagnosis
     });
   } catch (error) {
     next(error);

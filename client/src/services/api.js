@@ -2,8 +2,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
 
 export async function apiRequest(path, options = {}) {
   const token = localStorage.getItem("scholarsense_token");
+  const isFormData = options.body instanceof FormData;
   const headers = {
-    "Content-Type": "application/json",
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...(options.headers || {})
   };
 
@@ -75,5 +76,57 @@ export const scholarshipApi = {
       method: "POST",
       body: JSON.stringify(payload)
     });
+  }
+};
+
+export const readinessApi = {
+  getMine() {
+    return apiRequest("/readiness/me");
+  }
+};
+
+export const diagnosisApi = {
+  getMine() {
+    return apiRequest("/diagnosis/me");
+  }
+};
+
+export const ocrApi = {
+  analyze(file) {
+    const formData = new FormData();
+    formData.append("screenshot", file);
+
+    return apiRequest("/ocr/analyze", {
+      method: "POST",
+      body: formData
+    });
+  }
+};
+
+export const notificationApi = {
+  list() {
+    return apiRequest("/notifications");
+  },
+  create(payload) {
+    return apiRequest("/notifications", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+  },
+  markRead(id) {
+    return apiRequest(`/notifications/${id}/read`, {
+      method: "PUT"
+    });
+  },
+  markAllRead() {
+    return apiRequest("/notifications/read-all", {
+      method: "PUT"
+    });
+  }
+};
+
+export const emailApi = {
+  status() {
+    return apiRequest("/email/status");
   }
 };

@@ -1,5 +1,6 @@
 import StudentProfile from "../models/StudentProfile.js";
 import { getLocalProfile, upsertLocalProfile } from "../services/localProfileStore.js";
+import { createProfileNotifications } from "../services/notificationService.js";
 import { getProfileInsights, normalizeProfile } from "../services/profileService.js";
 
 function getUserId(req) {
@@ -13,6 +14,12 @@ function sendProfile(res, profile) {
     profile: safeProfile,
     insights: getProfileInsights(safeProfile || {})
   });
+}
+
+async function sendSavedProfile(req, res, profile) {
+  const insights = getProfileInsights(profile || {});
+  await createProfileNotifications(req.user, insights);
+  res.json({ profile, insights });
 }
 
 export async function getMyProfile(req, res, next) {
@@ -58,11 +65,11 @@ export async function saveMyProfile(req, res, next) {
         { new: true, upsert: true, runValidators: true }
       ).lean();
 
-      return sendProfile(res, profile);
+      return sendSavedProfile(req, res, profile);
     }
 
     const profile = await upsertLocalProfile(userId, normalized);
-    return sendProfile(res, profile);
+    return sendSavedProfile(req, res, profile);
   } catch (error) {
     next(error);
   }

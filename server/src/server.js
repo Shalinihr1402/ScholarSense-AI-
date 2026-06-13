@@ -4,7 +4,11 @@ import express from "express";
 import { connectDatabase } from "./config/database.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 import authRoutes from "./routes/authRoutes.js";
+import diagnosisRoutes from "./routes/diagnosisRoutes.js";
+import emailRoutes from "./routes/emailRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import ocrRoutes from "./routes/ocrRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import readinessRoutes from "./routes/readinessRoutes.js";
 import scholarshipRoutes from "./routes/scholarshipRoutes.js";
@@ -22,6 +26,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/scholarships", scholarshipRoutes);
 app.use("/api/readiness", readinessRoutes);
+app.use("/api/diagnosis", diagnosisRoutes);
+app.use("/api/ocr", ocrRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/email", emailRoutes);
 
 app.get("/", (req, res) => {
   res.json({
