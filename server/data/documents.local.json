@@ -1,0 +1,28 @@
+[
+  {
+    "id": "bdcf5055-2396-434c-8915-174f94ca0f42",
+    "userId": "597accf5-3f89-4eb7-b848-8140b7580f85",
+    "originalName": "markscard.jpeg",
+    "documentType": "Marksheet",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1782398453508-250084-markscard.jpeg",
+    "fileHash": "966e841dd8b751d4f1c7ec108e21217a431703cedcc96c3109307974e4bc50c3",
+    "fileSize": 181773,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-06-25T14:40:53.536Z",
+    "extractedFields": null,
+    "ocrConfidence": null
+  },
+  {
+    "id": "438379c4-7e82-4744-9322-6e6f61b4d852",
+    "userId": "597accf5-3f89-4eb7-b848-8140b7580f85",
+    "originalName": "markscard.jpeg",
+    "documentType": "Bank Passbook",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1782400417418-320984-markscard.jpeg",
+    "fileHash": "966e841dd8b751d4f1c7ec108e21217a431703cedcc96c3109307974e4bc50c3",
+    "fileSize": 181773,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-06-25T15:13:37.453Z",
+    "extractedFields": null,
+    "ocrConfidence": null
+  }
+]

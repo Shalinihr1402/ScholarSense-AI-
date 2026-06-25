@@ -1,0 +1,244 @@
+import { createHash, randomUUID } from "crypto";
+import { mkdir, readFile, unlink, writeFile } from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+import Document from "../models/Document.js";
+import { crossValidateDocuments, extractFieldsByDocumentType, extractTextFromImage, verifyDocumentType } from "../services/ocrAnalysisService.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const LOCAL_STORE = path.resolve(__dirname, "../../data/documents.local.json");
+
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+function getUserId(req) {
+  return req.user.id || req.user._id?.toString();
+}
+
+function computeHash(buffer) {
+  return createHash("sha256").update(buffer).digest("hex");
+}
+
+async function ensureLocalStore() {
+  await mkdir(path.dirname(LOCAL_STORE), { recursive: true });
+  try { await readFile(LOCAL_STORE, "utf8"); }
+  catch { await writeFile(LOCAL_STORE, "[]", "utf8"); }
+}
+
+async function readLocalDocs() {
+  await ensureLocalStore();
+  return JSON.parse(await readFile(LOCAL_STORE, "utf8"));
+}
+
+async function writeLocalDocs(docs) {
+  await ensureLocalStore();
+  await writeFile(LOCAL_STORE, JSON.stringify(docs, null, 2), "utf8");
+}
+
+const IMAGE_MIMES = ["image/jpeg", "image/png", "image/webp"];
+
+async function runOcrExtraction(filePath, mimeType, documentType) {
+  if (!IMAGE_MIMES.includes(mimeType)) return { fields: null, confidence: null, verification: { verified: true }, ocrFailed: false };
+  try {
+    const { text, confidence } = await extractTextFromImage(filePath);
+    const verification = verifyDocumentType(text, documentType);
+    const fields = verification.verified ? extractFieldsByDocumentType(text, documentType) : null;
+    return { fields, confidence, verification, ocrFailed: false };
+  } catch {
+    // OCR crashed — mark as unverified so caller can decide what to do
+    return { fields: null, confidence: null, verification: { verified: false, warning: null }, ocrFailed: true };
+  }
+}
+
+async function updateLocalDocFields(fileHash, documentType, userId, extractedFields, ocrConfidence) {
+  const docs = await readLocalDocs();
+  const idx = docs.findIndex(d => d.fileHash === fileHash && d.documentType === documentType && d.userId === userId);
+  if (idx >= 0) {
+    docs[idx].extractedFields = extractedFields;
+    docs[idx].ocrConfidence = ocrConfidence;
+    await writeLocalDocs(docs);
+  }
+}
+
+// ── controllers ───────────────────────────────────────────────────────────────
+
+export async function uploadDocument(req, res, next) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded." });
+    }
+
+    const userId = getUserId(req);
+    const { documentType = "Other" } = req.body;
+    const fileBuffer = await readFile(req.file.path);
+    const fileHash = computeHash(fileBuffer);
+
+    const isMongo = Document.db.readyState === 1;
+
+    if (isMongo) {
+      // Duplicate = same file content AND same document type
+      const existing = await Document.findOne({ userId, fileHash, documentType });
+      if (existing) {
+        await unlink(req.file.path).catch(() => {});
+        return res.status(200).json({
+          message: "This file was already uploaded under this document type.",
+          document: existing,
+          duplicate: true
+        });
+      }
+
+      const doc = await Document.create({
+        userId,
+        originalName: req.file.originalname,
+        documentType,
+        filePath: req.file.path,
+        fileHash,
+        fileSize: req.file.size,
+        mimeType: req.file.mimetype
+      });
+
+      // Run OCR in background to extract fields — does not block the upload
+      runOcrExtraction(req.file.path, req.file.mimetype, documentType).then(ocr => {
+        if (ocr?.fields) {
+          Document.findByIdAndUpdate(doc._id, {
+            extractedFields: ocr.fields,
+            ocrConfidence: ocr.confidence,
+            ocrVerified: true
+          }).catch(() => {});
+        }
+      }).catch(() => {});
+
+      return res.status(201).json({ document: doc, duplicate: false });
+    }
+
+    // JSON fallback when MongoDB is not connected
+    const docs = await readLocalDocs();
+    const existing = docs.find(d => d.userId === userId && d.fileHash === fileHash && d.documentType === documentType);
+    if (existing) {
+      await unlink(req.file.path).catch(() => {});
+      return res.status(200).json({ message: "Already uploaded under this document type.", document: existing, duplicate: true });
+    }
+
+    const doc = {
+      id: randomUUID(),
+      userId,
+      originalName: req.file.originalname,
+      documentType,
+      filePath: req.file.path,
+      fileHash,
+      fileSize: req.file.size,
+      mimeType: req.file.mimetype,
+      createdAt: new Date().toISOString(),
+      extractedFields: null,
+      ocrConfidence: null
+    };
+
+    docs.push(doc);
+    await writeLocalDocs(docs);
+
+    // Run OCR in background — does not block the upload
+    runOcrExtraction(req.file.path, req.file.mimetype, documentType).then(ocr => {
+      if (ocr?.fields) {
+        doc.extractedFields = ocr.fields;
+        doc.ocrConfidence = ocr.confidence;
+        updateLocalDocFields(fileHash, documentType, userId, ocr.fields, ocr.confidence).catch(() => {});
+      }
+    }).catch(() => {});
+
+    return res.status(201).json({ document: doc, duplicate: false });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function listMyDocuments(req, res, next) {
+  try {
+    const userId = getUserId(req);
+
+    if (Document.db.readyState === 1) {
+      const docs = await Document.find({ userId }).sort({ createdAt: -1 }).lean();
+      return res.json({ documents: docs });
+    }
+
+    const all = await readLocalDocs();
+    return res.json({ documents: all.filter(d => d.userId === userId) });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getRiskReport(req, res, next) {
+  try {
+    const userId = getUserId(req);
+    let docs;
+
+    if (Document.db.readyState === 1) {
+      docs = await Document.find({ userId }).lean();
+    } else {
+      const all = await readLocalDocs();
+      docs = all.filter(d => d.userId === userId);
+    }
+
+    // For each document type, keep the most recently uploaded one
+    const latestByType = {};
+    for (const doc of docs) {
+      const existing = latestByType[doc.documentType];
+      if (!existing || new Date(doc.createdAt) > new Date(existing.createdAt)) {
+        latestByType[doc.documentType] = doc;
+      }
+    }
+
+    // Build extractedFields map by document type
+    const extractedByType = {};
+    for (const [type, doc] of Object.entries(latestByType)) {
+      extractedByType[type] = doc.extractedFields || null;
+    }
+
+    const KEY_DOCS = ["Aadhaar Card", "Bank Passbook", "Income Certificate", "Marksheet", "Caste Certificate"];
+    const report = crossValidateDocuments(extractedByType);
+
+    res.json({
+      report,
+      uploadedTypes: Object.keys(latestByType),
+      missingTypes: KEY_DOCS.filter(t => !latestByType[t]),
+      documentDetails: Object.entries(latestByType).map(([type, doc]) => ({
+        type,
+        originalName: doc.originalName,
+        uploadedAt: doc.createdAt,
+        ocrConfidence: doc.ocrConfidence,
+        extractedFields: doc.extractedFields
+      }))
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteDocument(req, res, next) {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+
+    if (Document.db.readyState === 1) {
+      const doc = await Document.findOne({ _id: id, userId });
+      if (!doc) return res.status(404).json({ message: "Document not found." });
+      await unlink(doc.filePath).catch(() => {});
+      await doc.deleteOne();
+      return res.json({ message: "Document deleted." });
+    }
+
+    const docs = await readLocalDocs();
+    // Match by UUID id first; fallback to matching by fileHash if id format changed
+    const index = docs.findIndex(d => d.userId === userId && (d.id === id || d.fileHash === id));
+    if (index === -1) return res.status(404).json({ message: "Document not found." });
+    await unlink(docs[index].filePath).catch(() => {});
+    docs.splice(index, 1);
+    await writeLocalDocs(docs);
+    return res.json({ message: "Document deleted." });
+
+  } catch (error) {
+    next(error);
+  }
+}

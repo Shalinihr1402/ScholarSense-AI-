@@ -12,6 +12,7 @@ import ocrRoutes from "./routes/ocrRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import readinessRoutes from "./routes/readinessRoutes.js";
 import scholarshipRoutes from "./routes/scholarshipRoutes.js";
+import documentRoutes from "./routes/documentRoutes.js";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use("/api/diagnosis", diagnosisRoutes);
 app.use("/api/ocr", ocrRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/email", emailRoutes);
+app.use("/api/documents", documentRoutes);
 
 app.get("/", (req, res) => {
   res.json({

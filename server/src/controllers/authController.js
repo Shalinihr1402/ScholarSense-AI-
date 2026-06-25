@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
+import StudentProfile from "../models/StudentProfile.js";
 import { createLocalUser, findLocalUserByEmail, safeLocalUser } from "../services/localUserStore.js";
+import { upsertLocalProfile } from "../services/localProfileStore.js";
 import { signAuthToken } from "../utils/token.js";
 
 function validateEmail(email) {
@@ -24,7 +26,10 @@ function sendAuthResponse(res, user, status = 200) {
 
 export async function register(req, res, next) {
   try {
-    const { name, email, password, role = "student" } = req.body;
+    const {
+      name, email, password, role = "student",
+      dateOfBirth, state, category, annualIncome, course
+    } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Name, email, and password are required." });
@@ -42,6 +47,14 @@ export async function register(req, res, next) {
       return res.status(400).json({ message: "Invalid user role." });
     }
 
+    const profileSeed = {
+      fullName: name.trim(),
+      state: state || "",
+      category: category || "",
+      annualIncome: annualIncome ? Number(annualIncome) : null,
+      course: course || ""
+    };
+
     if (User.db.readyState === 1) {
       const normalizedEmail = email.toLowerCase().trim();
       const existing = await User.findOne({ email: normalizedEmail });
@@ -54,13 +67,24 @@ export async function register(req, res, next) {
         name,
         email: normalizedEmail,
         password: await bcrypt.hash(password, 12),
-        role
+        role,
+        dateOfBirth: dateOfBirth || null
       });
+
+      // Auto-create a StudentProfile so eligibility runs immediately after signup
+      if (role === "student") {
+        await StudentProfile.create({ userId: user._id, ...profileSeed });
+      }
 
       return sendAuthResponse(res, user, 201);
     }
 
     const user = await createLocalUser({ name, email, password, role });
+
+    if (role === "student") {
+      await upsertLocalProfile(user.id, profileSeed);
+    }
+
     return sendAuthResponse(res, user, 201);
   } catch (error) {
     next(error);

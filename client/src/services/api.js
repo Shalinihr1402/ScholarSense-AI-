@@ -130,3 +130,21 @@ export const emailApi = {
     return apiRequest("/email/status");
   }
 };
+
+export const documentApi = {
+  list() {
+    return apiRequest("/documents/mine");
+  },
+  upload(file, documentType) {
+    const formData = new FormData();
+    formData.append("document", file);
+    formData.append("documentType", documentType);
+    return apiRequest("/documents/upload", { method: "POST", body: formData });
+  },
+  remove(id) {
+    return apiRequest(`/documents/${id}`, { method: "DELETE" });
+  },
+  riskReport() {
+    return apiRequest("/documents/risk-report");
+  }
+};

@@ -1,164 +1,284 @@
 import React from "react";
-import { AlertTriangle, FileScan, ShieldCheck, Upload } from "lucide-react";
+import { AlertTriangle, CheckCircle2, FileSearch, RefreshCw, XCircle } from "lucide-react";
 import { ocrApi } from "../services/api.js";
 
+const DOC_TYPES = [
+  "Marksheet",
+  "Aadhaar Card",
+  "Bank Passbook",
+  "Income Certificate",
+  "Caste Certificate",
+  "Bonafide Certificate",
+  "Fee Receipt",
+];
+
+// Minimum keywords that MUST appear for each document type
+const DOC_KEYWORDS = {
+  "Marksheet": ["marks", "percentage", "board", "examination", "grade", "total", "subject", "score", "cgpa", "university", "result", "pass"],
+  "Aadhaar Card": ["aadhaar", "uidai", "unique identification", "government of india", "dob", "enrollment"],
+  "Bank Passbook": ["bank", "account", "ifsc", "branch", "passbook", "balance", "a/c"],
+  "Income Certificate": ["income", "certificate", "tahsildar", "annual", "issued", "revenue", "rupees"],
+  "Caste Certificate": ["caste", "certificate", "category", "scheduled", "obc", "tahsildar", "issued"],
+  "Bonafide Certificate": ["bonafide", "bona fide", "study certificate", "college", "student", "course", "principal"],
+  "Fee Receipt": ["receipt", "fee", "paid", "amount", "tuition", "college", "date"],
+};
+
+// Minimum OCR confidence to be "readable"
+const MIN_CONFIDENCE = 35;
+// Minimum text length
+const MIN_TEXT_LENGTH = 80;
+// How many keywords must match
+const MIN_KEYWORD_MATCHES = 2;
+
+function checkReadability(text, confidence, documentType) {
+  const lower = text.toLowerCase();
+  const keywords = DOC_KEYWORDS[documentType] || [];
+  const matched = keywords.filter(k => lower.includes(k));
+  const keywordScore = matched.length;
+
+  const isLowConfidence = confidence < MIN_CONFIDENCE;
+  const isTooShort = text.trim().length < MIN_TEXT_LENGTH;
+  const isWrongType = keywordScore < MIN_KEYWORD_MATCHES;
+
+  if (isTooShort && confidence < 20) {
+    return {
+      status: "unreadable",
+      icon: "x",
+      title: "Image is too blurry or dark to read",
+      message: "The document could not be read at all. Please retake the photo in good lighting, keeping the camera steady and the full document in frame.",
+      color: "#ef4444",
+      bg: "#ef444415",
+      border: "#ef444440",
+    };
+  }
+
+  if (isWrongType && !isTooShort) {
+    return {
+      status: "wrong_type",
+      icon: "warn",
+      title: `This does not look like a ${documentType}`,
+      message: `The text found in this image does not match what a ${documentType} should contain. Please make sure you selected the correct document type, or re-upload the right file.`,
+      color: "#f59e0b",
+      bg: "#f59e0b15",
+      border: "#f59e0b40",
+      matched,
+      keywords,
+    };
+  }
+
+  if (isLowConfidence || isTooShort) {
+    return {
+      status: "blurry",
+      icon: "warn",
+      title: "Image is readable but quality is low",
+      message: "Some text was found but the image is not sharp enough. Scholarship portals may reject a blurry scan. Retake the photo in natural light with all edges visible.",
+      color: "#f59e0b",
+      bg: "#f59e0b15",
+      border: "#f59e0b40",
+      matched,
+    };
+  }
+
+  return {
+    status: "ok",
+    icon: "check",
+    title: `This looks like a ${documentType} — readable enough for scholarship upload`,
+    message: "The document is clear and the content matches. You can safely upload this to your Document Vault.",
+    color: "#22c55e",
+    bg: "#22c55e15",
+    border: "#22c55e40",
+    matched,
+  };
+}
+
 export default function OcrAnalyzer() {
+  const [docType, setDocType] = React.useState("Marksheet");
   const [file, setFile] = React.useState(null);
-  const [result, setResult] = React.useState(null);
-  const [status, setStatus] = React.useState({ loading: false, error: "" });
+  const [check, setCheck] = React.useState(null); // result of readability check
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const fileRef = React.useRef(null);
 
-  async function handleSubmit(event) {
-    event.preventDefault();
+  function reset() {
+    setFile(null);
+    setCheck(null);
+    setError("");
+    if (fileRef.current) fileRef.current.value = "";
+  }
 
-    if (!file) {
-      setStatus({ loading: false, error: "Please choose a screenshot or document image first." });
-      return;
-    }
+  function handleTypeChange(e) {
+    setDocType(e.target.value);
+    reset();
+  }
 
-    setStatus({ loading: true, error: "" });
-    setResult(null);
-
+  async function handleCheck() {
+    if (!file) return;
+    setLoading(true);
+    setError("");
+    setCheck(null);
     try {
-      const response = await ocrApi.analyze(file);
-      setResult(response.result);
-      setStatus({ loading: false, error: "" });
-    } catch (error) {
-      setStatus({ loading: false, error: error.message });
+      const data = await ocrApi.analyze(file);
+      const result = data.result;
+      const readability = checkReadability(
+        result.extractedText || "",
+        result.confidence || 0,
+        docType
+      );
+      setCheck({ readability, result });
+    } catch (err) {
+      setError("Could not analyse the image. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
+
+  const r = check?.readability;
 
   return (
     <div className="page-stack">
       <div className="page-heading">
-        <p className="eyebrow">OCR screenshot analyzer</p>
-        <h2>Upload NSP/SSP screenshots or document images</h2>
+        <p className="eyebrow">Document Readability Checker</p>
+        <h2>Is this document good enough to upload?</h2>
+        <p className="muted-text">
+          Select the document type, upload a photo or scan, and we'll tell you if it's clear enough for a scholarship application.
+        </p>
       </div>
 
-      <section className="two-column">
-        <form className="panel upload-panel" onSubmit={handleSubmit}>
-          <div className="upload-icon">
-            <Upload size={34} />
-          </div>
-          <h3>Document upload</h3>
-          <p className="muted-text">
-            Upload a clear image of NSP/SSP status, bank passbook, income certificate, marksheet, Aadhaar, or scholarship document.
-          </p>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(event) => setFile(event.target.files?.[0] || null)}
-          />
-          {file ? <span className="selected-file">{file.name}</span> : null}
-          {status.error ? <div className="form-alert error">{status.error}</div> : null}
-          <button className="primary-btn" type="submit" disabled={status.loading}>
-            {status.loading ? "Analyzing OCR..." : "Analyze Screenshot"}
-          </button>
-        </form>
+      {/* Step 1 — Pick type + upload */}
+      {!check && (
+        <section className="panel" style={{ maxWidth: 560 }}>
+          <label style={{ display: "block", marginBottom: 16 }}>
+            <span style={{ fontWeight: 600, display: "block", marginBottom: 6 }}>
+              What document are you checking?
+            </span>
+            <select
+              value={docType}
+              onChange={handleTypeChange}
+              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, fontSize: 15 }}
+            >
+              {DOC_TYPES.map(t => <option key={t}>{t}</option>)}
+            </select>
+          </label>
 
-        <div className="panel">
-          <h3>What this analyzer checks</h3>
-          <div className="timeline">
-            <span>NSP/SSP status text like rejected, defective, payment failed, sent to PFMS</span>
-            <span>Bank passbook details like IFSC/account visibility</span>
-            <span>Document readability using OCR confidence and detected text length</span>
-            <span>Student guidance for DBT, Aadhaar-bank seeding, and correction actions</span>
-          </div>
-        </div>
-      </section>
-
-      {result ? (
-        <>
-          <section className="stats-grid">
-            <div className={`stat-card ${result.quality === "Good" ? "green" : result.quality === "Medium" ? "amber" : "red"}`}>
-              <p>Quality score</p>
-              <strong>{result.qualityScore}/100</strong>
-              <span>{result.uploadDecision.label}</span>
-            </div>
-            <div className="stat-card blue">
-              <p>Detected type</p>
-              <strong>{result.documentType}</strong>
-              <span>{result.textLength} characters detected</span>
-            </div>
-            <div className="stat-card teal">
-              <p>Status findings</p>
-              <strong>{result.statusFindings.length}</strong>
-              <span>Portal/status issues detected</span>
-            </div>
-            <div className="stat-card amber">
-              <p>OCR confidence</p>
-              <strong>{result.confidence}%</strong>
-              <span>{result.quality} readability</span>
-            </div>
-          </section>
-
-          <section className="panel">
-            <div className="quality-header">
-              <div>
-                <p className="eyebrow">Document quality checker</p>
-                <h3>{result.uploadDecision.message}</h3>
-              </div>
-              <span className={`status-pill ${result.uploadDecision.risk === "Low" ? "ok" : result.uploadDecision.risk === "Medium" ? "warn" : "bad"}`}>
-                {result.uploadDecision.risk} risk
+          <label style={{ display: "block", marginBottom: 16 }}>
+            <span style={{ fontWeight: 600, display: "block", marginBottom: 6 }}>
+              Upload a photo or scan of your {docType}
+            </span>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              onChange={e => { setFile(e.target.files?.[0] || null); setError(""); }}
+            />
+            {file && (
+              <span style={{ display: "block", marginTop: 8, fontSize: 13, color: "var(--accent,#6366f1)", fontWeight: 600 }}>
+                {file.name}
               </span>
-            </div>
-            <div className="field-grid">
-              {result.fieldVisibility.fields.map((field) => (
-                <article className={`field-card ${field.detected ? "detected" : "missing"}`} key={field.field}>
-                  <strong>{field.field}</strong>
-                  <span>{field.detected ? "Detected" : "Not clear"}</span>
-                </article>
-              ))}
-            </div>
-          </section>
+            )}
+          </label>
 
-          <section className="two-column">
-            <div className="panel">
-              <h3>Detected issues</h3>
-              <div className="diagnosis-list">
-                {result.issues.map((item) => (
-                  <p className={item.startsWith("No major") ? "ok-text" : "warn-text"} key={item}>
-                    <AlertTriangle size={16} /> {item}
-                  </p>
+          {error && (
+            <div className="form-alert error" style={{ marginBottom: 12 }}>{error}</div>
+          )}
+
+          <button
+            className="primary-btn"
+            onClick={handleCheck}
+            disabled={!file || loading}
+            style={{ width: "100%" }}
+          >
+            {loading
+              ? <><RefreshCw size={15} style={{ marginRight: 8, animation: "spin 1s linear infinite" }} />Checking document...</>
+              : <><FileSearch size={15} style={{ marginRight: 8 }} />Check this document</>
+            }
+          </button>
+        </section>
+      )}
+
+      {/* Step 2 — Result */}
+      {check && r && (
+        <section style={{ maxWidth: 600 }}>
+          {/* Main result banner */}
+          <div style={{
+            background: r.bg,
+            border: `2px solid ${r.border}`,
+            borderRadius: 14,
+            padding: "24px 28px",
+            marginBottom: 20,
+            display: "flex",
+            gap: 18,
+            alignItems: "flex-start"
+          }}>
+            <div style={{ flexShrink: 0, marginTop: 2 }}>
+              {r.icon === "check" && <CheckCircle2 size={36} style={{ color: r.color }} />}
+              {r.icon === "warn" && <AlertTriangle size={36} style={{ color: r.color }} />}
+              {r.icon === "x" && <XCircle size={36} style={{ color: r.color }} />}
+            </div>
+            <div>
+              <p style={{ fontWeight: 700, fontSize: 17, color: r.color, marginBottom: 6 }}>
+                {r.title}
+              </p>
+              <p style={{ fontSize: 14, lineHeight: 1.6, color: "var(--text-primary,#f0f0f0)" }}>
+                {r.message}
+              </p>
+            </div>
+          </div>
+
+          {/* What we found inside */}
+          {r.matched && r.matched.length > 0 && (
+            <div className="panel" style={{ marginBottom: 16 }}>
+              <p style={{ fontWeight: 600, marginBottom: 10 }}>Keywords found in this document:</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {r.matched.map(k => (
+                  <span key={k} style={{
+                    background: "#22c55e20", border: "1px solid #22c55e50",
+                    color: "#22c55e", borderRadius: 20, padding: "3px 12px", fontSize: 13, fontWeight: 600
+                  }}>
+                    ✓ {k}
+                  </span>
                 ))}
               </div>
             </div>
-            <div className="panel">
-              <h3>Student guidance</h3>
-              <div className="diagnosis-list">
-                {result.suggestions.map((item) => (
-                  <p className="ok-text" key={item}>
-                    <ShieldCheck size={16} /> {item}
-                  </p>
-                ))}
-              </div>
+          )}
+
+          {/* What to fix — only for warn/error states */}
+          {r.status !== "ok" && (
+            <div className="panel" style={{ marginBottom: 16, background: "#f59e0b08", border: "1px solid #f59e0b30" }}>
+              <p style={{ fontWeight: 600, marginBottom: 10 }}>How to fix this:</p>
+              <ul style={{ paddingLeft: 20, margin: 0, lineHeight: 2, fontSize: 14 }}>
+                {r.status === "unreadable" && <>
+                  <li>Take the photo in a brightly lit room (near a window works well)</li>
+                  <li>Keep your phone steady — use both hands or rest it on a surface</li>
+                  <li>Make sure all 4 corners of the document are visible</li>
+                  <li>Avoid flash glare — use natural light instead</li>
+                </>}
+                {r.status === "blurry" && <>
+                  <li>Retake in better lighting — avoid shadows on the document</li>
+                  <li>Hold phone at least 20 cm above the document</li>
+                  <li>Make sure the text is in focus before tapping the shutter</li>
+                </>}
+                {r.status === "wrong_type" && <>
+                  <li>Check that you selected the correct document type above</li>
+                  <li>Make sure you uploaded the right file (not a photo or ID card)</li>
+                  <li>If correct, the document may be damaged or unreadable — get a fresh copy</li>
+                </>}
+              </ul>
             </div>
-          </section>
+          )}
 
-          {result.statusFindings.length > 0 ? (
-            <section className="panel">
-              <h3>Scholarship status explanation</h3>
-              <div className="diagnosis-grid">
-                {result.statusFindings.map((finding) => (
-                  <article className="diagnosis-card warn" key={finding.issue}>
-                    <FileScan size={22} />
-                    <div>
-                      <h3>{finding.issue}</h3>
-                      <p><strong>Meaning:</strong> {finding.meaning}</p>
-                      <p><strong>Action:</strong> {finding.action}</p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          <section className="panel">
-            <h3>Extracted OCR text preview</h3>
-            <pre className="ocr-text-preview">{result.extractedText || "No readable text detected."}</pre>
-            <p className="muted-text">{result.safetyNote}</p>
-          </section>
-        </>
-      ) : null}
+          {/* Actions */}
+          <div style={{ display: "flex", gap: 12 }}>
+            <button className="secondary-btn" onClick={reset} style={{ flex: 1 }}>
+              ← Check another document
+            </button>
+            {r.status === "ok" && (
+              <a href="/document-vault" className="primary-btn" style={{ flex: 1, textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, textDecoration: "none" }}>
+                <CheckCircle2 size={15} /> Upload to Vault
+              </a>
+            )}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

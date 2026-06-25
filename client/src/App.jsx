@@ -13,6 +13,8 @@ import Chatbot from "./pages/Chatbot.jsx";
 import AwarenessGuide from "./pages/AwarenessGuide.jsx";
 import Notifications from "./pages/Notifications.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import DocumentVault from "./pages/DocumentVault.jsx";
+import RiskAnalyzer from "./pages/RiskAnalyzer.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
@@ -32,6 +34,8 @@ export default function App() {
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/awareness" element={<AwarenessGuide />} />
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/document-vault" element={<DocumentVault />} />
+        <Route path="/risk-analyzer" element={<RiskAnalyzer />} />
         </Route>
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>

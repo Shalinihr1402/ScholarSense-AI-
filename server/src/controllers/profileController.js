@@ -1,7 +1,38 @@
 import StudentProfile from "../models/StudentProfile.js";
+import Scholarship from "../models/Scholarship.js";
 import { getLocalProfile, upsertLocalProfile } from "../services/localProfileStore.js";
+import { getAllLocalScholarships } from "../services/localScholarshipStore.js";
+import { evaluateScholarships } from "../services/eligibilityService.js";
 import { createProfileNotifications } from "../services/notificationService.js";
 import { getProfileInsights, normalizeProfile } from "../services/profileService.js";
+
+async function buildEligibilitySnapshot(profile, isMongoConnected) {
+  try {
+    const scholarships = isMongoConnected
+      ? await Scholarship.find({ status: "Active" }).lean()
+      : await getAllLocalScholarships();
+
+    if (!scholarships.length) return null;
+
+    const results = evaluateScholarships(profile, scholarships);
+    return {
+      total: results.length,
+      eligible: results.filter(r => r.eligibility.status === "Eligible").length,
+      check: results.filter(r => r.eligibility.status === "Check").length,
+      notEligible: results.filter(r => r.eligibility.status === "Not Eligible").length,
+      topMatches: results.slice(0, 3).map(r => ({
+        id: r._id || r.id,
+        name: r.name,
+        provider: r.provider,
+        status: r.eligibility.status,
+        matchScore: r.eligibility.matchScore
+      })),
+      calculatedAt: new Date().toISOString()
+    };
+  } catch {
+    return null;
+  }
+}
 
 function getUserId(req) {
   return req.user.id || req.user._id?.toString();
@@ -58,17 +89,25 @@ export async function saveMyProfile(req, res, next) {
       return res.status(400).json({ message: "Marks percentage must be between 0 and 100." });
     }
 
-    if (StudentProfile.db.readyState === 1) {
+    const isMongo = StudentProfile.db.readyState === 1;
+    const eligibilitySnapshot = await buildEligibilitySnapshot(normalized, isMongo);
+    const updatePayload = {
+      ...normalized,
+      userId,
+      ...(eligibilitySnapshot && { eligibilitySnapshot, eligibilityUpdatedAt: new Date() })
+    };
+
+    if (isMongo) {
       const profile = await StudentProfile.findOneAndUpdate(
         { userId },
-        { $set: { ...normalized, userId } },
+        { $set: updatePayload },
         { new: true, upsert: true, runValidators: true }
       ).lean();
 
       return sendSavedProfile(req, res, profile);
     }
 
-    const profile = await upsertLocalProfile(userId, normalized);
+    const profile = await upsertLocalProfile(userId, updatePayload);
     return sendSavedProfile(req, res, profile);
   } catch (error) {
     next(error);

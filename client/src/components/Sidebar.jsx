@@ -5,11 +5,13 @@ import {
   BookOpen,
   Bot,
   FileScan,
+  FolderLock,
   Gauge,
   Home,
   Languages,
   ListChecks,
   ShieldAlert,
+  ShieldCheck,
   UserRound
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
@@ -19,6 +21,8 @@ import logo from "../assets/scholarsense-logo.jpeg";
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: Home },
   { label: "Profile", path: "/profile", icon: UserRound },
+  { label: "Document Vault", path: "/document-vault", icon: FolderLock },
+  { label: "Health Check", path: "/risk-analyzer", icon: ShieldCheck },
   { label: "Scholarships", path: "/scholarships", icon: ListChecks },
   { label: "OCR Analyzer", path: "/ocr-analyzer", icon: FileScan },
   { label: "Readiness Score", path: "/readiness-score", icon: Gauge },
