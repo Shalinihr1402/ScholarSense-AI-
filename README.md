@@ -1,106 +1,245 @@
-# ScholarSense AI
+ScholarSense AI
 
-An OCR-Driven Scholarship Intelligence and Decision Support System for Readiness Assessment and Failure Diagnosis.
+ScholarSense AI is an OCR-driven Scholarship Intelligence and Decision Support System designed to help students assess scholarship readiness, diagnose application failures, analyze screenshots, and receive personalized recommendations and notifications.
 
-## Day 1 Setup
+---
 
-This repository contains the base full-stack structure:
+🚀 Features
 
-- `client`: React + Vite frontend
-- `server`: Node.js + Express backend
+- User Authentication and Authorization
+- Student Profile Management
+- Scholarship Database and Personalized Recommendations
+- Readiness Score Assessment
+- Failure Diagnosis Engine
+- OCR Screenshot Analyzer
+- Notification System
+- Email Alerts for Important Events
+- MongoDB Support with Local JSON Fallback
+- Full-Stack Architecture using React and Node.js
 
-## Run Locally
+---
 
-```bash
-npm.cmd install
-npm.cmd run dev
-```
+🛠 Tech Stack
 
-Client: `http://localhost:5173`
+Frontend
 
-Server: `http://localhost:5000`
+- React
+- Vite
+- Axios
+- React Router
 
-## Day 2 Auth
+Backend
 
-Auth routes are available at:
+- Node.js
+- Express.js
+- JWT Authentication
+- MongoDB (Optional)
+- Multer
+- Tesseract OCR
 
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
+---
 
-If MongoDB is not configured, the backend uses a local development store at
-`server/data/users.local.json`, which is ignored by git.
+📂 Project Structure
 
-## Day 3 Student Profile
+ScholarSense-AI/
+│
+├── client/          # React + Vite frontend
+├── server/          # Node.js + Express backend
+├── README.md
+└── package.json
 
-Profile routes are available at:
+---
 
-- `GET /api/profile/me`
-- `POST /api/profile/me`
-- `PUT /api/profile/me`
+⚙️ Installation
 
-If MongoDB is not configured, profiles are saved in
-`server/data/profiles.local.json`, which is ignored by git.
+Clone the repository:
 
-## Day 4 Scholarship Database
+git clone <repository-url>
+cd ScholarSense-AI
 
-Scholarship routes are available at:
+Install dependencies:
 
-- `GET /api/scholarships`
-- `GET /api/scholarships/personalized`
-- `POST /api/scholarships` admin only
-- `PUT /api/scholarships/:id` admin only
-- `DELETE /api/scholarships/:id` admin only
+npm install
 
-If MongoDB is not configured, scholarships are seeded into
-`server/data/scholarships.local.json`, which is ignored by git.
+Start the application:
 
-## Day 6 Readiness Score
+npm run dev
 
-Readiness route:
+Local URLs
 
-- `GET /api/readiness/me`
+Frontend:
 
-The score is calculated from profile completion, eligibility match, document
-readiness, DBT status, and deadline safety.
+http://localhost:5173
 
-## Day 7 Failure Diagnosis
+Backend:
 
-Diagnosis route:
+http://localhost:5000
 
-- `GET /api/diagnosis/me`
+---
 
-The engine identifies profile, eligibility, document, DBT, bank, deadline, and
-readiness risks with a personalized action plan.
+Modules and APIs
 
-## Day 8 OCR Screenshot Analyzer
+🔐 Authentication
 
-OCR route:
+Routes:
 
-- `POST /api/ocr/analyze`
+- "POST /api/auth/register"
+- "POST /api/auth/login"
+- "GET /api/auth/me"
 
-Upload form field: `screenshot`
+If MongoDB is unavailable, users are stored in:
 
-The analyzer extracts text from uploaded images, detects document/status type,
-flags OCR quality issues, and gives student-friendly guidance.
+server/data/users.local.json
 
-## Day 10 Notifications
+---
 
-Notification routes:
+👤 Student Profile
 
-- `GET /api/notifications`
-- `POST /api/notifications`
-- `PUT /api/notifications/:id/read`
-- `PUT /api/notifications/read-all`
+Routes:
 
-Notifications are generated from profile, readiness, diagnosis, and OCR events.
+- "GET /api/profile/me"
+- "POST /api/profile/me"
+- "PUT /api/profile/me"
 
-## Day 11 Email Alerts
+Fallback storage:
 
-Email status route:
+server/data/profiles.local.json
 
-- `GET /api/email/status`
+---
 
-High and critical notifications attempt email delivery when `EMAIL_USER` and
-`EMAIL_PASS` are configured. Without credentials, emails are safely logged as
-`skipped` for development.
+🎓 Scholarship Database
+
+Routes:
+
+- "GET /api/scholarships"
+- "GET /api/scholarships/personalized"
+- "POST /api/scholarships"
+- "PUT /api/scholarships/:id"
+- "DELETE /api/scholarships/:id"
+
+Fallback storage:
+
+server/data/scholarships.local.json
+
+---
+
+📊 Readiness Score Engine
+
+Route:
+
+- "GET /api/readiness/me"
+
+Parameters considered:
+
+- Profile completion
+- Eligibility matching
+- Document readiness
+- DBT status
+- Deadline safety
+
+---
+
+🔍 Failure Diagnosis Engine
+
+Route:
+
+- "GET /api/diagnosis/me"
+
+Detects:
+
+- Profile issues
+- Eligibility risks
+- Missing documents
+- Bank and DBT problems
+- Deadline risks
+- Readiness concerns
+
+Provides a personalized action plan for students.
+
+---
+
+📸 OCR Screenshot Analyzer
+
+Route:
+
+- "POST /api/ocr/analyze"
+
+Upload field:
+
+screenshot
+
+Capabilities:
+
+- Extract text from screenshots
+- Detect document and status type
+- Identify OCR quality issues
+- Generate student-friendly guidance
+
+---
+
+🔔 Notification System
+
+Routes:
+
+- "GET /api/notifications"
+- "POST /api/notifications"
+- "PUT /api/notifications/:id/read"
+- "PUT /api/notifications/read-all"
+
+Notifications are generated from:
+
+- Profile updates
+- Readiness scores
+- Diagnosis reports
+- OCR analysis
+
+---
+
+📧 Email Alerts
+
+Route:
+
+- "GET /api/email/status"
+
+High-priority notifications are sent via email when:
+
+EMAIL_USER
+EMAIL_PASS
+
+are configured.
+
+Without credentials, emails are safely logged and skipped during development.
+
+---
+
+💾 Database Support
+
+Primary Database:
+
+- MongoDB
+
+Development Fallback:
+
+- "users.local.json"
+- "profiles.local.json"
+- "scholarships.local.json"
+
+---
+
+🌟 Future Enhancements
+
+- AI-powered chatbot support
+- Multilingual support
+- Document verification
+- Scholarship deadline reminders
+- Admin dashboard
+- Analytics and reports
+- Mobile application
+
+---
+
+📜 License
+
+This project is developed for educational and research purposes.
+
+© 2026 ScholarSense AI
