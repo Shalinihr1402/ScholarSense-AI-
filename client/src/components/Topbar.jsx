@@ -37,35 +37,48 @@ export default function Topbar() {
     };
   }, []);
 
+  const initials = (user?.name || "S").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+
   return (
     <header className="topbar">
       <div>
-        <p className="eyebrow">Student workspace</p>
-        <h2>Readiness, diagnosis, and guidance in one place</h2>
+        <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase", color: "#0d9488", margin: "0 0 4px" }}>
+          ScholarSense AI
+        </p>
+        <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, lineHeight: 1.3, color: "#0f172a", letterSpacing: "-.02em" }}>
+          Your{" "}
+          <span style={{ background: "linear-gradient(135deg,#2563eb,#0891b2)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            Smart Scholarship
+          </span>
+          {" "}Companion
+        </h2>
       </div>
       <div className="topbar-actions">
         <label className="search-box">
-          <Search size={17} />
-          <input placeholder="Search scholarships, DBT, documents..." />
+          <Search size={16} color="#94a3b8" />
+          <input placeholder="Search scholarships, documents…" />
         </label>
         <button className="icon-btn" type="button" aria-label="Voice assistant">
-          <Mic size={19} />
+          <Mic size={17} />
         </button>
         <Link
           className={`icon-btn ${summary.unread > 0 ? "notification-dot" : ""}`}
           to="/notifications"
           aria-label="Notifications"
-          title={`${summary.unread} unread notification(s), ${summary.highPriority} high priority`}
+          title={`${summary.unread} unread`}
         >
-          <Bell size={19} />
-          {summary.unread > 0 ? <span className="notification-count">{summary.unread}</span> : null}
+          <Bell size={17} />
+          {summary.unread > 0 && <span className="notification-count">{summary.unread}</span>}
         </Link>
         <div className="user-chip">
-          <span>{user?.name || "Student"}</span>
-          <small>{user?.role || "student"}</small>
+          <div className="user-chip-avatar">{initials}</div>
+          <div>
+            <span>{user?.name || "Student"}</span>
+            <small>{user?.role || "student"}</small>
+          </div>
         </div>
         <button className="icon-btn" type="button" aria-label="Logout" onClick={logout}>
-          <LogOut size={19} />
+          <LogOut size={17} />
         </button>
       </div>
     </header>
