@@ -479,8 +479,8 @@ function Timeline({ currentStage, stageDates }) {
         {TIMELINE.map((label, i) => {
           const isDone    = currentStage !== null && i < currentStage;
           const isCurrent = currentStage !== null && i === currentStage;
-          const dotColor  = isDone ? "#22c55e" : isCurrent ? "#6366f1" : "rgba(156,163,175,0.25)";
-          const textColor = isDone ? "#22c55e" : isCurrent ? "#f0f0f0" : "#6b7280";
+          const dotColor  = isDone ? "#16a34a" : isCurrent ? "#2563eb" : "#e2e8f0";
+          const textColor = isDone ? "#16a34a" : isCurrent ? "#1e40af" : "#94a3b8";
           const dateInfo  = stageDates?.[i];
           return (
             <React.Fragment key={label}>
@@ -491,7 +491,7 @@ function Timeline({ currentStage, stageDates }) {
                   background: dotColor,
                   border: isCurrent ? "3px solid #818cf8" : `2px solid ${dotColor}`,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  boxShadow: isCurrent ? "0 0 0 5px rgba(99,102,241,0.18)" : "none",
+                  boxShadow: isCurrent ? "0 0 0 5px rgba(37,99,235,.15)" : "none",
                   transition: "all .3s"
                 }}>
                   {isDone
@@ -505,7 +505,7 @@ function Timeline({ currentStage, stageDates }) {
                 <span style={{
                   fontSize: 11, fontWeight: isCurrent ? 800 : 500,
                   color: textColor, textAlign: "center", maxWidth: 68, lineHeight: 1.3,
-                  background: isCurrent ? "rgba(99,102,241,0.12)" : "transparent",
+                  background: isCurrent ? "#eff6ff" : "transparent",
                   padding: isCurrent ? "2px 5px" : "0", borderRadius: 4
                 }}>
                   {label}
@@ -514,7 +514,7 @@ function Timeline({ currentStage, stageDates }) {
                 {dateInfo?.label && (
                   <span style={{
                     fontSize: 10, fontWeight: 600, textAlign: "center",
-                    color: dateInfo.estimated ? "#6366f1" : isDone ? "#4ade80" : "#9ca3af",
+                    color: dateInfo.estimated ? "#2563eb" : isDone ? "#16a34a" : "#94a3b8",
                     lineHeight: 1.3, maxWidth: 68
                   }}>
                     {dateInfo.estimated ? `Est. ${dateInfo.label}` : dateInfo.label}
@@ -524,7 +524,7 @@ function Timeline({ currentStage, stageDates }) {
               {i < TIMELINE.length - 1 && (
                 <div style={{
                   flex: 1, height: 2, minWidth: 12, marginTop: 17,
-                  background: i < currentStage ? "#22c55e" : "rgba(156,163,175,0.18)",
+                  background: i < currentStage ? "#16a34a" : "#e2e8f0",
                   transition: "background .3s"
                 }} />
               )}
@@ -559,36 +559,37 @@ function DelayChecks({ checks, note }) {
   const toggle = i => setChecked(p => p.map((v, j) => j === i ? !v : v));
   const allDone = checked.every(Boolean);
   return (
-    <section className="panel" style={{ margin: 0, background: "rgba(245,158,11,0.04)", border: "1px solid rgba(245,158,11,0.18)" }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: "#fbbf24", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 6 }}>
+    <div style={{ background: "white", borderRadius: 16, padding: "20px 22px", boxShadow: "0 2px 10px rgba(15,23,42,.06)", border: "1.5px solid #fde68a" }}>
+      <p style={{ fontSize: 11, fontWeight: 800, color: "#d97706", textTransform: "uppercase", letterSpacing: ".09em", marginBottom: 6 }}>
         Potential Delay Checks
       </p>
-      {note && <p style={{ fontSize: 12, color: "#9ca3af", marginBottom: 12, lineHeight: 1.6 }}>{note}</p>}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {note && <p style={{ fontSize: 12, color: "#64748b", marginBottom: 12, lineHeight: 1.6 }}>{note}</p>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         {checks.map((c, i) => (
           <button key={i} onClick={() => toggle(i)}
             style={{
-              display: "flex", gap: 10, alignItems: "center", background: "none",
-              border: "none", cursor: "pointer", padding: "6px 0", textAlign: "left"
+              display: "flex", gap: 10, alignItems: "center", background: checked[i] ? "#f0fdf4" : "#fffbeb",
+              border: `1px solid ${checked[i] ? "#bbf7d0" : "#fde68a"}`,
+              borderRadius: 9, cursor: "pointer", padding: "9px 12px", textAlign: "left", transition: "all .15s"
             }}
           >
             {checked[i]
-              ? <CheckSquare size={17} color="#22c55e" style={{ flexShrink: 0 }} />
-              : <Square size={17} color="#fbbf24" style={{ flexShrink: 0 }} />
+              ? <CheckSquare size={16} color="#16a34a" style={{ flexShrink: 0 }} />
+              : <Square size={16} color="#d97706" style={{ flexShrink: 0 }} />
             }
             <span style={{
-              fontSize: 13, color: checked[i] ? "#6b7280" : "#e5e7eb",
+              fontSize: 13, color: checked[i] ? "#94a3b8" : "#334155",
               textDecoration: checked[i] ? "line-through" : "none", lineHeight: 1.5
             }}>{c}</span>
           </button>
         ))}
       </div>
       {allDone && (
-        <div style={{ marginTop: 12, padding: "8px 12px", borderRadius: 8, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)" }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: "#22c55e" }}>All checks done — contact your nodal officer with this information.</p>
+        <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 10, background: "#f0fdf4", border: "1.5px solid #bbf7d0" }}>
+          <p style={{ fontSize: 12.5, fontWeight: 700, color: "#16a34a", margin: 0 }}>✓ All checks done — contact your nodal officer with this information.</p>
         </div>
       )}
-    </section>
+    </div>
   );
 }
 
@@ -597,26 +598,25 @@ function ScreenshotCard({ file, preview }) {
   const [open, setOpen] = React.useState(false);
   return (
     <>
-      <section className="panel" style={{ display: "flex", gap: 16, alignItems: "center", background: "rgba(34,197,94,0.04)", border: "1px solid rgba(34,197,94,0.2)" }}>
-        {/* Thumb */}
-        <img src={preview} alt="screenshot" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 8, flexShrink: 0, border: "2px solid rgba(34,197,94,0.3)" }} />
+      <div style={{ display: "flex", gap: 14, alignItems: "center", background: "white", borderRadius: 14, padding: "14px 18px", border: "1.5px solid #bbf7d0", boxShadow: "0 2px 10px rgba(15,23,42,.06)" }}>
+        <img src={preview} alt="screenshot" style={{ width: 58, height: 58, objectFit: "cover", borderRadius: 10, flexShrink: 0, border: "2px solid #bbf7d0" }} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-            <CheckCircle2 size={15} color="#22c55e" />
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#22c55e" }}>Analysis Completed</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
+            <CheckCircle2 size={14} color="#16a34a" />
+            <span style={{ fontSize: 12, fontWeight: 800, color: "#16a34a" }}>Analysis Completed</span>
           </div>
-          <p style={{ fontSize: 14, fontWeight: 700, color: "#f0f0f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <p style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", margin: 0 }}>
             {file.name}
           </p>
-          <p style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>
+          <p style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>
             {(file.size / 1024).toFixed(0)} KB · Uploaded screenshot
           </p>
         </div>
         <button onClick={() => setOpen(true)}
-          style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 700, padding: "7px 14px", borderRadius: 8, background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.35)", color: "#818cf8", cursor: "pointer", flexShrink: 0 }}>
-          <Eye size={14} /> View
+          style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 700, padding: "8px 16px", borderRadius: 10, background: "#eff6ff", border: "1.5px solid #bfdbfe", color: "#2563eb", cursor: "pointer", flexShrink: 0 }}>
+          <Eye size={13} /> View
         </button>
-      </section>
+      </div>
 
       {/* Lightbox */}
       {open && (
@@ -698,249 +698,348 @@ export default function OcrAnalyzer() {
     <div className="page-stack">
 
       {/* ── Header ── */}
-      <div className="page-heading">
-        <p className="eyebrow">Scholarship Status Analyzer</p>
-        <h2>What does your scholarship status mean?</h2>
-        <p className="muted-text">Upload a screenshot from your scholarship portal. Get a clear answer, personalized next steps, and estimated timeline.</p>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
+      <div style={{ marginBottom: 4 }}>
+        <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: ".1em", textTransform: "uppercase", color: "#0d9488", margin: "0 0 8px" }}>
+          Scholarship Status Analyzer
+        </p>
+        <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0f172a", margin: "0 0 8px", letterSpacing: "-.02em", lineHeight: 1.25 }}>
+          Find out why your scholarship is{" "}
+          <span style={{ background: "linear-gradient(135deg,#2563eb,#0891b2)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            delayed
+          </span>{" "}
+          in under 30 seconds.
+        </h2>
+        <p style={{ fontSize: 14, color: "#64748b", margin: "0 0 12px", lineHeight: 1.6 }}>
+          Upload a screenshot from your scholarship portal — get a clear answer, personalized next steps, and estimated timeline.
+        </p>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {["NSP", "SSP", "PFMS", "INSPIRE", "PMSS"].map(p => (
-            <span key={p} style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: "rgba(99,102,241,0.1)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.2)" }}>{p}</span>
+            <span key={p} style={{
+              fontSize: 11, fontWeight: 800, padding: "4px 12px", borderRadius: 20,
+              background: "linear-gradient(135deg,#eff6ff,#e0f2fe)",
+              color: "#2563eb", border: "1.5px solid #bfdbfe"
+            }}>{p}</span>
           ))}
         </div>
       </div>
 
       {/* ── Upload panel (pre-result) ── */}
       {!result && (
-        <section className="panel">
-          <p style={{ fontWeight: 700, fontSize: 15, color: "#f0f0f0", marginBottom: 6 }}>Upload your scholarship status screenshot</p>
-          <p style={{ fontSize: 13, color: "#9ca3af", marginBottom: 16, lineHeight: 1.6 }}>
-            Take a screenshot from NSP, SSP, or any portal. <strong style={{ color: "#f59e0b" }}>Expand all dropdowns</strong> before screenshotting so the full status is visible.
-          </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 18, alignItems: "start" }}>
 
-          {/* Drop zone */}
-          <div
-            onClick={() => fileRef.current?.click()}
-            onDragOver={e => { e.preventDefault(); setDragging(true); }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={e => { e.preventDefault(); setDragging(false); handleFile(e.dataTransfer.files[0]); }}
-            style={{
-              border: `2px dashed ${dragging ? "#6366f1" : file ? "#22c55e" : "rgba(156,163,175,0.25)"}`,
-              borderRadius: 12, padding: preview ? 16 : "36px 20px", textAlign: "center",
-              cursor: "pointer", marginBottom: 16,
-              background: dragging ? "rgba(99,102,241,0.06)" : file ? "rgba(34,197,94,0.04)" : "rgba(255,255,255,0.01)",
-              transition: "all .2s"
-            }}
-          >
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => handleFile(e.target.files?.[0])} />
-            {preview ? (
-              <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                <img src={preview} alt="" style={{ height: 80, width: 80, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />
-                <div style={{ textAlign: "left" }}>
-                  <p style={{ fontWeight: 700, fontSize: 14, color: "#22c55e", marginBottom: 2 }}>{file.name}</p>
-                  <p style={{ fontSize: 12, color: "#9ca3af" }}>{(file.size / 1024).toFixed(0)} KB · Click to change</p>
+          {/* Left: Drop zone card */}
+          <div style={{ background: "white", borderRadius: 18, overflow: "hidden", boxShadow: "0 2px 16px rgba(15,23,42,.08)", border: "1.5px solid #e2e8f0" }}>
+            <div style={{ height: 4, background: "linear-gradient(90deg,#2563eb,#0891b2,#0d9488)" }} />
+            <div style={{ padding: "22px 24px" }}>
+              <p style={{ fontWeight: 800, fontSize: 16, color: "#0f172a", margin: "0 0 4px" }}>
+                📷 Upload Scholarship Screenshot
+              </p>
+              <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 18px", lineHeight: 1.6 }}>
+                Take a screenshot from NSP, SSP, or any portal.{" "}
+                <strong style={{ color: "#d97706" }}>Expand all sections</strong> before screenshotting.
+              </p>
+
+              {/* Drop zone */}
+              <div
+                onClick={() => fileRef.current?.click()}
+                onDragOver={e => { e.preventDefault(); setDragging(true); }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={e => { e.preventDefault(); setDragging(false); handleFile(e.dataTransfer.files[0]); }}
+                style={{
+                  border: `2px dashed ${dragging ? "#2563eb" : file ? "#16a34a" : "#cbd5e1"}`,
+                  borderRadius: 14, padding: preview ? 16 : "40px 24px", textAlign: "center",
+                  cursor: "pointer", marginBottom: 18,
+                  background: dragging ? "#eff6ff" : file ? "#f0fdf4" : "#f8fafc",
+                  transition: "all .2s"
+                }}
+              >
+                <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => handleFile(e.target.files?.[0])} />
+                {preview ? (
+                  <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                    <img src={preview} alt="" style={{ height: 80, width: 80, objectFit: "cover", borderRadius: 10, flexShrink: 0, border: "2px solid #bbf7d0" }} />
+                    <div style={{ textAlign: "left" }}>
+                      <p style={{ fontWeight: 700, fontSize: 14, color: "#16a34a", marginBottom: 3 }}>✓ {file.name}</p>
+                      <p style={{ fontSize: 12, color: "#64748b" }}>{(file.size / 1024).toFixed(0)} KB · Click to change</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{
+                      width: 64, height: 64, borderRadius: 16, margin: "0 auto 14px",
+                      background: "linear-gradient(135deg,#eff6ff,#e0f2fe)",
+                      border: "2px solid #bfdbfe",
+                      display: "flex", alignItems: "center", justifyContent: "center"
+                    }}>
+                      <Upload size={28} color="#2563eb" />
+                    </div>
+                    <p style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 5 }}>Click to upload or drag & drop</p>
+                    <p style={{ fontSize: 12.5, color: "#94a3b8" }}>JPG, PNG · Screenshot from phone or computer</p>
+                  </>
+                )}
+              </div>
+
+              {/* Tips */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 18 }}>
+                <div style={{ background: "#fffbeb", border: "1.5px solid #fde68a", borderRadius: 10, padding: "10px 12px" }}>
+                  <p style={{ fontSize: 12, fontWeight: 800, color: "#92400e", marginBottom: 4 }}>⚠ Before screenshotting</p>
+                  <p style={{ fontSize: 11.5, color: "#78350f", lineHeight: 1.6 }}>Expand all sections: Status, Milestones, Verification, Payment</p>
+                </div>
+                <div style={{ background: "#eff6ff", border: "1.5px solid #bfdbfe", borderRadius: 10, padding: "10px 12px" }}>
+                  <p style={{ fontSize: 12, fontWeight: 800, color: "#1e40af", marginBottom: 4 }}>📱 How to screenshot</p>
+                  <p style={{ fontSize: 11.5, color: "#1e3a8a", lineHeight: 1.6 }}>Android: Vol↓ + Power · iPhone: Side + Vol↑ · PC: Snipping Tool</p>
                 </div>
               </div>
-            ) : (
-              <>
-                <Upload size={32} color="#6366f1" style={{ margin: "0 auto 10px" }} />
-                <p style={{ fontSize: 15, fontWeight: 700, color: "#f0f0f0", marginBottom: 4 }}>Click to upload or drag & drop</p>
-                <p style={{ fontSize: 12, color: "#6b7280" }}>JPG, PNG · Screenshot from phone or computer</p>
-              </>
-            )}
+
+              {error && (
+                <div style={{ padding: "10px 14px", borderRadius: 10, background: "#fef2f2", border: "1.5px solid #fecdd3", color: "#dc2626", fontSize: 13, marginBottom: 14 }}>
+                  {error}
+                </div>
+              )}
+
+              {/* CTA button */}
+              <button onClick={analyze} disabled={!file || loading} style={{
+                width: "100%", fontSize: 15.5, fontWeight: 800,
+                padding: "15px", borderRadius: 13, border: "none",
+                cursor: !file || loading ? "not-allowed" : "pointer",
+                background: !file || loading
+                  ? "#94a3b8"
+                  : "linear-gradient(135deg,#2563eb 0%,#0891b2 50%,#0d9488 100%)",
+                color: "white",
+                boxShadow: !file || loading ? "none" : "0 4px 18px rgba(37,99,235,.35)",
+                transition: "all .2s",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 9
+              }}>
+                {loading
+                  ? <><div style={{ width: 18, height: 18, border: "2.5px solid white", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }} /> Reading screenshot…</>
+                  : <><span style={{ fontSize: 18 }}>🔍</span> Find My Scholarship Problem</>
+                }
+              </button>
+            </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-            <div style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "10px 12px" }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: "#ef4444", marginBottom: 4 }}>⚠ Before screenshotting on NSP</p>
-              <p style={{ fontSize: 12, color: "#fca5a5", lineHeight: 1.7 }}>Click to expand all sections — Current Status, Milestones, Verification Details, Payment Details</p>
-            </div>
-            <div style={{ background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 8, padding: "10px 12px" }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: "#818cf8", marginBottom: 4 }}>How to screenshot</p>
-              <p style={{ fontSize: 12, color: "#c7d2fe", lineHeight: 1.7 }}>Android: Vol↓ + Power · iPhone: Side + Vol↑ · PC: Snipping Tool</p>
+          {/* Right: Benefits card */}
+          <div style={{ background: "white", borderRadius: 18, overflow: "hidden", boxShadow: "0 2px 16px rgba(15,23,42,.08)", border: "1.5px solid #e2e8f0" }}>
+            <div style={{ height: 4, background: "linear-gradient(90deg,#0d9488,#22c55e)" }} />
+            <div style={{ padding: "22px 22px 20px" }}>
+              <p style={{ fontSize: 13, fontWeight: 800, color: "#0f172a", margin: "0 0 14px", letterSpacing: "-.01em" }}>
+                What you'll get instantly
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
+                {[
+                  ["🔎", "Detect your verification stage", "#eff6ff", "#2563eb"],
+                  ["💬", "Explain status in simple English", "#f0fdf4", "#16a34a"],
+                  ["📄", "Find missing documents", "#fef3c7", "#d97706"],
+                  ["📅", "Estimate payment timeline", "#f5f3ff", "#7c3aed"],
+                  ["✅", "Suggest exact next action", "#eff6ff", "#0891b2"],
+                ].map(([emoji, text, bg, color]) => (
+                  <div key={text} style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    padding: "10px 13px", borderRadius: 10,
+                    background: bg, border: `1px solid ${color}25`
+                  }}>
+                    <span style={{ fontSize: 16, flexShrink: 0 }}>{emoji}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#334155" }}>{text}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: 14 }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: ".09em", margin: "0 0 10px" }}>
+                  Supported Portals
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {["NSP", "SSP", "PFMS", "PMSS", "INSPIRE"].map(p => (
+                    <span key={p} style={{
+                      fontSize: 11.5, fontWeight: 800, padding: "5px 12px", borderRadius: 20,
+                      background: "linear-gradient(135deg,#eff6ff,#e0f2fe)",
+                      color: "#2563eb", border: "1.5px solid #bfdbfe"
+                    }}>{p}</span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-
-          {error && <div className="form-alert error" style={{ marginBottom: 12 }}>{error}</div>}
-
-          <button className="primary-btn" onClick={analyze} disabled={!file || loading}
-            style={{ width: "100%", fontSize: 15, padding: "14px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            {loading
-              ? <><RefreshCw size={16} style={{ animation: "spin 1s linear infinite" }} /> Reading screenshot...</>
-              : <><ChevronRight size={16} /> Analyze My Status</>
-            }
-          </button>
-        </section>
+        </div>
       )}
 
       {/* ── Results ── */}
       {result && (() => {
         const { status, portal, amount, stageDates } = result;
         const rec = status.recommendation;
-        const rc  = recColors[rec?.type] || recColors.action;
+        const lightRec = {
+          wait:   { bg: "#f0fdf4", border: "#bbf7d0",  color: "#16a34a", icon: <CheckCircle2 size={20} /> },
+          done:   { bg: "#f0fdf4", border: "#bbf7d0",  color: "#16a34a", icon: <CheckCircle2 size={20} /> },
+          action: { bg: "#fffbeb", border: "#fde68a",  color: "#d97706", icon: <Clock size={20} /> },
+          urgent: { bg: "#fef2f2", border: "#fecdd3",  color: "#dc2626", icon: <AlertTriangle size={20} /> }
+        };
+        const rc = lightRec[rec?.type] || lightRec.action;
 
         return (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-            {/* ① Uploaded screenshot card */}
+            {/* ① Screenshot card */}
             <ScreenshotCard file={file} preview={preview} />
 
             {/* ② Status card */}
-            <section className="panel" style={{ borderLeft: `5px solid ${status.riskColor}` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10, marginBottom: 14 }}>
-                <div>
-                  {portal && (
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".07em", display: "block", marginBottom: 4 }}>
-                      {portal} · Scholarship Portal
-                    </span>
-                  )}
-                  <h3 style={{ fontSize: 20, fontWeight: 800, color: status.riskColor, lineHeight: 1.3, marginBottom: 8 }}>{status.label}</h3>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                    <RiskBadge risk={status.risk} color={status.riskColor} />
-                    {amount && (
-                      <span style={{ fontSize: 14, fontWeight: 800, color: "#22c55e", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 20, padding: "4px 12px" }}>
-                        {amount}
+            <div style={{ background: "white", borderRadius: 18, overflow: "hidden", boxShadow: "0 2px 16px rgba(15,23,42,.08)", border: "1.5px solid #e2e8f0" }}>
+              <div style={{ height: 5, background: `linear-gradient(90deg,${status.riskColor},${status.riskColor}88)` }} />
+              <div style={{ padding: "22px 24px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12, marginBottom: 18 }}>
+                  <div>
+                    {portal && (
+                      <span style={{ fontSize: 11, fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: ".09em", display: "block", marginBottom: 6 }}>
+                        {portal} · Scholarship Portal
                       </span>
                     )}
+                    <h3 style={{ fontSize: 20, fontWeight: 900, color: "#0f172a", lineHeight: 1.3, marginBottom: 10 }}>{status.label}</h3>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                      <RiskBadge risk={status.risk} color={status.riskColor} />
+                      {amount && (
+                        <span style={{ fontSize: 14, fontWeight: 800, color: "#16a34a", background: "#f0fdf4", border: "1.5px solid #bbf7d0", borderRadius: 20, padding: "4px 14px" }}>
+                          {amount}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  {status.waitTime && (
+                    <div style={{ background: "#eff6ff", border: "1.5px solid #bfdbfe", borderRadius: 12, padding: "14px 18px", flexShrink: 0, minWidth: 170 }}>
+                      <p style={{ fontSize: 10.5, fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 3 }}>Current Stage</p>
+                      <p style={{ fontSize: 13.5, fontWeight: 700, color: "#1e40af", marginBottom: 10 }}>{TIMELINE[status.stage]}</p>
+                      <p style={{ fontSize: 10.5, fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 3 }}>Expected Time</p>
+                      <p style={{ fontSize: 16, fontWeight: 900, color: "#2563eb", marginBottom: 3 }}>{status.waitTime}</p>
+                      {status.avgDays && <p style={{ fontSize: 11, color: "#64748b" }}>Avg: {status.avgDays} days</p>}
+                    </div>
+                  )}
                 </div>
 
-                {/* ③ Expected waiting time */}
-                {status.waitTime && (
-                  <div style={{ textAlign: "right", background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 10, padding: "12px 16px", flexShrink: 0 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>Current Stage</p>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#f0f0f0", marginBottom: 10 }}>{TIMELINE[status.stage]}</p>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 2 }}>Expected Processing Time</p>
-                    <p style={{ fontSize: 15, fontWeight: 800, color: "#818cf8", marginBottom: 4 }}>{status.waitTime}</p>
-                    {status.avgDays && (
-                      <p style={{ fontSize: 11, color: "#6b7280" }}>Average: {status.avgDays} days</p>
+                {status.stage !== null && (
+                  <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: 18 }}>
+                    <p style={{ fontSize: 11, fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: ".09em", marginBottom: 14 }}>Application Journey</p>
+                    <Timeline currentStage={status.stage} stageDates={stageDates} />
+                    {stageDates && (
+                      <p style={{ fontSize: 10.5, color: "#94a3b8", marginTop: 10, display: "flex", gap: 12 }}>
+                        <span><span style={{ color: "#16a34a" }}>■</span> Completed</span>
+                        <span><span style={{ color: "#2563eb" }}>■</span> Estimated (from your submission date)</span>
+                      </p>
                     )}
                   </div>
                 )}
               </div>
-
-              {/* Timeline */}
-              {status.stage !== null && (
-                <div style={{ marginTop: 8 }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 16 }}>Application Journey</p>
-                  <Timeline currentStage={status.stage} stageDates={stageDates} />
-                  {stageDates && (
-                    <p style={{ fontSize: 10, color: "#6b7280", marginTop: 10 }}>
-                      <span style={{ color: "#22c55e" }}>■</span> Completed &nbsp;
-                      <span style={{ color: "#6366f1" }}>■</span> Est. dates (based on your submission date)
-                    </p>
-                  )}
-                </div>
-              )}
-            </section>
+            </div>
 
             {/* ④ What this means + Delay checks (2 cols) */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <section className="panel" style={{ margin: 0 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 12 }}>What This Means</p>
+              <div style={{ background: "white", borderRadius: 16, padding: "20px 22px", boxShadow: "0 2px 10px rgba(15,23,42,.06)", border: "1.5px solid #f1f5f9" }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: ".09em", marginBottom: 14 }}>What This Means</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {status.meaning.map((m, i) => (
                     <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: status.riskColor, flexShrink: 0, marginTop: 7 }} />
-                      <p style={{ fontSize: 14, color: "#e5e7eb", lineHeight: 1.6 }}>{m}</p>
+                      <div style={{ width: 7, height: 7, borderRadius: "50%", background: status.riskColor, flexShrink: 0, marginTop: 7 }} />
+                      <p style={{ fontSize: 13.5, color: "#334155", lineHeight: 1.65, margin: 0 }}>{m}</p>
                     </div>
                   ))}
                 </div>
-              </section>
-
-              {/* Dynamic delay checks */}
+              </div>
               {status.delayChecks?.length > 0 && (
                 <DelayChecks checks={status.delayChecks} note={status.delayCheckNote} />
               )}
             </div>
 
             {/* ⑤ Action Checklist */}
-            <section className="panel">
-              <p style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 14 }}>Personalized Next Actions</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ background: "white", borderRadius: 16, padding: "20px 22px", boxShadow: "0 2px 10px rgba(15,23,42,.06)", border: "1.5px solid #f1f5f9" }}>
+              <p style={{ fontSize: 11, fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: ".09em", marginBottom: 14 }}>Personalized Next Actions</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {status.actions.map((a, i) => (
                   <div key={i} style={{
-                    display: "flex", gap: 12, alignItems: "center",
-                    padding: "10px 14px", borderRadius: 8,
-                    background: a.done ? "rgba(34,197,94,0.05)" : a.urgent ? "rgba(239,68,68,0.07)" : "rgba(255,255,255,0.03)",
-                    border: `1px solid ${a.done ? "rgba(34,197,94,0.2)" : a.urgent ? "rgba(239,68,68,0.25)" : "rgba(255,255,255,0.06)"}`
+                    display: "flex", gap: 12, alignItems: "center", padding: "11px 14px", borderRadius: 10,
+                    background: a.done ? "#f0fdf4" : a.urgent ? "#fef2f2" : "#f8fafc",
+                    border: `1.5px solid ${a.done ? "#bbf7d0" : a.urgent ? "#fecdd3" : "#e2e8f0"}`
                   }}>
                     <div style={{
-                      width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
-                      background: a.done ? "#22c55e" : a.urgent ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.08)",
-                      border: a.done ? "none" : `2px solid ${a.urgent ? "#ef4444" : "rgba(255,255,255,0.15)"}`,
+                      width: 24, height: 24, borderRadius: "50%", flexShrink: 0,
+                      background: a.done ? "#16a34a" : a.urgent ? "#fef2f2" : "#e2e8f0",
+                      border: a.done ? "none" : `2px solid ${a.urgent ? "#dc2626" : "#cbd5e1"}`,
                       display: "flex", alignItems: "center", justifyContent: "center"
                     }}>
                       {a.done && <CheckCircle2 size={14} color="#fff" />}
-                      {a.urgent && !a.done && <AlertTriangle size={11} color="#ef4444" />}
+                      {a.urgent && !a.done && <AlertTriangle size={11} color="#dc2626" />}
                     </div>
                     <p style={{
-                      fontSize: 14, fontWeight: a.urgent ? 700 : 500,
-                      color: a.done ? "#6b7280" : a.urgent ? "#fca5a5" : "#e5e7eb",
-                      textDecoration: a.done ? "line-through" : "none", flex: 1
+                      fontSize: 13.5, fontWeight: a.urgent ? 700 : 500,
+                      color: a.done ? "#94a3b8" : a.urgent ? "#dc2626" : "#334155",
+                      textDecoration: a.done ? "line-through" : "none", flex: 1, margin: 0
                     }}>{a.text}</p>
-                    {a.urgent && <span style={{ fontSize: 10, fontWeight: 700, color: "#ef4444", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 10, padding: "2px 8px", flexShrink: 0 }}>Urgent</span>}
+                    {a.urgent && <span style={{ fontSize: 10.5, fontWeight: 800, color: "#dc2626", background: "#fef2f2", border: "1.5px solid #fecdd3", borderRadius: 20, padding: "2px 10px", flexShrink: 0 }}>Urgent</span>}
                   </div>
                 ))}
               </div>
-            </section>
+            </div>
 
-            {/* ⑥ Health Check cross-link (for bank / document issues) */}
+            {/* ⑥ Health Check cross-link */}
             {status.healthLink?.show && (
               <a href="/risk-analyzer" style={{ textDecoration: "none" }}>
                 <div style={{
-                  display: "flex", gap: 14, alignItems: "center",
-                  padding: "14px 18px", borderRadius: 12,
-                  background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.25)",
-                  cursor: "pointer", transition: "background .2s"
+                  display: "flex", gap: 14, alignItems: "center", padding: "16px 20px", borderRadius: 14,
+                  background: "linear-gradient(135deg,#eff6ff,#f0fdfa)", border: "1.5px solid #bfdbfe",
+                  cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,.08)"
                 }}>
-                  <ShieldCheck size={22} color="#818cf8" style={{ flexShrink: 0 }} />
+                  <div style={{ width: 42, height: 42, borderRadius: 12, background: "#eff6ff", border: "1.5px solid #bfdbfe", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <ShieldCheck size={20} color="#2563eb" />
+                  </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: "#818cf8", marginBottom: 2 }}>Check Document Health</p>
-                    <p style={{ fontSize: 13, color: "#9ca3af" }}>{status.healthLink.message}</p>
+                    <p style={{ fontSize: 13, fontWeight: 800, color: "#1e40af", margin: "0 0 2px" }}>Check Document Health</p>
+                    <p style={{ fontSize: 12.5, color: "#64748b", margin: 0 }}>{status.healthLink.message}</p>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: "#6366f1", flexShrink: 0 }}>
-                    Open Health Check <ExternalLink size={13} style={{ marginLeft: 2 }} />
-                  </div>
+                  <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12.5, fontWeight: 800, color: "#2563eb", flexShrink: 0, background: "#eff6ff", border: "1.5px solid #bfdbfe", padding: "6px 14px", borderRadius: 20 }}>
+                    Open <ExternalLink size={12} />
+                  </span>
                 </div>
               </a>
             )}
 
             {/* ⑦ Contact card */}
             {(profile?.collegeName || profile?.nodalOfficerName || profile?.nodalOfficerContact || profile?.nodalOfficerEmail) ? (
-              <section className="panel" style={{ background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.2)" }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: "#818cf8", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 14 }}>Your Institute Contact</p>
+              <div style={{ background: "white", borderRadius: 16, padding: "20px 22px", boxShadow: "0 2px 10px rgba(15,23,42,.06)", border: "1.5px solid #e0f2fe" }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: "#0891b2", textTransform: "uppercase", letterSpacing: ".09em", marginBottom: 14 }}>Your Institute Contact</p>
                 <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "10px 14px", alignItems: "start" }}>
                   {profile.collegeName && (
-                    <><MapPin size={16} color="#818cf8" style={{ marginTop: 2 }} /><p style={{ fontSize: 15, fontWeight: 700, color: "#f0f0f0" }}>{profile.collegeName}</p></>
+                    <><MapPin size={16} color="#2563eb" style={{ marginTop: 2 }} /><p style={{ fontSize: 15, fontWeight: 700, color: "#0f172a", margin: 0 }}>{profile.collegeName}</p></>
                   )}
                   {profile.nodalOfficerName && (
-                    <><div style={{ width: 16 }} /><p style={{ fontSize: 13, color: "#c7d2fe" }}>{profile.nodalOfficerName}{profile.nodalOfficerDesignation ? ` · ${profile.nodalOfficerDesignation}` : ""}</p></>
+                    <><div style={{ width: 16 }} /><p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>{profile.nodalOfficerName}{profile.nodalOfficerDesignation ? ` · ${profile.nodalOfficerDesignation}` : ""}</p></>
                   )}
                   {profile.nodalOfficerContact && (
-                    <><Phone size={16} color="#22c55e" style={{ marginTop: 2 }} /><a href={`tel:${profile.nodalOfficerContact}`} style={{ fontSize: 15, fontWeight: 700, color: "#22c55e", textDecoration: "none" }}>{profile.nodalOfficerContact}</a></>
+                    <><Phone size={16} color="#16a34a" style={{ marginTop: 2 }} /><a href={`tel:${profile.nodalOfficerContact}`} style={{ fontSize: 15, fontWeight: 700, color: "#16a34a", textDecoration: "none" }}>{profile.nodalOfficerContact}</a></>
                   )}
                   {profile.nodalOfficerEmail && (
-                    <><Mail size={16} color="#6366f1" style={{ marginTop: 2 }} /><a href={`mailto:${profile.nodalOfficerEmail}`} style={{ fontSize: 14, color: "#818cf8", textDecoration: "none" }}>{profile.nodalOfficerEmail}</a></>
+                    <><Mail size={16} color="#2563eb" style={{ marginTop: 2 }} /><a href={`mailto:${profile.nodalOfficerEmail}`} style={{ fontSize: 14, color: "#2563eb", textDecoration: "none" }}>{profile.nodalOfficerEmail}</a></>
                   )}
                 </div>
-              </section>
+              </div>
             ) : (
-              <div style={{ background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 10, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                <p style={{ fontSize: 13, color: "#f59e0b" }}>Add institute & nodal officer details in your Profile to see their direct contact here.</p>
-                <a href="/profile" style={{ fontSize: 12, fontWeight: 700, padding: "6px 14px", borderRadius: 8, background: "#f59e0b", color: "#000", textDecoration: "none", flexShrink: 0 }}>Fill Profile</a>
+              <div style={{ background: "#fffbeb", border: "1.5px solid #fde68a", borderRadius: 12, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <p style={{ fontSize: 13, color: "#92400e", margin: 0 }}>Add institute & nodal officer details in your Profile to see their direct contact here.</p>
+                <a href="/profile" style={{ fontSize: 13, fontWeight: 800, padding: "8px 16px", borderRadius: 10, background: "#d97706", color: "#fff", textDecoration: "none", flexShrink: 0 }}>Fill Profile</a>
               </div>
             )}
 
             {/* ⑧ Final Recommendation */}
-            <section style={{ borderRadius: 12, padding: "20px 22px", background: rc.bg, border: `2px solid ${rc.border}`, display: "flex", gap: 16, alignItems: "flex-start" }}>
-              <div style={{ color: rc.color, flexShrink: 0, marginTop: 2 }}>{rc.icon}</div>
-              <div>
-                <p style={{ fontSize: 11, fontWeight: 700, color: rc.color, textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 6 }}>Our Recommendation</p>
-                <p style={{ fontSize: 17, fontWeight: 800, color: rc.color, lineHeight: 1.5 }}>{rec?.text}</p>
+            <div style={{ borderRadius: 16, overflow: "hidden", border: `1.5px solid ${rc.border}`, boxShadow: "0 2px 10px rgba(15,23,42,.06)" }}>
+              <div style={{ height: 4, background: rc.color }} />
+              <div style={{ padding: "18px 22px", background: rc.bg, display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <div style={{ color: rc.color, flexShrink: 0, marginTop: 2 }}>{rc.icon}</div>
+                <div>
+                  <p style={{ fontSize: 11, fontWeight: 800, color: rc.color, textTransform: "uppercase", letterSpacing: ".09em", marginBottom: 6 }}>Our Recommendation</p>
+                  <p style={{ fontSize: 16, fontWeight: 800, color: "#0f172a", lineHeight: 1.6, margin: 0 }}>{rec?.text}</p>
+                </div>
               </div>
-            </section>
+            </div>
 
-            <button onClick={reset} className="secondary-btn" style={{ width: "100%", padding: "12px", fontSize: 14 }}>
+            <button onClick={reset} style={{
+              width: "100%", padding: "13px", fontSize: 14, fontWeight: 700,
+              borderRadius: 12, border: "1.5px solid #e2e8f0", background: "white",
+              color: "#475569", cursor: "pointer", transition: "all .15s"
+            }}>
               ← Analyze Another Screenshot
             </button>
           </div>

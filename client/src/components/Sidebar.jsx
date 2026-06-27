@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  BarChart3, Bell, BookOpen, Bot, FileScan, FolderLock,
+  BarChart3, Bell, BookOpen, FileScan, FolderLock,
   Gauge, Home, Languages, ListChecks, ShieldAlert, ShieldCheck,
   UserRound, LogOut
 } from "lucide-react";
@@ -17,7 +17,6 @@ const navItems = [
   { label: "Status Analyzer",   path: "/ocr-analyzer",      icon: FileScan,    group: "tools" },
   { label: "Readiness Score",   path: "/readiness-score",   icon: Gauge,       group: "tools" },
   { label: "Failure Diagnosis", path: "/failure-diagnosis", icon: ShieldAlert, group: "tools" },
-  { label: "AI Chatbot",        path: "/chatbot",           icon: Bot,         group: "support" },
   { label: "Awareness Guide",   path: "/awareness",         icon: BookOpen,    group: "support" },
   { label: "Notifications",     path: "/notifications",     icon: Bell,        group: "support" },
   { label: "Analytics",         path: "/admin/dashboard",   icon: BarChart3,   group: "admin" },
