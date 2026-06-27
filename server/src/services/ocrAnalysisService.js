@@ -1,4 +1,4 @@
-import { createWorker } from "tesseract.js";
+import { readFile } from "fs/promises";
 
 function lower(text = "") {
   return text.toLowerCase();
@@ -119,7 +119,7 @@ export function detectDocumentType(text) {
     return "Bank Passbook";
   }
 
-  if (hasAny(text, ["income certificate", "annual income", "tahsildar", "revenue department"])) {
+  if (hasAny(text, ["income certificate", "annual income", "tahsildar", "revenue department", "nadakacheri"])) {
     return "Income Certificate";
   }
 
@@ -304,21 +304,69 @@ function parseDateFlexible(str) {
 
 // ── Per-document field extractors ─────────────────────────────────────────────
 
+// Words that signal the name has ended — stop before these
+const NAME_STOP_WORDS = new Set([
+  "register","number","roll","date","father","mother","dob","address",
+  "village","district","state","pin","class","school","college","course",
+  "year","sem","semester","gender","male","female","category","caste",
+  "to","s/o","d/o","w/o","c/o","mr","ms","mrs","smt","sri","shri",
+  "code","and","of","the","for","in","at","by"
+]);
+
+// Clean a raw OCR name — strip leading junk, limit to 4 real name words
+function cleanName(raw) {
+  if (!raw) return null;
+  const words = raw.trim().split(/\s+/);
+  const nameWords = [];
+  for (const w of words) {
+    if (NAME_STOP_WORDS.has(w.toLowerCase())) break; // stop here
+    if (/^[A-Za-z.]{1,20}$/.test(w)) nameWords.push(w); // only alpha words
+    if (nameWords.length >= 4) break; // max 4 name words
+  }
+  return nameWords.length >= 2 ? nameWords.join(" ") : null;
+}
+
 export function extractAadhaarFields(text) {
   const result = { name: null, dob: null, aadhaarVisible: false, hasUIDAI: false };
 
-  result.hasUIDAI = hasAny(text, ["aadhaar", "uidai", "unique identification"]);
+  result.hasUIDAI = hasAny(text, ["aadhaar", "uidai", "unique identification", "apaar"]);
   result.aadhaarVisible = /\d{4}\s*\d{4}\s*\d{4}/.test(text);
 
-  // DOB: "DOB: 14/02/2003" or "Date of Birth: 14-02-2003" or standalone date
-  const dobMatch = text.match(/(?:dob|date\s*of\s*birth|d\.o\.b)[:\s]+(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/i)
-    || text.match(/\b(\d{2}[\/\-\.]\d{2}[\/\-\.]\d{4})\b/);
-  if (dobMatch) result.dob = dobMatch[1];
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
-  // Name: "Name: Shalini H R" — look for proper-case multi-word name
-  const nameMatch = text.match(/(?:^|\n)\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]*){1,3})\s*(?:\n|$)/m)
-    || text.match(/name[:\s]+([A-Z][a-z]+(?:\s+[A-Z][a-z]*){1,3})/i);
-  if (nameMatch) result.name = nameMatch[1].trim();
+  // DOB: ONLY match after explicit label — never grab random dates (avoids signed/issue dates)
+  // Pattern A: "DOB: 14/02/2002" on same line
+  const dobSameLine = text.match(/(?:dob|date\s*of\s*birth|d\.o\.b)\s*[:\s]\s*(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/i);
+  if (dobSameLine) {
+    result.dob = dobSameLine[1];
+  } else {
+    // Pattern B: "Date of Birth" label on one line, date on the NEXT line (APAAR/DigiLocker format)
+    for (let i = 0; i < lines.length - 1; i++) {
+      if (/^date\s*of\s*birth$/i.test(lines[i])) {
+        const nextLine = lines[i + 1];
+        const dateMatch = nextLine.match(/^(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})$/);
+        if (dateMatch) { result.dob = dateMatch[1]; break; }
+      }
+    }
+  }
+
+  // Name: Pattern A — "Name: Shalini H R" on same line
+  const nameSameLine = text.match(/(?:^|\n)\s*name\s*[:\s]+([A-Za-z][A-Za-z\s.]{3,40})/im);
+  if (nameSameLine) {
+    result.name = cleanName(nameSameLine[1]);
+  } else {
+    // Pattern B — "Name" label on one line, value on the NEXT line (APAAR format)
+    for (let i = 0; i < lines.length - 1; i++) {
+      if (/^name$/i.test(lines[i])) {
+        const nextLine = lines[i + 1];
+        // Must look like a real name (letters only, 2+ words or mixed case)
+        if (/^[A-Za-z][a-zA-Z\s.]{3,40}$/.test(nextLine) && !/^\d/.test(nextLine)) {
+          result.name = cleanName(nextLine);
+          break;
+        }
+      }
+    }
+  }
 
   return result;
 }
@@ -335,10 +383,10 @@ export function extractBankFields(text) {
     || text.match(/\b(\d{9,18})\b/);
   if (acMatch) result.accountNumber = acMatch[1].replace(/\s/g, "");
 
-  // Account holder name
-  const nameMatch = text.match(/(?:account\s*holder|name)[:\s]+([A-Z][a-z]+(?:\s+[A-Z][a-z]*){1,3})/i)
-    || text.match(/(?:^|\n)\s*([A-Z][A-Z\s]{4,40})\s*(?:\n|$)/m);
-  if (nameMatch) result.accountHolderName = nameMatch[1].trim();
+  // Account holder name — strip "To " prefix common in passbooks
+  const nameMatch = text.match(/(?:account\s*holder(?:\s*name)?|in\s*favour\s*of)[:\s]+([A-Za-z\s.]{3,40})/i)
+    || text.match(/(?:^|\n)\s*(?:To\s+)?([A-Z][A-Za-z\s.]{4,40})\s*(?:\n|$)/m);
+  if (nameMatch) result.accountHolderName = cleanName(nameMatch[1]);
 
   // Bank name (common Indian banks)
   const bankMatch = text.match(/(state bank|sbi|punjab national|pnb|canara|union bank|axis|hdfc|icici|kotak|bank of baroda|bank of india|karnataka bank|vijaya bank|syndicate)[^\n,]{0,40}/i);
@@ -407,33 +455,67 @@ export function extractCasteFields(text) {
 const docSignatures = {
   "Aadhaar Card":       { must: [["aadhaar","uidai","unique identification"]], nice: ["dob","date of birth","government of india"] },
   "Bank Passbook":      { must: [["account","a/c","bank"]], nice: ["ifsc","branch","passbook"] },
-  "Income Certificate": { must: [["income","certificate"]], nice: ["tahsildar","annual","revenue","rupees"] },
+  "Income Certificate": { must: [["income","certificate","nadakacheri","tahsildar","revenue"]], nice: ["annual","rupees","karnataka","rd0","55000","issued"] },
   "Marksheet":          { must: [["marks","percentage","cgpa","grade","result","examination"]], nice: ["semester","board","university","total"] },
-  "Caste Certificate":  { must: [["caste","certificate","category"]], nice: ["scheduled","obc","tahsildar","community"] },
+  "Caste Certificate":  { must: [["caste","certificate","category","nadakacheri","tahsildar"]], nice: ["scheduled","obc","community","karnataka"] },
   "Bonafide Certificate": { must: [["bonafide","bona fide","study certificate"]], nice: ["college","institute","student"] },
   "Fee Receipt":        { must: [["receipt","fee","paid"]], nice: ["amount","tuition","date"] }
 };
 
+// Keywords that MUST NOT appear if the document is of a certain type.
+// Used for regional-language documents where positive keywords won't appear in English OCR.
+const wrongDocSignatures = {
+  "Income Certificate": [
+    ["aadhaar","uidai","unique identification"],     // is an Aadhaar
+    ["ifsc","account no","account number"],          // is a bank passbook
+    ["marksheet","statement of marks","cgpa","semester","examination board"]  // is a marksheet
+  ],
+  "Caste Certificate": [
+    ["aadhaar","uidai","unique identification"],
+    ["ifsc","account no","account number"],
+    ["marksheet","statement of marks","cgpa","semester"]
+  ]
+};
+
 export function verifyDocumentType(text, documentType) {
   const sig = docSignatures[documentType];
-  if (!sig) return { verified: true, confidence: 100, warning: null }; // unknown type — skip check
+  if (!sig) return { verified: true, confidence: 100, warning: null };
 
   const t = text.toLowerCase();
 
-  // Check if ANY of the must-have keyword groups match
+  // For documents that may be in regional languages (Kannada etc.), use NEGATIVE verification:
+  // Accept if the image doesn't clearly look like a different document type.
+  const negSig = wrongDocSignatures[documentType];
+  if (negSig) {
+    const looksLikeWrongDoc = negSig.some(group => group.some(kw => t.includes(kw)));
+    if (looksLikeWrongDoc) {
+      const friendlyNames = {
+        "Income Certificate": "an income certificate",
+        "Caste Certificate":  "a caste certificate"
+      };
+      return {
+        verified: false,
+        confidence: 0,
+        warning: `This image does not look like ${friendlyNames[documentType]}. It appears to be a different document. Please upload the correct file.`
+      };
+    }
+    // Passes negative check — accept it (could be Kannada/regional language govt cert)
+    const niceCount = sig.nice.filter(kw => t.includes(kw)).length;
+    return { verified: true, confidence: Math.min(100, 50 + niceCount * 10), warning: null };
+  }
+
+  // For English-primary documents: positive keyword check
   const mustMatch = sig.must.some(group => group.some(kw => t.includes(kw)));
   const niceCount = sig.nice.filter(kw => t.includes(kw)).length;
   const confidence = mustMatch ? Math.min(100, 50 + niceCount * 15) : 0;
 
   if (!mustMatch) {
     const friendlyNames = {
-      "Aadhaar Card":       "an Aadhaar card (should contain Aadhaar/UIDAI text)",
-      "Bank Passbook":      "a bank passbook (should show account number and bank name)",
-      "Income Certificate": "an income certificate (should contain income and certificate text)",
-      "Marksheet":          "a marksheet (should show marks, percentage, or grade)",
-      "Caste Certificate":  "a caste certificate (should contain caste/category text)",
+      "Aadhaar Card":         "an Aadhaar card (should contain Aadhaar/UIDAI text)",
+      "Bank Passbook":        "a bank passbook (should show account number and bank name)",
+      "Marksheet":            "a marksheet (should show marks, percentage, or grade)",
       "Bonafide Certificate": "a bonafide certificate",
-      "Fee Receipt":        "a fee receipt (should show payment amount)"
+      "Fee Receipt":          "a fee receipt (should show payment amount)"
     };
     return {
       verified: false,
@@ -589,21 +671,37 @@ export function crossValidateDocuments(extractedByType) {
   };
 }
 
-export async function extractTextFromImage(filePath, existingBuffer) {
-  // Tesseract v6 in Node on Windows cannot fetch file:// URLs —
-  // read the file into a Buffer first and pass the Buffer directly.
-  const { readFile } = await import("fs/promises");
-  const buffer = existingBuffer || await readFile(filePath);
-  const worker = await createWorker("eng");
-  try {
-    const result = await worker.recognize(buffer);
-    return {
-      text: result.data.text || "",
-      confidence: result.data.confidence || 0
-    };
-  } finally {
-    await worker.terminate();
+export async function extractTextFromImage(filePath) {
+  const apiKey = process.env.OCRSPACE_API_KEY;
+  if (!apiKey) throw new Error("OCRSPACE_API_KEY not set in .env");
+
+  const buffer = await readFile(filePath);
+  const base64 = buffer.toString("base64");
+  const ext = filePath.split(".").pop().toLowerCase();
+  const mimeMap = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", pdf: "application/pdf" };
+  const mimeType = mimeMap[ext] || "image/jpeg";
+
+  const body = new URLSearchParams();
+  body.append("apikey", apiKey);
+  body.append("base64Image", `data:${mimeType};base64,${base64}`);
+  body.append("language", "eng");
+  body.append("isOverlayRequired", "false");
+  body.append("detectOrientation", "true");
+  body.append("scale", "true");
+  body.append("OCREngine", "2");
+
+  const response = await fetch("https://api.ocr.space/parse/image", { method: "POST", body });
+  const data = await response.json();
+
+  if (data.IsErroredOnProcessing) {
+    throw new Error(data.ErrorMessage?.[0] || "OCR.space processing error");
   }
+
+  const text = data.ParsedResults?.[0]?.ParsedText || "";
+  const exitCode = data.ParsedResults?.[0]?.FileParseExitCode;
+  const confidence = exitCode === 1 ? 85 : exitCode === 2 ? 60 : 40;
+
+  return { text, confidence };
 }
 
 /**
@@ -621,43 +719,104 @@ export function extractMarksheetFields(text) {
 
   const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
-  // Percentage: match "82.08%" or "Percentage: 82" or "(82.08%)" patterns
-  const percentMatch = text.match(/(?:percentage|total\s*marks?|overall|result)[^\d]*(\d{2,3}(?:\.\d{1,2})?)\s*%?/i)
-    || text.match(/\((\d{2,3}(?:\.\d{1,2})?)\s*%\)/)
-    || text.match(/(\d{2,3}(?:\.\d{1,2})?)\s*%/);
-  if (percentMatch) {
-    const val = parseFloat(percentMatch[1]);
-    if (val >= 30 && val <= 100) result.marksPercentage = val;
+  // ── Percentage ──────────────────────────────────────────────────────────────
+  // Priority 1: explicit "(82.08%)" bracket format common in SSLC/PUC marksheets
+  const bracketPct = text.match(/\((\d{2,3}(?:\.\d{1,2})?)\s*%\)/);
+  if (bracketPct) {
+    const val = parseFloat(bracketPct[1]);
+    if (val >= 30 && val < 100) result.marksPercentage = val; // exclude exactly 100 (likely a column heading)
   }
-
-  // CGPA: convert to approximate percentage
+  // Priority 2: "Total Marks Obtained ... 513" then compute from 625 (SSLC style)
   if (!result.marksPercentage) {
-    const cgpaMatch = text.match(/(?:cgpa|gpa)[^\d]*(\d(?:\.\d{1,2})?)/i);
+    const totalObtained = text.match(/total\s*marks?\s*obtained[^\d]*(\d{3})/i);
+    const totalMax      = text.match(/total\s*marks?[^\d]*(\d{3})/i);
+    if (totalObtained && totalMax) {
+      const obtained = parseInt(totalObtained[1], 10);
+      const max      = parseInt(totalMax[1], 10);
+      if (max > 0 && obtained <= max) result.marksPercentage = parseFloat(((obtained / max) * 100).toFixed(2));
+    }
+  }
+  // Priority 3: "Percentage: 82" or "82 %" not preceded by column numbers
+  if (!result.marksPercentage) {
+    const pctMatch = text.match(/(?:percentage|overall\s*%|result\s*%)[^\d]*(\d{2,3}(?:\.\d{1,2})?)/i);
+    if (pctMatch) {
+      const val = parseFloat(pctMatch[1]);
+      if (val >= 30 && val < 100) result.marksPercentage = val;
+    }
+  }
+  // Priority 4: CGPA
+  if (!result.marksPercentage) {
+    const cgpaMatch = text.match(/(?:cgpa|gpa|sgpa)[:\s]*(\d(?:\.\d{1,2})?)/i);
     if (cgpaMatch) {
       const cgpa = parseFloat(cgpaMatch[1]);
       if (cgpa >= 1 && cgpa <= 10) result.marksPercentage = Math.round(cgpa * 9.5);
     }
   }
 
-  // Board/University name: look for known keywords
-  const boardMatch = text.match(/((?:board of|university of|[\w\s]+ university|[\w\s]+ board)[^\n,]{0,50})/i);
-  if (boardMatch) result.boardName = boardMatch[1].trim().slice(0, 80);
-
-  // Institution: look for "college", "institute", "school" lines
-  for (const line of lines) {
-    if (/college|institute|school|university/i.test(line) && line.length < 100) {
-      result.instituteName = line.slice(0, 80);
+  // ── Board / University ───────────────────────────────────────────────────────
+  // Look for known Indian board names first (exact phrases)
+  const knownBoards = [
+    "Karnataka Secondary Education Examination Board",
+    "Karnataka Pre University Board",
+    "Central Board of Secondary Education",
+    "CBSE",
+    "Council for the Indian School Certificate Examinations",
+    "CISCE",
+    "Visvesvaraya Technological University",
+    "VTU",
+    "Bangalore University",
+    "Mysore University",
+    "Davangere University",
+    "Kuvempu University",
+    "Mangalore University",
+    "Manipal University",
+    "Rajiv Gandhi University",
+  ];
+  for (const board of knownBoards) {
+    if (text.toLowerCase().includes(board.toLowerCase())) {
+      result.boardName = board;
       break;
     }
   }
+  // Fallback: extract "XX Board" or "XX University" from text
+  if (!result.boardName) {
+    const boardMatch = text.match(/([A-Z][A-Za-z\s]{5,50}(?:Board|University|Institute))/);
+    if (boardMatch) result.boardName = boardMatch[1].trim().slice(0, 80);
+  }
 
-  // Student name: after "Name:" label — matches Title Case or ALL CAPS (e.g. SHALINI H R)
-  const nameMatch = text.match(/(?:student\s*name|name\s*of\s*student|candidate['\s]*s\s*name|name)\s*[:/]\s*([A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z.]*){1,4})/i)
-    || text.match(/(?:^|\n)\s*Name\s+([A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z.]*){1,4})/m);
-  if (nameMatch) result.fullName = nameMatch[1].trim();
+  // ── Institution name ─────────────────────────────────────────────────────────
+  // Skip lines that are just labels (contain "CODE", "ADDRESS :", "NAME AND", etc.)
+  const LABEL_PATTERNS = /school\s*code|name\s*and\s*address|address\s*:|institute\s*code|college\s*code/i;
+  for (const line of lines) {
+    if (/college|institute|university/i.test(line) && !LABEL_PATTERNS.test(line) && line.length > 5 && line.length < 120) {
+      result.instituteName = line.replace(/^[^:]+:\s*/, "").trim().slice(0, 80);
+      break;
+    }
+  }
+  // For SSLC marksheet: school block is "SCHOOL CODE, NAME AND ADDRESS :\nIA0402\nSMT YAMUNABAI..."
+  // Skip the code line (alphanumeric short code) and grab the actual school name
+  if (!result.instituteName) {
+    const blockMatch = text.match(/school\s*code[^:\n]*:[^\n]*\n([^\n]*)\n([^\n]*)/i);
+    if (blockMatch) {
+      const line1 = blockMatch[1].trim(); // IA0402 (code)
+      const line2 = blockMatch[2].trim(); // SMT YAMUNABAI SHANTARAM NALLUR (name)
+      // If line1 looks like a code (short alphanumeric), use line2 as the name
+      if (/^[A-Z0-9]{4,10}$/.test(line1) && line2.length > 5) {
+        result.instituteName = line2;
+      } else if (line1.length > 5) {
+        result.instituteName = line1;
+      }
+    }
+  }
 
-  // DOB if present on marksheet
-  const dobMatch = text.match(/(?:dob|date\s*of\s*birth)[:\s]+(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/i);
+  // ── Student name ─────────────────────────────────────────────────────────────
+  // Handle formats: "Name : SHALINI H R" and "/ Name : SHALINI H R" and "oxo / Name : SHALINI H R"
+  const nameMatch = text.match(/(?:\/\s*)?(?:candidate[‘’s]*\s*name|student\s*name|name\s*of\s*student|name)\s*[:/]\s*([A-Z][A-Za-z\s.]{2,40})/im)
+    || text.match(/\bName\s+([A-Z][A-Za-z\s.]{3,40})/m);
+  if (nameMatch) result.fullName = cleanName(nameMatch[1]);
+
+  // ── DOB ───────────────────────────────────────────────────────────────────────
+  const dobMatch = text.match(/(?:dob|date\s*of\s*birth|birth\s*date)[:\s]+(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/i);
   if (dobMatch) result.dob = dobMatch[1];
 
   return result;

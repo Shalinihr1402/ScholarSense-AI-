@@ -1,5 +1,5 @@
 import React from "react";
-import { AlertTriangle, CheckCircle2, FileText, ShieldCheck, Trash2, Upload } from "lucide-react";
+import { AlertTriangle, CheckCircle2, FileText, Info, ShieldCheck, Trash2, Upload } from "lucide-react";
 import { documentApi } from "../services/api.js";
 
 const DOC_TYPES = [
@@ -101,6 +101,46 @@ function formatDate(isoString) {
   });
 }
 
+// Render extracted fields from OCR in a readable way
+function ExtractedFields({ fields, docType }) {
+  if (!fields) return null;
+
+  const items = [];
+
+  if (fields.name)              items.push({ label: "Name",            value: fields.name });
+  if (fields.fullName)          items.push({ label: "Name",            value: fields.fullName });
+  if (fields.accountHolderName) items.push({ label: "Account Holder",  value: fields.accountHolderName });
+  if (fields.applicantName)     items.push({ label: "Applicant Name",  value: fields.applicantName });
+  if (fields.dob)               items.push({ label: "Date of Birth",   value: fields.dob });
+  if (fields.marksPercentage != null) items.push({ label: "Marks",     value: `${fields.marksPercentage}%` });
+  if (fields.boardName)         items.push({ label: "Board",           value: fields.boardName });
+  if (fields.instituteName)     items.push({ label: "College",         value: fields.instituteName });
+  if (fields.ifscCode)          items.push({ label: "IFSC Code",       value: fields.ifscCode });
+  if (fields.accountNumber)     items.push({ label: "Account No",      value: fields.accountNumber });
+  if (fields.bankName)          items.push({ label: "Bank",            value: fields.bankName });
+  if (fields.annualIncome)      items.push({ label: "Annual Income",   value: `₹${fields.annualIncome}` });
+  if (fields.category)          items.push({ label: "Category",        value: fields.category });
+  if (fields.issueDate)         items.push({ label: "Issue Date",      value: fields.issueDate });
+
+  if (items.length === 0) return null;
+
+  return (
+    <div style={{ marginTop: 8, background: "#22c55e10", border: "1px solid #22c55e30", borderRadius: 8, padding: "10px 14px" }}>
+      <p style={{ fontSize: 11, fontWeight: 700, color: "#22c55e", marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
+        <CheckCircle2 size={12} /> OCR Read Successfully
+      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 20px" }}>
+        {items.map(item => (
+          <span key={item.label} style={{ fontSize: 12 }}>
+            <span style={{ color: "var(--text-muted,#9ca3af)" }}>{item.label}:</span>{" "}
+            <strong>{item.value}</strong>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // Step 1: Pick type + file  |  Step 2: Confirm checklist  |  Step 3: Uploading / result
 export default function DocumentVault() {
   const [documents, setDocuments] = React.useState([]);
@@ -174,7 +214,12 @@ export default function DocumentVault() {
       setConfirmed(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
-      setNotice({ type: "error", msg: err.message });
+      // Wrong document type — show prominent red block
+      const msg = err.message?.includes("does not look like") || err.message?.includes("does not look like")
+        ? err.message
+        : err.message;
+      setNotice({ type: "error", msg });
+      // Keep step 2 open so student can go back and pick correct document
     } finally {
       setUploading(false);
     }
@@ -229,15 +274,25 @@ export default function DocumentVault() {
 
         {/* Notice banner */}
         {notice.msg && (
-          <div className="form-alert" style={{
+          <div style={{
             marginBottom: 16,
-            background: notice.type === "error" ? "#ef444420" : notice.type === "warn" ? "#f59e0b20" : "#22c55e20",
-            border: `1px solid ${notice.type === "error" ? "#ef444460" : notice.type === "warn" ? "#f59e0b60" : "#22c55e60"}`,
+            background: notice.type === "error" ? "#ef444418" : notice.type === "warn" ? "#f59e0b18" : "#22c55e18",
+            border: `2px solid ${notice.type === "error" ? "#ef4444" : notice.type === "warn" ? "#f59e0b" : "#22c55e"}`,
             color: notice.type === "error" ? "#ef4444" : notice.type === "warn" ? "#f59e0b" : "#22c55e",
-            borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "flex-start", gap: 8
+            borderRadius: 10, padding: "14px 18px", display: "flex", alignItems: "flex-start", gap: 12
           }}>
-            {notice.type === "success" ? <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: 2 }} /> : <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />}
-            <span>{notice.msg}</span>
+            {notice.type === "success"
+              ? <CheckCircle2 size={20} style={{ flexShrink: 0, marginTop: 1 }} />
+              : <AlertTriangle size={20} style={{ flexShrink: 0, marginTop: 1 }} />}
+            <div>
+              {notice.type === "error" && <p style={{ fontWeight: 700, marginBottom: 4 }}>❌ Wrong Document — Upload Rejected</p>}
+              <span style={{ fontSize: 14, lineHeight: 1.6 }}>{notice.msg}</span>
+              {notice.type === "error" && (
+                <p style={{ marginTop: 8, fontSize: 13, opacity: 0.85 }}>
+                  Please go back, select the correct document type, and upload the right file.
+                </p>
+              )}
+            </div>
           </div>
         )}
 
@@ -376,11 +431,16 @@ export default function DocumentVault() {
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <strong>{doc.originalName}</strong>
+                      {doc.extractedFields
+                        ? <span style={{ fontSize: 10, fontWeight: 700, padding: "1px 7px", borderRadius: 8, background: "#22c55e20", color: "#22c55e", border: "1px solid #22c55e40" }}>✓ OCR Read</span>
+                        : <span style={{ fontSize: 10, fontWeight: 700, padding: "1px 7px", borderRadius: 8, background: "#f59e0b20", color: "#f59e0b", border: "1px solid #f59e0b40" }}>Pending OCR</span>
+                      }
                     </div>
                     <p className="muted-text" style={{ fontSize: 12, margin: "2px 0" }}>
                       {formatBytes(doc.fileSize)} · Uploaded {formatDate(doc.createdAt)}
                     </p>
-                    <p className="muted-text" style={{ fontSize: 11, fontFamily: "monospace", wordBreak: "break-all" }}>
+                    <ExtractedFields fields={doc.extractedFields} docType={doc.documentType} />
+                    <p className="muted-text" style={{ fontSize: 11, fontFamily: "monospace", wordBreak: "break-all", marginTop: 4 }}>
                       <ShieldCheck size={11} style={{ marginRight: 4 }} />
                       SHA-256: {doc.fileHash}
                     </p>

@@ -8,8 +8,17 @@ export async function analyzeOcrUpload(req, res, next) {
       return res.status(400).json({ message: "Please upload an image file for OCR analysis." });
     }
 
-    const result = await analyzeUploadedImage(req.file);
-    await createOcrNotifications(req.user, result);
+    let result;
+    try {
+      result = await analyzeUploadedImage(req.file);
+    } catch (ocrErr) {
+      console.error("[OCR] analyzeUploadedImage failed:", ocrErr.message);
+      return res.status(500).json({ message: `OCR failed: ${ocrErr.message}` });
+    }
+
+    // Notifications are optional — don't let them fail the response
+    createOcrNotifications(req.user, result).catch(e => console.error("[OCR] notification error:", e.message));
+
     return res.json({ result });
   } catch (error) {
     next(error);

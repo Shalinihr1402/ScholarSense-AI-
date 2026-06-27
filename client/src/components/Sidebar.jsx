@@ -24,7 +24,7 @@ const navItems = [
   { label: "Document Vault", path: "/document-vault", icon: FolderLock },
   { label: "Health Check", path: "/risk-analyzer", icon: ShieldCheck },
   { label: "Scholarships", path: "/scholarships", icon: ListChecks },
-  { label: "OCR Analyzer", path: "/ocr-analyzer", icon: FileScan },
+  { label: "Status Analyzer", path: "/ocr-analyzer", icon: FileScan },
   { label: "Readiness Score", path: "/readiness-score", icon: Gauge },
   { label: "Failure Diagnosis", path: "/failure-diagnosis", icon: ShieldAlert },
   { label: "AI Chatbot", path: "/chatbot", icon: Bot },

@@ -24,5 +24,92 @@
     "createdAt": "2026-06-25T15:13:37.453Z",
     "extractedFields": null,
     "ocrConfidence": null
+  },
+  {
+    "id": "dd907681-8aa4-4af9-a978-75b8bb128091",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "originalName": "SSLC_Marks_card.jpg",
+    "documentType": "Marksheet",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1782542033519-727045-SSLC_Marks_card.jpg",
+    "fileHash": "c905590a0546b26769715f6e68d9217b365f9f6caaeb3ee3ee5c0c6f9963b3b9",
+    "fileSize": 329689,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-06-27T06:33:53.581Z",
+    "extractedFields": {
+      "fullName": "SHALINI H R Jonat",
+      "marksPercentage": 82.08,
+      "instituteName": "SMT YAMUNABAI SHANTARAM NALLUR",
+      "boardName": "Karnataka Secondary Education Examination Board",
+      "dob": "14-02-2002"
+    },
+    "ocrConfidence": 85
+  },
+  {
+    "id": "3ddcb06a-6be1-4cf9-8f08-2941e103e573",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "originalName": "Passbook.jpg",
+    "documentType": "Bank Passbook",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1782542059835-736448-Passbook.jpg",
+    "fileHash": "cffc0e805dc2513efd68abfe6da18152b9a272d072259d58ef72881be4816fc0",
+    "fileSize": 130587,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-06-27T06:34:19.866Z",
+    "extractedFields": {
+      "accountHolderName": "Centraf Bahk",
+      "ifscCode": "CBIN0280860",
+      "accountNumber": "3471408206",
+      "bankName": null
+    },
+    "ocrConfidence": 85
+  },
+  {
+    "id": "70138c20-d6e5-48e5-9f78-8258db5d859b",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "originalName": "adhar.jpg",
+    "documentType": "Aadhaar Card",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1782542203549-141903-adhar.jpg",
+    "fileHash": "29ca9b59f122f2194aec11316510a118e40b97ba13a3acb9204f3ff1c3b2c415",
+    "fileSize": 192945,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-06-27T06:36:43.579Z",
+    "extractedFields": {
+      "name": null,
+      "dob": null,
+      "aadhaarVisible": true,
+      "hasUIDAI": true
+    },
+    "ocrConfidence": 85
+  },
+  {
+    "id": "7d72f54a-92fe-4374-bc42-8cd8dcd95c22",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "originalName": "reciept.jpg",
+    "documentType": "Fee Receipt",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1782542223254-618598-reciept.jpg",
+    "fileHash": "10e433e575fea184a478783ca02e0365afe7420678145ea64b6eccabe6802dfc",
+    "fileSize": 374644,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-06-27T06:37:03.318Z",
+    "extractedFields": null,
+    "ocrConfidence": null
+  },
+  {
+    "id": "182619f6-c0f0-4d94-91dc-cc06cbf7f457",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "originalName": "incomeCard.jpg",
+    "documentType": "Income Certificate",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1782543425424-214693-incomeCard.jpg",
+    "fileHash": "3e597c37a897561a1e9382f11dad67916a70327b6f3c61c8d1376608da083de0",
+    "fileSize": 251572,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-06-27T06:57:05.484Z",
+    "extractedFields": {
+      "applicantName": null,
+      "annualIncome": null,
+      "issueDate": "01/01/2021",
+      "issuingAuthority": null,
+      "isExpired": true
+    },
+    "ocrConfidence": 85
   }
 ]

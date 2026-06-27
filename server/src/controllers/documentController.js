@@ -97,16 +97,27 @@ export async function uploadDocument(req, res, next) {
         mimeType: req.file.mimetype
       });
 
-      // Run OCR in background to extract fields — does not block the upload
-      runOcrExtraction(req.file.path, req.file.mimetype, documentType).then(ocr => {
-        if (ocr?.fields) {
-          Document.findByIdAndUpdate(doc._id, {
-            extractedFields: ocr.fields,
-            ocrConfidence: ocr.confidence,
-            ocrVerified: true
-          }).catch(() => {});
-        }
-      }).catch(() => {});
+      // Run OCR — verify type BEFORE keeping the document
+      const ocr = await runOcrExtraction(req.file.path, req.file.mimetype, documentType);
+
+      if (!ocr.ocrFailed && ocr.verification && !ocr.verification.verified) {
+        await unlink(req.file.path).catch(() => {});
+        await doc.deleteOne();
+        return res.status(422).json({
+          message: ocr.verification.warning || `This does not look like a ${documentType}. Please upload the correct document.`,
+          wrongDocument: true
+        });
+      }
+
+      if (ocr?.fields) {
+        await Document.findByIdAndUpdate(doc._id, {
+          extractedFields: ocr.fields,
+          ocrConfidence: ocr.confidence,
+          ocrVerified: true
+        });
+        doc.extractedFields = ocr.fields;
+        doc.ocrConfidence = ocr.confidence;
+      }
 
       return res.status(201).json({ document: doc, duplicate: false });
     }
@@ -133,17 +144,25 @@ export async function uploadDocument(req, res, next) {
       ocrConfidence: null
     };
 
+    // Run OCR now — verify document type BEFORE saving
+    const ocr = await runOcrExtraction(req.file.path, req.file.mimetype, documentType);
+
+    // Block wrong document — if OCR read something but type doesn't match, reject
+    if (!ocr.ocrFailed && ocr.verification && !ocr.verification.verified) {
+      await unlink(req.file.path).catch(() => {});
+      return res.status(422).json({
+        message: ocr.verification.warning || `This does not look like a ${documentType}. Please upload the correct document.`,
+        wrongDocument: true
+      });
+    }
+
+    if (ocr?.fields) {
+      doc.extractedFields = ocr.fields;
+      doc.ocrConfidence = ocr.confidence;
+    }
+
     docs.push(doc);
     await writeLocalDocs(docs);
-
-    // Run OCR in background — does not block the upload
-    runOcrExtraction(req.file.path, req.file.mimetype, documentType).then(ocr => {
-      if (ocr?.fields) {
-        doc.extractedFields = ocr.fields;
-        doc.ocrConfidence = ocr.confidence;
-        updateLocalDocFields(fileHash, documentType, userId, ocr.fields, ocr.confidence).catch(() => {});
-      }
-    }).catch(() => {});
 
     return res.status(201).json({ document: doc, duplicate: false });
 
