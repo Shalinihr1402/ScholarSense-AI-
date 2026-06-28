@@ -1,7 +1,7 @@
 import React from "react";
 import {
   BarChart3, Bell, BookOpen, FileScan, FolderLock,
-  Gauge, Home, Languages, ListChecks, ShieldAlert, ShieldCheck,
+  Home, Languages, ListChecks, ShieldAlert, ShieldCheck,
   UserRound, LogOut
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
@@ -15,7 +15,6 @@ const navItems = [
   { label: "Health Check",      path: "/risk-analyzer",     icon: ShieldCheck, group: "tools" },
   { label: "Scholarships",      path: "/scholarships",      icon: ListChecks,  group: "tools" },
   { label: "Status Analyzer",   path: "/ocr-analyzer",      icon: FileScan,    group: "tools" },
-  { label: "Readiness Score",   path: "/readiness-score",   icon: Gauge,       group: "tools" },
   { label: "Failure Diagnosis", path: "/failure-diagnosis", icon: ShieldAlert, group: "tools" },
   { label: "Awareness Guide",   path: "/awareness",         icon: BookOpen,    group: "support" },
   { label: "Notifications",     path: "/notifications",     icon: Bell,        group: "support" },

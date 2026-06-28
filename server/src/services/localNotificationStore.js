@@ -78,14 +78,23 @@ export async function markAllLocalNotificationsRead(userId) {
 export async function updateLocalNotificationEmailStatus(userId, id, { emailSent, emailStatus }) {
   const notifications = await readNotifications();
   const index = notifications.findIndex((notification) => notification.id === id && notification.userId === userId);
-
-  if (index < 0) {
-    return null;
-  }
-
+  if (index < 0) return null;
   notifications[index].emailSent = emailSent;
   notifications[index].emailStatus = emailStatus;
   notifications[index].updatedAt = new Date().toISOString();
   await writeNotifications(notifications);
   return notifications[index];
+}
+
+export async function deleteLocalNotification(userId, id) {
+  const notifications = await readNotifications();
+  const index = notifications.findIndex(n => n.id === id && n.userId === userId);
+  if (index < 0) { const e = new Error("Notification not found."); e.status = 404; throw e; }
+  notifications.splice(index, 1);
+  await writeNotifications(notifications);
+}
+
+export async function deleteAllLocalNotifications(userId) {
+  const notifications = await readNotifications();
+  await writeNotifications(notifications.filter(n => n.userId !== userId));
 }

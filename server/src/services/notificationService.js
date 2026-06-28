@@ -5,11 +5,26 @@ import {
   listLocalNotifications,
   markAllLocalNotificationsRead,
   markLocalNotificationRead,
-  updateLocalNotificationEmailStatus
+  updateLocalNotificationEmailStatus,
+  deleteLocalNotification,
+  deleteAllLocalNotifications
 } from "./localNotificationStore.js";
 
 export function getUserId(user) {
   return user.id || user._id?.toString();
+}
+
+// ── Deduplication check ───────────────────────────────────────────────────────
+export async function isDuplicateNotification(userId, dedupKey, withinDays = 7) {
+  if (!dedupKey) return false;
+  const since = new Date(Date.now() - withinDays * 86400000);
+  if (Notification.db?.readyState === 1) {
+    const found = await Notification.findOne({ userId, dedupKey, createdAt: { $gte: since } }).lean();
+    return Boolean(found);
+  }
+  // local store: check in memory
+  const all = await listLocalNotifications(userId);
+  return all.some(n => n.dedupKey === dedupKey && new Date(n.createdAt) >= since);
 }
 
 export async function createNotification(userId, payload, user = null) {
@@ -18,7 +33,10 @@ export async function createNotification(userId, payload, user = null) {
     title: payload.title,
     message: payload.message,
     type: payload.type || "system",
-    priority: payload.priority || "medium"
+    category: payload.category || "general",
+    priority: payload.priority || "medium",
+    actionUrl: payload.actionUrl || "",
+    dedupKey: payload.dedupKey || ""
   };
 
   if (Notification.db.readyState === 1) {
@@ -107,26 +125,24 @@ export async function createProfileNotifications(user, insights) {
   return created;
 }
 
-export async function createReadinessNotifications(user, readiness) {
-  const userId = getUserId(user);
-  if (readiness.totalScore < 70) {
-    return [
-      await createNotification(userId, {
-        title: "Readiness score needs improvement",
-        message: `Your readiness score is ${readiness.totalScore}/100. Complete the action plan before applying.`,
-        type: "readiness",
-        priority: readiness.totalScore < 50 ? "critical" : "high"
-      }, user)
-    ];
+// Readiness notifications removed — replaced by smart notification engine
+export async function createReadinessNotifications() { return []; }
+
+export async function deleteNotification(userId, id) {
+  if (Notification.db?.readyState === 1) {
+    const n = await Notification.findOneAndDelete({ _id: id, userId });
+    if (!n) { const e = new Error("Notification not found."); e.status = 404; throw e; }
+    return;
   }
-  return [
-    await createNotification(userId, {
-      title: "Readiness score generated",
-      message: `Your scholarship readiness score is ${readiness.totalScore}/100 (${readiness.status.label}).`,
-      type: "readiness",
-      priority: "low"
-    }, user)
-  ];
+  return deleteLocalNotification(userId, id);
+}
+
+export async function deleteAllNotifications(userId) {
+  if (Notification.db?.readyState === 1) {
+    await Notification.deleteMany({ userId });
+    return;
+  }
+  return deleteAllLocalNotifications(userId);
 }
 
 export async function createDiagnosisNotifications(user, diagnosis) {

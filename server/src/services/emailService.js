@@ -15,21 +15,51 @@ function createTransporter() {
   });
 }
 
-export function renderNotificationEmail({ title, message, priority, type }) {
+export function renderNotificationEmail({ title, message, priority, category, actionUrl }) {
+  const colorMap = { critical: "#dc2626", high: "#d97706", medium: "#2563eb", low: "#16a34a" };
+  const color = colorMap[priority] || "#2563eb";
+  const badge = (priority || "medium").toUpperCase();
+  const appUrl = process.env.APP_URL || "http://localhost:5173";
+
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
+<tr><td align="center">
+<table width="560" cellpadding="0" cellspacing="0" style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);">
+  <!-- Header -->
+  <tr><td style="background:linear-gradient(135deg,#1e3a8a,#0891b2);padding:28px 32px;">
+    <p style="margin:0;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">ScholarSense AI · Smart Notification</p>
+    <h1 style="margin:8px 0 0;color:white;font-size:22px;font-weight:900;line-height:1.3;">${title}</h1>
+  </td></tr>
+  <!-- Priority badge -->
+  <tr><td style="padding:0 32px;">
+    <div style="display:inline-block;background:${color};color:white;font-size:11px;font-weight:800;padding:5px 14px;border-radius:0 0 10px 10px;letter-spacing:.08em;">${badge} PRIORITY · ${(category || "general").toUpperCase()}</div>
+  </td></tr>
+  <!-- Message -->
+  <tr><td style="padding:24px 32px 8px;">
+    <p style="margin:0;font-size:15px;color:#334155;line-height:1.8;">${message}</p>
+  </td></tr>
+  <!-- CTA -->
+  ${actionUrl ? `<tr><td style="padding:16px 32px 28px;">
+    <a href="${appUrl}${actionUrl}" style="display:inline-block;background:linear-gradient(135deg,#2563eb,#0891b2);color:white;text-decoration:none;font-size:14px;font-weight:800;padding:12px 28px;border-radius:10px;">Take Action →</a>
+  </td></tr>` : ""}
+  <!-- Safety footer -->
+  <tr><td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:18px 32px;">
+    <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">
+      🔒 <strong>Safety:</strong> ScholarSense AI will never ask for your OTP, Aadhaar number, or password.<br>
+      This alert was sent because your profile matched an eligibility condition. <a href="${appUrl}/notifications" style="color:#2563eb;">Manage alerts</a>
+    </p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
+
   return {
     subject: `[ScholarSense AI] ${title}`,
-    text: [
-      "ScholarSense AI Alert",
-      "",
-      `Priority: ${priority}`,
-      `Type: ${type}`,
-      "",
-      message,
-      "",
-      "Open ScholarSense AI to view the full action plan.",
-      "",
-      "Safety note: Do not share OTP, passwords, or full Aadhaar details with anyone."
-    ].join("\n")
+    html,
+    text: `${title}\n\n${message}\n\nOpen ScholarSense AI: ${appUrl}${actionUrl || ""}\n\nSafety: Do not share OTP or Aadhaar with anyone.`
   };
 }
 
@@ -54,7 +84,8 @@ export async function sendNotificationEmail({ user, notification }) {
       from: `"ScholarSense AI" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: rendered.subject,
-      text: rendered.text
+      text: rendered.text,
+      html: rendered.html
     });
 
     return createEmailLog({

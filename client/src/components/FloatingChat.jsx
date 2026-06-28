@@ -1,26 +1,15 @@
 import React from "react";
 import { X, Send, Minimize2, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import { chatApi } from "../services/api.js";
 
-// ── Canned responses ──────────────────────────────────────────────────────────
+// ── Quick prompts ─────────────────────────────────────────────────────────────
 const QUICK = [
-  { label: "Track my status",        reply: "Go to Status Analyzer and upload a screenshot of your scholarship portal. I'll explain what it means and what to do next." },
-  { label: "Bank validation failed",  reply: "Bank validation fails when: (1) Aadhaar not linked to bank account, (2) DBT not enabled, (3) NPCI mapping missing, or (4) Account is dormant. Visit your bank with your Aadhaar card to fix these." },
-  { label: "How to check NSP status", reply: "Log in to scholarships.gov.in → My Applications → Click your application → Expand all sections → Take a screenshot → Upload it here in Status Analyzer." },
-  { label: "Documents needed",        reply: "For NSP/SSP you typically need: Aadhaar card, Income Certificate, Caste Certificate, Marksheet (last passed), Bank Passbook, Fee Receipt, and a Bonafide Certificate from your college." },
+  { label: "🎯 Am I eligible?",       q: "Based on my profile — marks, income, category, and college — am I eligible for any NSP or SSP scholarship this year?" },
+  { label: "🏦 Money not arrived?",   q: "My scholarship is sanctioned but money hasn't reached my bank. Based on my bank details in my profile, what is most likely wrong?" },
+  { label: "📄 Documents needed",     q: "Based on my category, course, and college in my profile, give me the exact list of documents I need for my scholarship." },
+  { label: "🚨 Application rejected", q: "My scholarship was marked Defective or Rejected. Based on my profile, what are the likely reasons and what should I do immediately?" },
 ];
-
-function autoReply(text) {
-  const t = text.toLowerCase();
-  if (t.includes("bank") || t.includes("dbt") || t.includes("validation")) return QUICK[1].reply;
-  if (t.includes("nsp") || t.includes("ssp") || t.includes("status") || t.includes("track")) return QUICK[2].reply;
-  if (t.includes("document") || t.includes("certificate") || t.includes("need")) return QUICK[3].reply;
-  if (t.includes("pfms") || t.includes("payment")) return "Your payment is processed through PFMS after ministry digital signature. Usually takes 7–30 working days. Track at pfms.nic.in → Know Your Payment.";
-  if (t.includes("reject")) return "Check the rejection reason on the portal first. Common reasons: name mismatch with Aadhaar, income above limit, duplicate application. Contact your college nodal officer with the reason.";
-  if (t.includes("defect")) return "Log in to the portal immediately, find the defect reason, fix the document or field highlighted, and re-submit before the correction deadline closes.";
-  if (t.includes("hello") || t.includes("hai") || t.includes("hi") || t.includes("help")) return "Hai! 👋 I'm your ScholarSense AI assistant. I can help you understand scholarship status, documents, DBT issues, and eligibility. What's your question?";
-  return "I can help with scholarship status, NSP/SSP portal questions, bank validation, document issues, and more. Could you tell me more about your specific concern?";
-}
 
 // ── Robot SVG mascot ──────────────────────────────────────────────────────────
 function RobotMascot({ size = 62 }) {
@@ -166,16 +155,24 @@ export default function FloatingChat() {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs, open]);
 
-  function send(text) {
+  async function send(text) {
     const t = (text || input).trim();
-    if (!t) return;
+    if (!t || typing) return;
     setInput(""); setBubble(false);
+    const history = msgs.slice(-8);
     setMsgs(m => [...m, { from: "user", text: t }]);
     setTyping(true);
-    setTimeout(() => {
+    try {
+      const { reply } = await chatApi.send(t, history);
+      setMsgs(m => [...m, { from: "bot", text: reply }]);
+    } catch (err) {
+      const msg = err.message?.includes("Failed to fetch") || err.message?.includes("NetworkError")
+        ? "⚠️ Cannot reach the server. Make sure the backend is running on port 5000."
+        : "Sorry, I couldn't get a response. Please try again.";
+      setMsgs(m => [...m, { from: "bot", text: msg }]);
+    } finally {
       setTyping(false);
-      setMsgs(m => [...m, { from: "bot", text: autoReply(t) }]);
-    }, 900 + Math.random() * 400);
+    }
   }
 
   return (
@@ -270,7 +267,7 @@ export default function FloatingChat() {
           {msgs.length <= 2 && (
             <div style={{ padding: "10px 14px 6px", display: "flex", gap: 6, flexWrap: "wrap", background: "#f8fafc", flexShrink: 0 }}>
               {QUICK.map(q => (
-                <button key={q.label} onClick={() => send(q.label)}
+                <button key={q.label} onClick={() => send(q.q)} disabled={typing}
                   style={{
                     padding: "6px 12px", fontSize: 12, fontWeight: 700,
                     borderRadius: 999, border: "1.5px solid #dbeafe",

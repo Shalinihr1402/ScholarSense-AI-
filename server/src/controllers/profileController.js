@@ -5,6 +5,7 @@ import { getAllLocalScholarships } from "../services/localScholarshipStore.js";
 import { evaluateScholarships } from "../services/eligibilityService.js";
 import { createProfileNotifications } from "../services/notificationService.js";
 import { getProfileInsights, normalizeProfile } from "../services/profileService.js";
+import { logProfileUpdate } from "../services/auditService.js";
 
 async function buildEligibilitySnapshot(profile, isMongoConnected) {
   try {
@@ -47,9 +48,13 @@ function sendProfile(res, profile) {
   });
 }
 
-async function sendSavedProfile(req, res, profile) {
+async function sendSavedProfile(req, res, profile, changedFields = []) {
   const insights = getProfileInsights(profile || {});
   await createProfileNotifications(req.user, insights);
+  const userId = req.user.id || req.user._id?.toString();
+  if (changedFields.length > 0) {
+    logProfileUpdate(userId, changedFields, profile).catch(() => {});
+  }
   res.json({ profile, insights });
 }
 
@@ -97,6 +102,8 @@ export async function saveMyProfile(req, res, next) {
       ...(eligibilitySnapshot && { eligibilitySnapshot, eligibilityUpdatedAt: new Date() })
     };
 
+    const changedFields = Object.keys(normalized).filter(k => normalized[k] !== "" && normalized[k] != null);
+
     if (isMongo) {
       const profile = await StudentProfile.findOneAndUpdate(
         { userId },
@@ -104,11 +111,11 @@ export async function saveMyProfile(req, res, next) {
         { new: true, upsert: true, runValidators: true }
       ).lean();
 
-      return sendSavedProfile(req, res, profile);
+      return sendSavedProfile(req, res, profile, changedFields);
     }
 
     const profile = await upsertLocalProfile(userId, updatePayload);
-    return sendSavedProfile(req, res, profile);
+    return sendSavedProfile(req, res, profile, changedFields);
   } catch (error) {
     next(error);
   }

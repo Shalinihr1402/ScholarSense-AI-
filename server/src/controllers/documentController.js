@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "crypto";
+import { logDocumentUpload, logDocumentDelete } from "../services/auditService.js";
 import { mkdir, readFile, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -119,6 +120,7 @@ export async function uploadDocument(req, res, next) {
         doc.ocrConfidence = ocr.confidence;
       }
 
+      logDocumentUpload(userId, documentType, req.file.originalname).catch(() => {});
       return res.status(201).json({ document: doc, duplicate: false });
     }
 
@@ -163,7 +165,7 @@ export async function uploadDocument(req, res, next) {
 
     docs.push(doc);
     await writeLocalDocs(docs);
-
+    logDocumentUpload(userId, documentType, req.file.originalname).catch(() => {});
     return res.status(201).json({ document: doc, duplicate: false });
 
   } catch (error) {
@@ -245,6 +247,7 @@ export async function deleteDocument(req, res, next) {
       if (!doc) return res.status(404).json({ message: "Document not found." });
       await unlink(doc.filePath).catch(() => {});
       await doc.deleteOne();
+      logDocumentDelete(userId, doc.documentType).catch(() => {});
       return res.json({ message: "Document deleted." });
     }
 
@@ -252,9 +255,11 @@ export async function deleteDocument(req, res, next) {
     // Match by UUID id first; fallback to matching by fileHash if id format changed
     const index = docs.findIndex(d => d.userId === userId && (d.id === id || d.fileHash === id));
     if (index === -1) return res.status(404).json({ message: "Document not found." });
+    const deletedType = docs[index].documentType;
     await unlink(docs[index].filePath).catch(() => {});
     docs.splice(index, 1);
     await writeLocalDocs(docs);
+    logDocumentDelete(userId, deletedType).catch(() => {});
     return res.json({ message: "Document deleted." });
 
   } catch (error) {

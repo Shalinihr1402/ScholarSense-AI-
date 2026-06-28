@@ -13,6 +13,8 @@ import profileRoutes from "./routes/profileRoutes.js";
 import readinessRoutes from "./routes/readinessRoutes.js";
 import scholarshipRoutes from "./routes/scholarshipRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import auditRoutes from "./routes/auditRoutes.js";
 
 dotenv.config();
 
@@ -32,6 +34,8 @@ app.use("/api/ocr", ocrRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/documents", documentRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/audit", auditRoutes);
 
 app.get("/", (req, res) => {
   res.json({

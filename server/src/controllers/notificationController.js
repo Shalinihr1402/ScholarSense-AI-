@@ -3,8 +3,11 @@ import {
   getUserId,
   listNotificationsForUser,
   markAllNotificationsRead,
-  markNotificationRead
+  markNotificationRead,
+  deleteNotification,
+  deleteAllNotifications
 } from "../services/notificationService.js";
+import { runSmartNotifications } from "../services/smartNotificationService.js";
 
 function summarize(notifications) {
   return {
@@ -55,6 +58,33 @@ export async function markAllMyNotificationsRead(req, res, next) {
     const userId = getUserId(req.user);
     const notifications = await markAllNotificationsRead(userId);
     res.json({ notifications, summary: summarize(notifications) });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteMyNotification(req, res, next) {
+  try {
+    const userId = getUserId(req.user);
+    await deleteNotification(userId, req.params.id);
+    res.json({ message: "Notification deleted." });
+  } catch (error) { next(error); }
+}
+
+export async function deleteAllMyNotifications(req, res, next) {
+  try {
+    const userId = getUserId(req.user);
+    await deleteAllNotifications(userId);
+    res.json({ message: "All notifications deleted." });
+  } catch (error) { next(error); }
+}
+
+export async function refreshSmartNotifications(req, res, next) {
+  try {
+    const created = await runSmartNotifications(req.user);
+    const userId = getUserId(req.user);
+    const notifications = await listNotificationsForUser(userId);
+    res.json({ created: created.filter(Boolean).length, notifications, summary: summarize(notifications) });
   } catch (error) {
     next(error);
   }

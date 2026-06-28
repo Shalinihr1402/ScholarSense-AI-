@@ -104,30 +104,26 @@ export const ocrApi = {
 };
 
 export const notificationApi = {
-  list() {
-    return apiRequest("/notifications");
-  },
-  create(payload) {
-    return apiRequest("/notifications", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-  },
-  markRead(id) {
-    return apiRequest(`/notifications/${id}/read`, {
-      method: "PUT"
-    });
-  },
-  markAllRead() {
-    return apiRequest("/notifications/read-all", {
-      method: "PUT"
-    });
-  }
+  list() { return apiRequest("/notifications"); },
+  refresh() { return apiRequest("/notifications/refresh", { method: "POST" }); },
+  markRead(id) { return apiRequest(`/notifications/${id}/read`, { method: "PUT" }); },
+  markAllRead() { return apiRequest("/notifications/read-all", { method: "PUT" }); },
+  delete(id) { return apiRequest(`/notifications/${id}`, { method: "DELETE" }); },
+  deleteAll() { return apiRequest("/notifications/all", { method: "DELETE" }); }
 };
 
 export const emailApi = {
   status() {
     return apiRequest("/email/status");
+  }
+};
+
+export const chatApi = {
+  send(message, history = []) {
+    return apiRequest("/chat", {
+      method: "POST",
+      body: JSON.stringify({ message, history })
+    });
   }
 };
 
