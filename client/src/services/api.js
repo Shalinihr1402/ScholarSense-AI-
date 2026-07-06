@@ -118,6 +118,10 @@ export const emailApi = {
   }
 };
 
+export const auditApi = {
+  get() { return apiRequest("/audit"); }
+};
+
 export const chatApi = {
   send(message, history = []) {
     return apiRequest("/chat", {

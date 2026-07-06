@@ -40,7 +40,11 @@ const studentProfileSchema = new mongoose.Schema(
     // Section 4 — Eligibility
     category:         { type: String, trim: true },
     annualIncome:     { type: Number, min: 0 },
-    disabilityStatus: { type: String, enum: ["Unknown", "Yes", "No"], default: "Unknown" },
+    disabilityStatus:     { type: String, enum: ["Unknown", "Yes", "No"], default: "Unknown" },
+    disabilityType:       { type: String, trim: true },
+    disabilityPercentage: { type: Number, min: 0, max: 100 },
+    udidNumber:           { type: String, trim: true },
+    udidCardPath:         { type: String, trim: true },
     minorityStatus:   { type: String, enum: ["Unknown", "Yes", "No"], default: "Unknown" },
     hosteller:        { type: String, enum: ["Unknown", "Hosteller", "Day Scholar"], default: "Unknown" },
     orphanStatus:     { type: String, enum: ["Unknown", "Yes", "No"], default: "Unknown" },

@@ -1,6 +1,14 @@
 import StudentProfile from "../models/StudentProfile.js";
+import Document from "../models/Document.js";
 import { getLocalProfile } from "./localProfileStore.js";
+import { readFile } from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 import { createNotification, getUserId, isDuplicateNotification } from "./notificationService.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const LOCAL_DOCS_STORE = path.resolve(__dirname, "../../data/documents.local.json");
 
 // ── Scholarship windows (update yearly) ──────────────────────────────────────
 const SCHOLARSHIP_WINDOWS = [
@@ -32,10 +40,11 @@ const SCHOLARSHIP_WINDOWS = [
 
 // ── Document types that need periodic renewal ─────────────────────────────────
 const EXPIRY_RULES = [
-  { keyword: "income",  label: "Income Certificate",     validMonths: 12, priority: "high" },
-  { keyword: "caste",   label: "Caste/Category Certificate", validMonths: 36, priority: "medium" },
-  { keyword: "bonafide",label: "Bonafide Certificate",   validMonths: 12, priority: "high" },
-  { keyword: "domicile",label: "Domicile Certificate",   validMonths: 60, priority: "low" },
+  { keyword: "income",   label: "Income Certificate",        validMonths: 12, priority: "high" },
+  { keyword: "caste",    label: "Caste Certificate",         validMonths: 36, priority: "medium" },
+  { keyword: "bonafide", label: "Bonafide Certificate",      validMonths: 12, priority: "high" },
+  { keyword: "domicile", label: "Domicile Certificate",      validMonths: 60, priority: "low" },
+  { keyword: "fee",      label: "Fee Receipt",               validMonths: 12, priority: "medium" },
 ];
 
 // ── Check if student is likely eligible for a scholarship ────────────────────
@@ -120,20 +129,38 @@ export async function runSmartNotifications(user) {
     }));
   }
 
-  // Warn about documents that commonly expire
+  // Warn about documents that commonly expire — using actual upload date
+  const uploadedDocs = await getUploadedDocs(userId);
   for (const rule of EXPIRY_RULES) {
-    const has = docs.some(d => d.toLowerCase().includes(rule.keyword));
-    if (has && profile?.updatedAt) {
-      const updatedAt = new Date(profile.updatedAt);
-      const monthsOld = (now - updatedAt) / (1000 * 60 * 60 * 24 * 30);
-      if (monthsOld > rule.validMonths - 2) { // warn 2 months before expiry
-        created.push(await maybe(userId, user, {
-          dedupKey: `doc_expiry_${rule.keyword}_${now.getFullYear()}`,
-          title: `📅 ${rule.label} may expire soon`,
-          message: `Your ${rule.label} was uploaded ${Math.round(monthsOld)} months ago. This document is typically valid for ${rule.validMonths} months. Get a fresh copy before your scholarship deadline.`,
-          category: "document", type: "document", priority: rule.priority, actionUrl: "/document-vault"
-        }));
-      }
+    // Find the most recently uploaded doc matching this type
+    const match = uploadedDocs
+      .filter(d => d.documentType?.toLowerCase().includes(rule.keyword) || d.originalName?.toLowerCase().includes(rule.keyword))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+
+    if (!match) continue;
+
+    const uploadDate  = new Date(match.createdAt);
+    const expiryDate  = new Date(uploadDate);
+    expiryDate.setMonth(expiryDate.getMonth() + rule.validMonths);
+
+    const daysToExpiry = Math.round((expiryDate - now) / 86400000);
+
+    if (daysToExpiry <= 0) {
+      // Already expired
+      created.push(await maybe(userId, user, {
+        dedupKey: `doc_expired_${rule.keyword}_${expiryDate.getFullYear()}_${expiryDate.getMonth()}`,
+        title: `🚨 ${rule.label} has EXPIRED`,
+        message: `Your ${rule.label} expired on ${expiryDate.toLocaleDateString("en-IN")}. Scholarship applications with expired documents are rejected. Get a new certificate immediately.`,
+        category: "document", type: "document", priority: "critical", actionUrl: "/document-vault"
+      }));
+    } else if (daysToExpiry <= 60) {
+      // Expiring within 60 days
+      created.push(await maybe(userId, user, {
+        dedupKey: `doc_expiry_${rule.keyword}_${expiryDate.getFullYear()}_${expiryDate.getMonth()}`,
+        title: `📅 ${rule.label} expires in ${daysToExpiry} days`,
+        message: `Your ${rule.label} will expire on ${expiryDate.toLocaleDateString("en-IN")}. Renew it before it expires — scholarship portals reject outdated certificates.`,
+        category: "document", type: "document", priority: daysToExpiry <= 14 ? "high" : rule.priority, actionUrl: "/document-vault"
+      }));
     }
   }
 
@@ -204,6 +231,20 @@ function getRequiredDocs(profile) {
     base.push({ keyword: "disability", label: "Disability Certificate", priority: "high" });
   }
   return base;
+}
+
+// ── Fetch actual uploaded documents with real createdAt dates ────────────────
+async function getUploadedDocs(userId) {
+  try {
+    if (Document.db?.readyState === 1) {
+      return await Document.find({ userId }).lean();
+    }
+    // JSON fallback
+    const raw = await readFile(LOCAL_DOCS_STORE, "utf8").catch(() => "[]");
+    return JSON.parse(raw).filter(d => d.userId === userId);
+  } catch {
+    return [];
+  }
 }
 
 // ── Create only if not duplicate within 7 days ────────────────────────────────

@@ -1,5 +1,6 @@
 import Scholarship from "../models/Scholarship.js";
 import StudentProfile from "../models/StudentProfile.js";
+import { seedScholarships } from "../data/seedScholarships.js";
 import {
   createLocalScholarship,
   deleteLocalScholarship,
@@ -37,10 +38,16 @@ function normalizeScholarship(payload) {
     gender: payload.gender || "Any",
     disabilityRequired: Boolean(payload.disabilityRequired),
     requiredDocuments: normalizeArray(payload.requiredDocuments),
+    amount: payload.amount || "",
+    amountDetails: payload.amountDetails || "",
+    openDate: payload.openDate || "",
     deadline: payload.deadline || "",
+    lastDateInstitute: payload.lastDateInstitute || "",
     applicationLink: payload.applicationLink || "",
     sourceUrl: payload.sourceUrl || "",
-    status: payload.status || "Open",
+    ministry: payload.ministry || "",
+    religion: normalizeArray(payload.religion),
+    status: payload.status || "Active",
     description: payload.description || ""
   };
 }
@@ -76,7 +83,14 @@ export async function listScholarships(req, res, next) {
         query.categories = filters.category;
       }
 
-      const scholarships = await Scholarship.find(query).sort({ deadline: 1, name: 1 }).lean();
+      let scholarships = await Scholarship.find(query).sort({ deadline: 1, name: 1 }).lean();
+
+      // Auto-seed if DB is empty
+      if (scholarships.length === 0 && !filters.search && !filters.state && !filters.category) {
+        await Scholarship.insertMany(seedScholarships, { ordered: false }).catch(() => {});
+        scholarships = await Scholarship.find({}).sort({ deadline: 1, name: 1 }).lean();
+      }
+
       return res.json({ scholarships, count: scholarships.length });
     }
 
@@ -96,6 +110,12 @@ export async function listPersonalizedScholarships(req, res, next) {
     if (Scholarship.db.readyState === 1) {
       profile = await StudentProfile.findOne({ userId }).lean();
       scholarships = await Scholarship.find({}).sort({ deadline: 1, name: 1 }).lean();
+
+      // Auto-seed if DB is empty
+      if (scholarships.length === 0) {
+        await Scholarship.insertMany(seedScholarships, { ordered: false }).catch(() => {});
+        scholarships = await Scholarship.find({}).sort({ deadline: 1, name: 1 }).lean();
+      }
     } else {
       profile = await getLocalProfile(userId);
       scholarships = await getAllLocalScholarships();

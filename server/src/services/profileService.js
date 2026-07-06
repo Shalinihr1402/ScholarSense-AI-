@@ -52,8 +52,11 @@ export function normalizeProfile(input = {}) {
     // Eligibility
     category:         str(input.category),
     annualIncome:     input.annualIncome === "" || input.annualIncome == null ? "" : Number(input.annualIncome),
-    disabilityStatus: input.disabilityStatus || "Unknown",
-    minorityStatus:   input.minorityStatus   || "Unknown",
+    disabilityStatus:     input.disabilityStatus || "Unknown",
+    disabilityType:       str(input.disabilityType),
+    disabilityPercentage: input.disabilityPercentage !== "" && input.disabilityPercentage != null ? Number(input.disabilityPercentage) : undefined,
+    udidNumber:           str(input.udidNumber),
+    minorityStatus:       input.minorityStatus || "Unknown",
     hosteller:        input.hosteller        || "Unknown",
     orphanStatus:     input.orphanStatus     || "Unknown",
     firstGraduate:    input.firstGraduate    || "Unknown",

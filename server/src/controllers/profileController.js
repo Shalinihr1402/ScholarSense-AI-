@@ -120,3 +120,28 @@ export async function saveMyProfile(req, res, next) {
     next(error);
   }
 }
+
+export async function uploadUdidCard(req, res, next) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded." });
+    }
+
+    const userId = getUserId(req);
+    const udidCardPath = req.file.filename;
+
+    if (StudentProfile.db.readyState === 1) {
+      const profile = await StudentProfile.findOneAndUpdate(
+        { userId },
+        { $set: { udidCardPath } },
+        { new: true, upsert: true }
+      ).lean();
+      return res.json({ profile, message: "UDID card uploaded successfully." });
+    }
+
+    const profile = await upsertLocalProfile(userId, { udidCardPath });
+    return res.json({ profile, message: "UDID card uploaded successfully." });
+  } catch (error) {
+    next(error);
+  }
+}

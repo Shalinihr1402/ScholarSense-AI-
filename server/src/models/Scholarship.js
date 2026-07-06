@@ -12,10 +12,16 @@ const scholarshipSchema = new mongoose.Schema(
     gender: { type: String, default: "Any" },
     disabilityRequired: { type: Boolean, default: false },
     requiredDocuments: { type: [String], default: [] },
+    amount: { type: String, default: "" },
+    amountDetails: { type: String, default: "" },
+    openDate: { type: String, default: "" },
     deadline: { type: String, default: "" },
+    lastDateInstitute: { type: String, default: "" },
     applicationLink: { type: String, default: "" },
     sourceUrl: { type: String, default: "" },
-    status: { type: String, enum: ["Open", "Closing Soon", "Closed"], default: "Open" },
+    ministry: { type: String, default: "" },
+    religion: { type: [String], default: [] },
+    status: { type: String, enum: ["Active", "Open", "Closing Soon", "Closed"], default: "Active" },
     description: { type: String, default: "" }
   },
   { timestamps: true }

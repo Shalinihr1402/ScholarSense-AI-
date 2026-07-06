@@ -1,7 +1,7 @@
 import React from "react";
 import {
   AlertTriangle, BookOpen, Building2, CheckCircle2,
-  CreditCard, User, GraduationCap, Sparkles
+  CreditCard, User, GraduationCap, Sparkles, Upload, FileCheck, Accessibility
 } from "lucide-react";
 import { profileApi } from "../services/api.js";
 
@@ -23,7 +23,9 @@ const initialForm = {
   currentAcademicYear:"", universityBoard:"", marksPercentage:"", admissionType:"",
   collegeName:"", instituteCode:"", instituteAddress:"",
   nodalOfficerName:"", nodalOfficerDesignation:"", nodalOfficerEmail:"", nodalOfficerContact:"",
-  category:"", annualIncome:"", disabilityStatus:"Unknown", minorityStatus:"Unknown",
+  category:"", annualIncome:"", disabilityStatus:"Unknown",
+  disabilityType:"", disabilityPercentage:"", udidNumber:"", udidCardPath:"",
+  minorityStatus:"Unknown",
   hosteller:"Unknown", orphanStatus:"Unknown", firstGraduate:"Unknown",
   bankName:"", accountHolderName:"", accountNumber:"", ifscCode:"",
   aadhaarBankLinked:"Unknown", dbtEnabled:"Unknown", bankAccountActive:"Unknown", npciMapping:"Unknown",
@@ -148,6 +150,7 @@ export default function Profile() {
   const [form, setForm] = React.useState(initialForm);
   const [insights, setInsights] = React.useState(null);
   const [pageStatus, setPageStatus] = React.useState({ loading: true, saving: false, error: "", success: "" });
+  const [udidUpload, setUdidUpload] = React.useState({ uploading: false, done: false, error: "" });
 
   React.useEffect(() => {
     profileApi.getMine()
@@ -174,6 +177,27 @@ export default function Profile() {
     e.target.style.borderColor = "#e2e8f0";
     e.target.style.boxShadow = "none";
     e.target.style.background = "#f8fafc";
+  }
+
+  async function handleUdidUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUdidUpload({ uploading: true, done: false, error: "" });
+    try {
+      const fd = new FormData();
+      fd.append("udidCard", file);
+      const res = await fetch("/api/profile/me/udid-card", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        body: fd
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Upload failed");
+      setForm(s => ({ ...s, udidCardPath: data.profile?.udidCardPath || "uploaded" }));
+      setUdidUpload({ uploading: false, done: true, error: "" });
+    } catch (err) {
+      setUdidUpload({ uploading: false, done: false, error: err.message });
+    }
   }
 
   async function handleSubmit(e) {
@@ -444,6 +468,115 @@ export default function Profile() {
             </select>
           </Field>
         </SectionCard>
+
+        {/* ── Disability Details (shown only when disabilityStatus === "Yes") ── */}
+        {form.disabilityStatus === "Yes" && (
+          <div style={{
+            background: "white", borderRadius: 18, overflow: "hidden",
+            boxShadow: "0 2px 16px rgba(15,23,42,.07)", border: "1.5px solid #ddd6fe"
+          }}>
+            <div style={{ height: 4, background: "linear-gradient(90deg,#7c3aed,#6366f1)" }} />
+            <div style={{ padding: "18px 24px 16px", display: "flex", alignItems: "center", gap: 14, borderBottom: "1px solid #f1f5f9" }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, flexShrink: 0, background: "#f5f3ff", border: "1.5px solid #ddd6fe", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Accessibility size={20} color="#7c3aed" />
+              </div>
+              <div>
+                <h3 style={{ margin: "0 0 2px", fontSize: 15.5, fontWeight: 800, color: "#0f172a" }}>Disability Details</h3>
+                <p style={{ margin: 0, fontSize: 12, color: "#64748b" }}>Required for AICTE Saksham & PMS-Disability scholarships</p>
+              </div>
+            </div>
+            <div style={{ padding: "22px 24px" }}>
+              <div style={GRID}>
+                <Field label="Type of Disability" hint="Select the category that matches your disability certificate">
+                  <select style={INP} onFocus={onFocus} onBlur={onBlur} name="disabilityType" value={form.disabilityType} onChange={upd}>
+                    <option value="">Select disability type</option>
+                    <option>Visual Impairment</option>
+                    <option>Hearing Impairment</option>
+                    <option>Speech and Language Disability</option>
+                    <option>Locomotor Disability</option>
+                    <option>Intellectual Disability</option>
+                    <option>Specific Learning Disability</option>
+                    <option>Mental Illness</option>
+                    <option>Autism Spectrum Disorder</option>
+                    <option>Cerebral Palsy</option>
+                    <option>Chronic Neurological Conditions</option>
+                    <option>Multiple Disabilities</option>
+                    <option>Other</option>
+                  </select>
+                </Field>
+                <Field label="Disability Percentage (%)" hint="As on your disability certificate from government hospital / CMO">
+                  <input style={INP} onFocus={onFocus} onBlur={onBlur}
+                    name="disabilityPercentage" type="number" min="1" max="100"
+                    value={form.disabilityPercentage} onChange={upd} placeholder="e.g. 45" />
+                  {form.disabilityPercentage !== "" && Number(form.disabilityPercentage) < 40 && (
+                    <span style={{ fontSize: 11, color: "#d97706", fontWeight: 600 }}>⚠ Most scholarships require ≥40% disability</span>
+                  )}
+                  {form.disabilityPercentage !== "" && Number(form.disabilityPercentage) >= 40 && (
+                    <span style={{ fontSize: 11, color: "#16a34a", fontWeight: 600 }}>✓ Eligible for disability scholarships</span>
+                  )}
+                </Field>
+                <Field label="UDID Number" hint="Unique Disability ID from swavlambancard.gov.in">
+                  <input style={INP} onFocus={onFocus} onBlur={onBlur}
+                    name="udidNumber" value={form.udidNumber} onChange={upd}
+                    placeholder="e.g. KA-DIST-2024-XXXXX" />
+                </Field>
+              </div>
+
+              {/* UDID Card Upload — full width below grid */}
+              <div style={{ marginTop: 18 }}>
+                <div style={{
+                  border: `2px dashed ${form.udidCardPath || udidUpload.done ? "#16a34a" : "#c4b5fd"}`,
+                  borderRadius: 14, padding: "18px 20px",
+                  background: form.udidCardPath || udidUpload.done ? "#f0fdf4" : "#faf5ff",
+                  transition: "all .2s"
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                      background: form.udidCardPath || udidUpload.done ? "#dcfce7" : "#ede9fe",
+                      display: "flex", alignItems: "center", justifyContent: "center"
+                    }}>
+                      {form.udidCardPath || udidUpload.done
+                        ? <FileCheck size={22} color="#16a34a" />
+                        : <Upload size={22} color="#7c3aed" />
+                      }
+                    </div>
+                    <div style={{ flex: 1, minWidth: 200 }}>
+                      <p style={{ margin: "0 0 2px", fontWeight: 700, fontSize: 13.5, color: "#1e293b" }}>
+                        UDID Card / Disability Certificate
+                        <span style={{ fontSize: 9, color: "#94a3b8", marginLeft: 5, fontWeight: 400 }}>○ optional</span>
+                      </p>
+                      <p style={{ margin: 0, fontSize: 12, color: "#64748b" }}>JPEG, PNG or PDF — max 10 MB</p>
+                      {form.udidCardPath && !udidUpload.done && (
+                        <p style={{ margin: "4px 0 0", fontSize: 11.5, color: "#16a34a", fontWeight: 600 }}>✓ Already uploaded</p>
+                      )}
+                      {udidUpload.done && (
+                        <p style={{ margin: "4px 0 0", fontSize: 11.5, color: "#16a34a", fontWeight: 600 }}>✓ Uploaded successfully</p>
+                      )}
+                      {udidUpload.error && (
+                        <p style={{ margin: "4px 0 0", fontSize: 11.5, color: "#dc2626", fontWeight: 600 }}>✗ {udidUpload.error}</p>
+                      )}
+                    </div>
+                    <label style={{
+                      padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 700,
+                      background: udidUpload.uploading ? "#94a3b8" : "linear-gradient(135deg,#7c3aed,#6366f1)",
+                      color: "white", cursor: udidUpload.uploading ? "not-allowed" : "pointer",
+                      display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
+                      boxShadow: "0 2px 8px rgba(124,58,237,.3)"
+                    }}>
+                      {udidUpload.uploading
+                        ? <><div style={{ width: 14, height: 14, border: "2px solid white", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }} /> Uploading…</>
+                        : <><Upload size={14} /> {form.udidCardPath ? "Replace File" : "Choose File"}</>
+                      }
+                      <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf"
+                        style={{ display: "none" }} onChange={handleUdidUpload} disabled={udidUpload.uploading} />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── 5. Bank & DBT ── */}
         <SectionCard icon={CreditCard} title="Bank & DBT Information"

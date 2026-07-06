@@ -2,33 +2,44 @@ import React from "react";
 import {
   BarChart3, Bell, BookOpen, FileScan, FolderLock,
   Home, Languages, ListChecks, ShieldAlert, ShieldCheck,
-  UserRound, LogOut
+  UserRound, LogOut, ClipboardList
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import logo from "../assets/scholarsense-logo.jpeg";
+import { useTranslation } from "react-i18next";
 
-const navItems = [
-  { label: "Dashboard",         path: "/dashboard",         icon: Home,        group: "main" },
-  { label: "Profile",           path: "/profile",           icon: UserRound,   group: "main" },
-  { label: "Document Vault",    path: "/document-vault",    icon: FolderLock,  group: "tools" },
-  { label: "Health Check",      path: "/risk-analyzer",     icon: ShieldCheck, group: "tools" },
-  { label: "Scholarships",      path: "/scholarships",      icon: ListChecks,  group: "tools" },
-  { label: "Status Analyzer",   path: "/ocr-analyzer",      icon: FileScan,    group: "tools" },
-  { label: "Failure Diagnosis", path: "/failure-diagnosis", icon: ShieldAlert, group: "tools" },
-  { label: "Awareness Guide",   path: "/awareness",         icon: BookOpen,    group: "support" },
-  { label: "Notifications",     path: "/notifications",     icon: Bell,        group: "support" },
-  { label: "Analytics",         path: "/admin/dashboard",   icon: BarChart3,   group: "admin" },
+const LANGUAGES = [
+  { code: "en", label: "EN", full: "English" },
+  { code: "kn", label: "ಕನ್ನಡ", full: "ಕನ್ನಡ" },
+  { code: "hi", label: "हिं", full: "हिंदी" },
 ];
 
-const GROUP_LABELS = { main: "Main", tools: "Tools", support: "Support", admin: "Admin" };
+const navItems = [
+  { key: "dashboard",       path: "/dashboard",         icon: Home,          group: "main" },
+  { key: "profile",         path: "/profile",           icon: UserRound,     group: "main" },
+  { key: "documentVault",   path: "/document-vault",    icon: FolderLock,    group: "tools" },
+  { key: "healthCheck",     path: "/risk-analyzer",     icon: ShieldCheck,   group: "tools" },
+  { key: "scholarships",    path: "/scholarships",      icon: ListChecks,    group: "tools" },
+  { key: "statusAnalyzer",  path: "/ocr-analyzer",      icon: FileScan,      group: "tools" },
+  { key: "failureDiagnosis",path: "/failure-diagnosis", icon: ShieldAlert,   group: "tools" },
+  { key: "awarenessGuide",  path: "/awareness",         icon: BookOpen,      group: "support" },
+  { key: "notifications",   path: "/notifications",     icon: Bell,          group: "support" },
+  { key: "activityTrail",   path: "/audit-trail",       icon: ClipboardList, group: "support" },
+  { key: "analytics",       path: "/admin/dashboard",   icon: BarChart3,     group: "admin" },
+];
 
 export default function Sidebar() {
   const { user, logout } = useAuth();
+  const { t, i18n } = useTranslation();
+
+  function switchLang(code) {
+    i18n.changeLanguage(code);
+    localStorage.setItem("scholarsense_lang", code);
+  }
   const visible = navItems.filter(i => i.path !== "/admin/dashboard" || user?.role === "admin");
   const initials = (user?.name || "S").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 
-  // Group items
   const groups = visible.reduce((acc, item) => {
     if (!acc[item.group]) acc[item.group] = [];
     acc[item.group].push(item);
@@ -79,7 +90,7 @@ export default function Sidebar() {
               textTransform: "uppercase", color: "#94a3b8",
               padding: "8px 8px 4px", margin: 0
             }}>
-              {GROUP_LABELS[group]}
+              {t(`nav.groups.${group}`)}
             </p>
             {items.map(item => {
               const Icon = item.icon;
@@ -122,7 +133,7 @@ export default function Sidebar() {
                       }}>
                         <Icon size={15} />
                       </div>
-                      <span style={{ flex: 1, lineHeight: 1 }}>{item.label}</span>
+                      <span style={{ flex: 1, lineHeight: 1 }}>{t(`nav.${item.key}`)}</span>
                       {/* Active dot */}
                       {isActive && (
                         <div style={{
@@ -140,16 +151,26 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* ── Language chip ── */}
-      <div style={{
-        margin: "0 12px 10px", padding: "9px 12px",
-        background: "linear-gradient(135deg,#f0fdfa,#eff6ff)",
-        border: "1px solid #ccfbf1", borderRadius: 10,
-        display: "flex", alignItems: "center", gap: 8,
-        fontSize: 11.5, fontWeight: 700, color: "#0d9488", flexShrink: 0
-      }}>
-        <Languages size={13} color="#0d9488" />
-        <span>English / ಕನ್ನಡ / हिंदी</span>
+      {/* ── Language switcher ── */}
+      <div style={{ margin: "0 12px 10px", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
+          <Languages size={11} color="#0d9488" />
+          <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: "#0d9488" }}>Language</span>
+        </div>
+        <div style={{ display: "flex", gap: 5 }}>
+          {LANGUAGES.map(({ code, label, full }) => (
+            <button key={code} onClick={() => switchLang(code)} title={full}
+              style={{
+                flex: 1, padding: "6px 4px", borderRadius: 8, border: "1.5px solid",
+                fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all .15s",
+                borderColor: i18n.language === code ? "#0d9488" : "#e2e8f0",
+                background: i18n.language === code ? "linear-gradient(135deg,#f0fdfa,#ccfbf1)" : "white",
+                color: i18n.language === code ? "#0d9488" : "#64748b",
+              }}>
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Divider */}
@@ -181,7 +202,7 @@ export default function Sidebar() {
             {user?.role || "student"}
           </div>
         </div>
-        <button onClick={logout} title="Logout"
+        <button onClick={logout} title={t("common.logout")}
           style={{
             width: 28, height: 28, borderRadius: 8, border: "1px solid #e2e8f0",
             background: "white", cursor: "pointer",

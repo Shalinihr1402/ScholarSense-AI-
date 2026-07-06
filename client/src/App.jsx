@@ -15,6 +15,7 @@ import Notifications from "./pages/Notifications.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import DocumentVault from "./pages/DocumentVault.jsx";
 import RiskAnalyzer from "./pages/RiskAnalyzer.jsx";
+import AuditTrail from "./pages/AuditTrail.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/document-vault" element={<DocumentVault />} />
         <Route path="/risk-analyzer" element={<RiskAnalyzer />} />
+        <Route path="/audit-trail" element={<AuditTrail />} />
         </Route>
       </Route>
       <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
