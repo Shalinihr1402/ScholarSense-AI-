@@ -1,6 +1,4 @@
-# ScholarSense AI
-
-An OCR-driven Scholarship Intelligence and Decision Support System that helps students assess scholarship readiness, understand their application status, diagnose failures, and receive personalized guidance — all in one place.
+An OCR-driven Scholarship Intelligence and Decision Support System that empowers eligible Indian students to assess application readiness, interpret multi-portal status codes, diagnose submission failures, and receive personalised AI-guided recommendations — eliminating the five avoidable failure modes that cause scholarship loss every year.
 
 ---
 
