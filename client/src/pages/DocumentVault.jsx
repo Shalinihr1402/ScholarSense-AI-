@@ -10,6 +10,9 @@ const DOC_TYPES = [
   "Marksheet",
   "Bonafide Certificate",
   "Fee Receipt",
+  "UDID Card",
+  "Disability Certificate",
+  "Domicile Certificate",
   "Other"
 ];
 
