@@ -317,11 +317,11 @@ export const seedScholarships = [
     requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Income Certificate", "Religion/Minority Certificate", "12th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Admission Letter"],
     description: "For minority students in technical/professional courses (Engineering, Medicine, MBA, MCA) at NAAC A-graded or NIRF-ranked institutions. Income below ₹2.5 lakh."
   },
-  // ── SSP Karnataka (Official 2021-22 Criteria) ──────────────────────────────────
+  // ── SSP Karnataka 2026-27 (Official Criteria + Confirmed Deadlines) ────────────
 
-  // 1. Department of Social Welfare — SC Fee Reimbursement
+  // 1. Social Welfare — SC Post-Matric (deadline: 31 Jan 2027)
   {
-    name: "SSP Fee Reimbursement for SC Students – Karnataka (Social Welfare)",
+    name: "SSP Post-Matric Scholarship for SC Students – Karnataka (Social Welfare)",
     provider: "Karnataka State Scholarship Portal (SSP)",
     ministry: "Department of Social Welfare, Karnataka",
     state: "Karnataka",
@@ -334,20 +334,20 @@ export const seedScholarships = [
     disabilityRequired: false,
     parentProfession: "",
     amount: "Full Tuition + Maintenance Allowance",
-    amountDetails: "Full tuition reimbursement + Maintenance: ₹5,900–18,000/yr + Books/Stationery: ₹2,000",
-    openDate: "2026-07-15",
-    deadline: "2026-11-30",
-    lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    amountDetails: "Group I: ₹7,000 (Day Scholar) / ₹13,500 (Hosteller) | Group II: ₹6,500 / ₹9,500 | Group III: ₹3,000 / ₹6,000 | Group IV: ₹2,500 / ₹4,000. Full tuition reimbursed. DBT credit Feb–Jul 2027.",
+    openDate: "2026-06-01",
+    deadline: "2027-01-31",
+    lastDateInstitute: "2027-02-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (SC) – from Karnataka Tahsildar", "Income Certificate – from Tahsildar", "10th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP Fee Reimbursement for SC students under Social Welfare Dept. Annual family income below ₹2.5 lakh. Any post-matric course. Full tuition + hostel/dayscholar maintenance."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (SC) – from Karnataka Tahsildar", "Income Certificate – from Tahsildar", "SSLC Register Number", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 Post-Matric for SC students (Social Welfare). Income ≤₹2.5 lakh: full tuition + maintenance. Income ₹2.5L–₹10L: 50% fee waiver for Engg/Medical. Helpline: 94823004000. Deadline: 31 Jan 2027."
   },
 
-  // 2. Department of Tribal Welfare — ST Fee Reimbursement
+  // 2. Tribal Welfare — ST Post-Matric (deadline: 31 Aug 2026)
   {
-    name: "SSP Fee Reimbursement for ST Students – Karnataka (Tribal Welfare)",
+    name: "SSP Post-Matric Scholarship for ST Students – Karnataka (Tribal Welfare)",
     provider: "Karnataka State Scholarship Portal (SSP)",
     ministry: "Department of Tribal Welfare, Karnataka",
     state: "Karnataka",
@@ -360,18 +360,18 @@ export const seedScholarships = [
     disabilityRequired: false,
     parentProfession: "",
     amount: "Full Tuition + Maintenance Allowance",
-    amountDetails: "Full tuition reimbursement + Maintenance: ₹5,900–18,000/yr + Books/Stationery: ₹2,000",
-    openDate: "2026-07-15",
-    deadline: "2026-11-30",
-    lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    amountDetails: "ST Pre-Matric Classes 1–5: Boys ₹1,000 / Girls ₹1,100 | Classes 9–10: ₹3,000. Post-Matric: Full tuition + maintenance. Income ₹2.5L–₹10L: 50% fee waiver (Engg/Medical). DBT credit Feb–Jul 2027.",
+    openDate: "2026-06-01",
+    deadline: "2026-08-31",
+    lastDateInstitute: "2026-09-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (ST) – from Karnataka Tahsildar", "Income Certificate – from Tahsildar", "10th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP Fee Reimbursement for ST students under Tribal Welfare Dept. Annual family income below ₹2.5 lakh. Any post-matric course. Full tuition + hostel/dayscholar maintenance."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (ST) – from Karnataka Tahsildar", "Income Certificate – from Tahsildar", "SSLC Register Number", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 Post-Matric for ST students (Tribal Welfare). Income ≤₹2.5L: full tuition + maintenance. Income ₹2.5L–₹10L: 50% fee waiver for Engg/Medical. Helpline: 94823004000. Deadline: 31 Aug 2026."
   },
 
-  // 3. Backward Classes — Category-1 Fee Reimbursement (income < 2.5L)
+  // 3. Backward Classes — Category-1 Fee Reimbursement (deadline: 31 Aug 2026)
   {
     name: "SSP Fee Reimbursement for Category-1 OBC Students – Karnataka",
     provider: "Karnataka State Scholarship Portal (SSP)",
@@ -385,21 +385,21 @@ export const seedScholarships = [
     gender: "Any",
     disabilityRequired: false,
     parentProfession: "",
-    amount: "Full Tuition + Maintenance",
-    amountDetails: "Full tuition reimbursement + Maintenance allowance for Category-1 students",
-    openDate: "2026-07-15",
-    deadline: "2026-11-30",
-    lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    amount: "Full Tuition + Maintenance (Fee Concession)",
+    amountDetails: "Fee Concession: Full tuition in Govt/recognised institutions. Post-Matric BC: Group 1 ₹20,000 (₹10,000 educational + ₹10,000 tuition) | Group 2 ₹13,000 (₹8,000 + ₹5,000). DBT Feb–Jul 2027.",
+    openDate: "2026-06-01",
+    deadline: "2026-08-31",
+    lastDateInstitute: "2026-09-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "OBC Category-1 Certificate (Karnataka) – from Tahsildar", "Income Certificate – below ₹2.5 lakh", "10th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP Fee Reimbursement for OBC Category-1 students (Backward Classes Welfare Dept). Annual family income below ₹2.5 lakh. Any post-matric course."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "OBC Category-1 Certificate (Karnataka) – from Tahsildar", "Income Certificate – below ₹2.5 lakh", "SSLC Register Number", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 for OBC Category-1 (Backward Classes Welfare). Income ≤₹2.5 lakh. Deadline: 31 Aug 2026. Fee Concession + Postmatric scholarship. Helpline: 8050770004 / 80-50770005."
   },
 
-  // 4. Backward Classes — OBC 2A/3A/2B/3B (income < 1L)
+  // 4. Backward Classes — OBC 2A/3A/2B/3B Vidyasiri (deadline: 31 Aug 2026)
   {
-    name: "SSP Postmatric Scholarship for OBC (2A/3A/2B/3B) Students – Karnataka",
+    name: "SSP Vidyasiri / Postmatric Scholarship for OBC (2A/3A/2B/3B) – Karnataka",
     provider: "Karnataka State Scholarship Portal (SSP)",
     ministry: "Department of Backward Classes Welfare, Karnataka",
     state: "Karnataka",
@@ -411,26 +411,26 @@ export const seedScholarships = [
     gender: "Any",
     disabilityRequired: false,
     parentProfession: "",
-    amount: "₹4,200–10,500/year",
-    amountDetails: "Day Scholar: ₹4,200–5,000/yr | Hosteller: ₹7,500–10,500/yr | Tuition up to ₹10,000",
-    openDate: "2026-07-15",
-    deadline: "2026-11-30",
-    lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    amount: "₹1,500/month × 10 months (Vidyasiri) + Fee Concession",
+    amountDetails: "Vidyasiri: ₹1,500/month for food & accommodation (10 months = ₹15,000/yr). Post-Matric BC: Group 1 ₹20,000 | Group 2 ₹13,000. Income ≤₹1L for 2A/3A/3B. DBT Feb–Jul 2027.",
+    openDate: "2026-06-01",
+    deadline: "2026-08-31",
+    lastDateInstitute: "2026-09-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "OBC Certificate (2A/3A/2B/3B) – Non-Creamy Layer from Tahsildar", "Income Certificate – below ₹1 lakh", "10th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP for OBC sub-categories 2A, 3A, 2B, 3B (Other Backward Classes). Annual income below ₹1 lakh. Vidhyasiri/Postmatric maintenance support."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "OBC Certificate (2A/3A/2B/3B) – Non-Creamy Layer from Tahsildar", "Income Certificate – below ₹1 lakh", "SSLC Register Number", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 Vidyasiri/Postmatric for OBC 2A/3A/2B/3B. Income ≤₹1 lakh. ₹1,500/month food & accommodation stipend. Deadline: 31 Aug 2026. Helpline: 8050770004."
   },
 
-  // 5. Minority Welfare — Fee Reimbursement
+  // 5. Minority Welfare Post-Matric (deadline: 30 Sep 2026)
   {
-    name: "SSP Fee Reimbursement for Minority Students – Karnataka",
+    name: "SSP Post-Matric Scholarship for Minority Students – Karnataka",
     provider: "Karnataka State Scholarship Portal (SSP)",
     ministry: "Department of Minority Welfare, Karnataka",
     state: "Karnataka",
     categories: ["Minority"],
-    religion: ["Muslim", "Christian", "Jain", "Sikh", "Parsi", "Buddhist"],
+    religion: ["Muslim", "Christian", "Jain", "Sikh", "Parsi", "Buddhist", "Zoroastrian"],
     incomeLimit: 250000,
     incomeLimitMin: 0,
     minMarks: 0,
@@ -439,18 +439,18 @@ export const seedScholarships = [
     disabilityRequired: false,
     parentProfession: "",
     amount: "Full Tuition + Maintenance",
-    amountDetails: "Full tuition reimbursement + maintenance allowance. NSP ID compulsory for application.",
-    openDate: "2026-07-15",
-    deadline: "2026-11-30",
-    lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    amountDetails: "Post-Matric: Full tuition + maintenance. Pre-Matric income limit ₹1 lakh. NSP ID compulsory. DBT Feb–Jul 2027.",
+    openDate: "2026-06-01",
+    deadline: "2026-09-30",
+    lastDateInstitute: "2026-10-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Minority Religion Certificate (Muslim/Christian/Jain/Sikh/Parsi/Buddhist)", "Income Certificate – below ₹2.5 lakh", "NSP Registration ID", "10th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP for Minority students (Muslim, Christian, Jain, Sikh, Parsi, Buddhist). Income below ₹2.5 lakh. NSP ID compulsory. Full tuition + maintenance. Apply on both NSP and SSP portals."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Minority Religion Certificate (Muslim/Christian/Jain/Sikh/Parsi/Buddhist/Zoroastrian)", "Income Certificate – below ₹2.5 lakh", "NSP Registration ID", "SSLC Register Number", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 Post-Matric for Minority students (Muslim/Christian/Jain/Sikh/Parsi/Buddhist/Zoroastrian). Income ≤₹2.5 lakh. NSP ID compulsory. Deadline: 30 Sep 2026. Helpline: 8277799990."
   },
 
-  // 6. Dept of Technical Education — SC/ST (income 2.5L–10L, KEA-CET)
+  // 6. Technical Education SC/ST (Post-Matric deadline: 30 Nov 2025 — check 2026-27 TBA)
   {
     name: "SSP Fee Reimbursement for SC/ST Technical Students – Karnataka (DOTE)",
     provider: "Karnataka State Scholarship Portal (SSP)",
@@ -465,18 +465,18 @@ export const seedScholarships = [
     disabilityRequired: false,
     parentProfession: "",
     amount: "Full Tuition Reimbursement",
-    amountDetails: "Full tuition fee reimbursement for BE/B.Tech/B.Arch/Diploma via KEA-CET admissions",
-    openDate: "2026-07-15",
+    amountDetails: "Full tuition for BE/B.Tech/B.Arch/Diploma (KEA-CET). Income ₹2.5L–₹10L. 2026-27 deadline TBA — check ssp.karnataka.gov.in. DBT Feb–Jul 2027.",
+    openDate: "2026-06-01",
     deadline: "2026-11-30",
     lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (SC/ST) – from Tahsildar", "Income Certificate – ₹2.5 lakh to ₹10 lakh", "KEA-CET Allotment Letter", "10th Marksheet", "12th Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP (DOTE) for SC/ST students in BE/B.Tech/B.Arch or Diploma admitted via KEA-CET. Family income must be between ₹2.5 lakh and ₹10 lakh (not below ₹2.5L — those are covered by Social/Tribal Welfare)."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (SC/ST) – from Tahsildar", "Income Certificate – ₹2.5 lakh to ₹10 lakh", "KEA-CET Allotment Letter", "SSLC Register Number", "12th Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 (DOTE) for SC/ST in BE/B.Tech/B.Arch/Diploma via KEA-CET. Income must be between ₹2.5L–₹10L. Below ₹2.5L → apply under Social/Tribal Welfare instead."
   },
 
-  // 7. Dept of Technical Education — Defence Personnel children
+  // 7. Technical Education — Defence children (2026-27 deadline TBA)
   {
     name: "SSP Fee Reimbursement for Children of Defence Personnel – Karnataka (DOTE)",
     provider: "Karnataka State Scholarship Portal (SSP)",
@@ -491,18 +491,18 @@ export const seedScholarships = [
     disabilityRequired: false,
     parentProfession: "Defence",
     amount: "Full Tuition Reimbursement",
-    amountDetails: "Full tuition for BE/B.Tech/B.Arch/Diploma (KEA-CET). No income restriction for defence children.",
-    openDate: "2026-07-15",
+    amountDetails: "Full tuition for BE/B.Tech/B.Arch/Diploma (KEA-CET). No income/caste restriction for defence children. DBT Feb–Jul 2027.",
+    openDate: "2026-06-01",
     deadline: "2026-11-30",
     lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Parent Defence Service Certificate (NCO/JCO rank)", "KEA-CET Allotment Letter", "10th Marksheet", "12th Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP (DOTE) for children of Indian Army/Navy/Air Force personnel (NCO/JCO rank and below). No caste or income restriction. Must be admitted via KEA-CET to BE/B.Tech/B.Arch or Diploma."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Parent Defence Service Certificate (NCO/JCO rank – Army/Navy/Air Force)", "KEA-CET Allotment Letter", "SSLC Register Number", "12th Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 (DOTE) for children of Army/Navy/Air Force (NCO/JCO rank). No caste/income restriction. KEA-CET admission required. Check ssp.karnataka.gov.in for 2026-27 deadline."
   },
 
-  // 8. Dept of Medical Education — SC/ST (income 2.5L–10L)
+  // 8. Medical Education SC/ST (2026-27 deadline TBA)
   {
     name: "SSP Fee Reimbursement for SC/ST Medical Students – Karnataka",
     provider: "Karnataka State Scholarship Portal (SSP)",
@@ -517,18 +517,18 @@ export const seedScholarships = [
     disabilityRequired: false,
     parentProfession: "",
     amount: "Full Tuition Reimbursement",
-    amountDetails: "Full tuition reimbursement for MBBS/BDS and other medical courses",
-    openDate: "2026-07-15",
+    amountDetails: "Full tuition for MBBS/BDS. Income ₹2.5L–₹10L. 2026-27 deadline TBA — check ssp.karnataka.gov.in. DBT Feb–Jul 2027.",
+    openDate: "2026-06-01",
     deadline: "2026-11-30",
     lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (SC/ST) – from Tahsildar", "Income Certificate – ₹2.5 lakh to ₹10 lakh", "MBBS/BDS Admission Proof", "10th Marksheet", "12th Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP (Medical Education Dept) for SC/ST students in MBBS, BDS, and allied medical courses. Family income must be between ₹2.5 lakh and ₹10 lakh."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (SC/ST) – from Tahsildar", "Income Certificate – ₹2.5 lakh to ₹10 lakh", "MBBS/BDS Admission Proof", "SSLC Register Number", "12th Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 (Medical Education) for SC/ST in MBBS/BDS. Income ₹2.5L–₹10L. Check ssp.karnataka.gov.in — exact 2026-27 deadline TBA."
   },
 
-  // 9. AYUSH Department — SC/ST (income 2.5L–10L)
+  // 9. AYUSH SC/ST (2026-27 deadline TBA)
   {
     name: "SSP Fee Reimbursement for SC/ST AYUSH Students – Karnataka",
     provider: "Karnataka State Scholarship Portal (SSP)",
@@ -543,18 +543,18 @@ export const seedScholarships = [
     disabilityRequired: false,
     parentProfession: "",
     amount: "Full Tuition Reimbursement",
-    amountDetails: "Full tuition reimbursement for AYUSH (Ayurveda, Yoga, Unani, Siddha, Homeopathy) courses",
-    openDate: "2026-07-15",
-    deadline: "2026-11-30",
-    lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    amountDetails: "Full tuition for Ayurveda/Yoga/Unani/Siddha/Homeopathy. Income ₹2.5L–₹10L. 2026-27 deadline TBA. DBT credit mid-2027.",
+    openDate: "2026-06-01",
+    deadline: "2027-02-28",
+    lastDateInstitute: "2027-03-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (SC/ST) – from Tahsildar", "Income Certificate – ₹2.5 lakh to ₹10 lakh", "AYUSH Course Admission Proof", "10th Marksheet", "12th Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP (AYUSH Dept) for SC/ST students in Ayurveda, Yoga, Unani, Siddha, Homeopathy courses. Family income between ₹2.5 lakh and ₹10 lakh."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (SC/ST) – from Tahsildar", "Income Certificate – ₹2.5 lakh to ₹10 lakh", "AYUSH Course Admission Proof", "SSLC Register Number", "12th Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 (AYUSH) for SC/ST in Ayurveda/Yoga/Unani/Siddha/Homeopathy. Income ₹2.5L–₹10L. AYUSH typically has latest deadline — check ssp.karnataka.gov.in."
   },
 
-  // 10. Collegiate Education — SC/ST MBA/MCA (income 2.5L–10L)
+  // 10. Collegiate Education SC/ST MBA/MCA (2026-27 deadline TBA)
   {
     name: "SSP Fee Reimbursement for SC/ST MBA/MCA Students – Karnataka (Collegiate)",
     provider: "Karnataka State Scholarship Portal (SSP)",
@@ -569,18 +569,18 @@ export const seedScholarships = [
     disabilityRequired: false,
     parentProfession: "",
     amount: "Full Tuition Reimbursement",
-    amountDetails: "Full tuition reimbursement for MBA and MCA programmes",
-    openDate: "2026-07-15",
+    amountDetails: "Full tuition for MBA/MCA programmes. Income ₹2.5L–₹10L. 2026-27 deadline TBA. DBT Feb–Jul 2027.",
+    openDate: "2026-06-01",
     deadline: "2026-11-30",
     lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
     requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Caste Certificate (SC/ST) – from Tahsildar", "Income Certificate – ₹2.5 lakh to ₹10 lakh", "MBA/MCA Admission Proof", "Graduation Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP (Collegiate Education Dept) for SC/ST students in MBA and MCA programmes. Family income must be between ₹2.5 lakh and ₹10 lakh."
+    description: "Karnataka SSP 2026-27 (Collegiate) for SC/ST in MBA/MCA. Income ₹2.5L–₹10L. Check ssp.karnataka.gov.in — 2026-27 deadline TBA."
   },
 
-  // 11. Karnataka Brahmin Development Board — Brahmin/EWS (income < 8L)
+  // 11. Karnataka Brahmin Development Board (2026-27 deadline TBA)
   {
     name: "SSP Fee Reimbursement – Karnataka Brahmin Development Board",
     provider: "Karnataka State Scholarship Portal (SSP)",
@@ -595,22 +595,22 @@ export const seedScholarships = [
     disabilityRequired: false,
     parentProfession: "",
     amount: "Fee Reimbursement + Maintenance",
-    amountDetails: "Tuition fee reimbursement + maintenance allowance for Brahmin (EWS) students",
-    openDate: "2026-07-15",
+    amountDetails: "Tuition fee reimbursement + maintenance for Brahmin (EWS) students. Income below ₹8 lakh. DBT Feb–Jul 2027.",
+    openDate: "2026-06-01",
     deadline: "2026-11-30",
     lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Brahmin Community Certificate – from Brahmin Sangha/Tahsildar", "Income Certificate – below ₹8 lakh", "10th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP for Brahmin (EWS) students via Karnataka Brahmin Development Board. Annual income below ₹8 lakh. No restriction on course type or level. Apply at ssp.karnataka.gov.in."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Brahmin Community Certificate – from Brahmin Sangha/Tahsildar", "Income Certificate – below ₹8 lakh", "SSLC Register Number", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 (Brahmin Board) for Brahmin/EWS students. Income below ₹8 lakh. Any course. 2026-27 deadline TBA — check ssp.karnataka.gov.in."
   },
 
-  // 12. Disability Welfare — Specially Abled (no caste/income restriction, UDID required)
+  // 12. Disability Welfare (Pre-Matric deadline: 30 Jun 2026; Post-Matric TBA)
   {
-    name: "SSP Fee Reimbursement for Specially Abled Students – Karnataka (Disability Welfare)",
+    name: "SSP Scholarship for Specially Abled Students – Karnataka (Disability Welfare)",
     provider: "Karnataka State Scholarship Portal (SSP)",
-    ministry: "Department of Disability Welfare, Karnataka",
+    ministry: "Department for the Empowerment of Differently Abled and Senior Citizen, Karnataka",
     state: "Karnataka",
     categories: ["General", "SC", "ST", "OBC", "EWS"],
     incomeLimit: 0,
@@ -621,44 +621,44 @@ export const seedScholarships = [
     disabilityRequired: true,
     parentProfession: "",
     amount: "Full Tuition + Maintenance",
-    amountDetails: "Full tuition reimbursement + maintenance for students not covered by other departments",
-    openDate: "2026-07-15",
-    deadline: "2026-11-30",
-    lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    amountDetails: "Full tuition reimbursement + maintenance. UDID card required. No income/caste restriction. DBT Feb–Jul 2027.",
+    openDate: "2026-04-01",
+    deadline: "2026-06-30",
+    lastDateInstitute: "2026-07-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/ssppre/",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "UDID Card (Unique Disability ID)", "Disability Certificate – from Government Hospital (≥40%)", "10th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP for specially abled students not eligible under other department scholarships. No caste or income restriction. Must have UDID card. Any course eligible."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "UDID Card (Unique Disability ID)", "Disability Certificate – from Government Hospital (≥40%)", "SSLC Register Number", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 (Disability Welfare) for specially abled students. No caste/income restriction. UDID card required. Pre-Matric deadline: 30 Jun 2026. Post-Matric TBA."
   },
 
-  // 13. Labour Welfare — Children of Construction Workers
+  // 13. Labour — Construction Workers' children (Pre-Matric deadline: 30 Jun 2026)
   {
-    name: "SSP Fee Reimbursement for Children of Construction Workers – Karnataka (Labour)",
+    name: "SSP Scholarship for Children of Construction Workers – Karnataka (KBOCW)",
     provider: "Karnataka State Scholarship Portal (SSP)",
-    ministry: "Department of Labour, Karnataka",
+    ministry: "Karnataka Building and Other Construction Workers Welfare Board",
     state: "Karnataka",
     categories: ["General", "SC", "ST", "OBC", "EWS"],
     incomeLimit: 0,
     incomeLimitMin: 0,
     minMarks: 0,
-    courseLevels: ["Post-Matric", "UG", "PG", "Diploma", "ITI"],
+    courseLevels: ["Pre-Matric", "Post-Matric", "UG", "PG", "Diploma", "ITI"],
     gender: "Any",
     disabilityRequired: false,
     parentProfession: "Construction Worker",
     amount: "Full Tuition + Maintenance",
-    amountDetails: "Full tuition reimbursement + maintenance allowance",
-    openDate: "2026-07-15",
-    deadline: "2026-11-30",
-    lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    amountDetails: "Full tuition + maintenance. Parent's BOCW labour card required. Pre-Matric deadline: 30 Jun 2026. DBT Feb–Jul 2027.",
+    openDate: "2026-04-01",
+    deadline: "2026-06-30",
+    lastDateInstitute: "2026-07-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/ssppre/",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Parent's Labour/Construction Worker ID Card (BOCW Board Karnataka)", "10th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP for children of registered construction workers (Building & Other Construction Workers). No caste or income restriction. Parent must have BOCW Labour Card."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Parent's BOCW Labour Card (Karnataka Building & Other Construction Workers)", "SSLC Register Number", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 (KBOCW) for children of registered construction workers. No caste/income restriction. Parent must have BOCW Labour Card. Pre-Matric deadline: 30 Jun 2026."
   },
 
-  // 14. Agriculture — Children of Farmers (CM Raitha Vidyanidhi, FRUITS ID)
+  // 14. Agriculture — CM Raitha Vidyanidhi (2026-27 deadline TBA)
   {
     name: "SSP CM Raitha Vidyanidhi – Children of Farmers – Karnataka (Agriculture)",
     provider: "Karnataka State Scholarship Portal (SSP)",
@@ -668,19 +668,152 @@ export const seedScholarships = [
     incomeLimit: 0,
     incomeLimitMin: 0,
     minMarks: 0,
-    courseLevels: ["Post-Matric", "UG", "PG", "Diploma", "ITI"],
+    courseLevels: ["Pre-Matric", "Post-Matric", "UG", "PG", "Diploma", "ITI"],
     gender: "Any",
     disabilityRequired: false,
     parentProfession: "Farmer",
     amount: "Full Tuition + Maintenance",
-    amountDetails: "Full tuition reimbursement + maintenance allowance for children from farming families",
-    openDate: "2026-07-15",
+    amountDetails: "Full tuition + maintenance for children of farmers. Parent's FRUITS ID required. DBT Feb–Jul 2027.",
+    openDate: "2026-04-01",
     deadline: "2026-11-30",
     lastDateInstitute: "2026-12-15",
-    applicationLink: "https://ssp.karnataka.gov.in",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/ssppre/",
     sourceUrl: "https://ssp.karnataka.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Parent's FRUITS ID (Farmer Registration in Karnataka)", "Land Records / RTC (ownership proof)", "10th Marksheet", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
-    description: "Karnataka SSP CM Raitha Vidyanidhi for children of farmer families. Parent must own agriculture land registered with FRUITS ID (Karnataka Farmer Database). No caste or income restriction."
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Parent's FRUITS ID (Karnataka Farmer Database)", "Land Records / RTC (ownership proof)", "SSLC Register Number", "Previous Year Marksheet", "Bonafide Certificate", "Fee Receipt", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 CM Raitha Vidyanidhi for children of farmer families. Parent must own agriculture land with FRUITS ID. No caste/income restriction. 2026-27 deadline TBA — check ssp.karnataka.gov.in."
+  },
+
+  // ── SSP Karnataka Pre-Matric Scholarships 2026-27 ────────────────────────────
+
+  // P1. SC Pre-Matric (Social Welfare) — deadline 30 Jun 2026
+  {
+    name: "SSP Pre-Matric Scholarship for SC Students – Karnataka (Social Welfare)",
+    provider: "Karnataka State Scholarship Portal (SSP)",
+    ministry: "Department of Social Welfare, Karnataka",
+    state: "Karnataka",
+    categories: ["SC"],
+    incomeLimit: 600000,
+    incomeLimitMin: 0,
+    minMarks: 0,
+    courseLevels: ["Pre-Matric"],
+    gender: "Any",
+    disabilityRequired: false,
+    parentProfession: "",
+    amount: "₹1,000–₹7,000/year",
+    amountDetails: "Classes 1–5: Boys ₹1,000 / Girls ₹1,100 | Classes 6–7: Boys ₹1,150 / Girls ₹1,250 | Classes 9–10: Day Scholar ₹3,500 / Hosteller ₹7,000. Classes 1–8: income ≤₹6L. Classes 9–10: income ≤₹2.5L.",
+    openDate: "2026-04-01",
+    deadline: "2026-06-30",
+    lastDateInstitute: "2026-07-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/ssppre/",
+    sourceUrl: "https://ssp.karnataka.gov.in",
+    status: "Active",
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "SATS ID (Student Achievement Tracking System)", "Caste Certificate (SC) – from Tahsildar", "Income Certificate", "School Enrollment Proof", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 Pre-Matric for SC students. Classes 1–8 income ≤₹6 lakh, Classes 9–10 income ≤₹2.5 lakh. Amounts: Classes 1–5 ₹1,000/₹1,100, Classes 9–10 ₹3,500/₹7,000. Deadline: 30 Jun 2026. Helpline: 94823004000. New account: ssp.postmatric.karnataka.gov.in/CA/"
+  },
+
+  // P2. SC Pre-Matric – Children of Unhygienic Occupation Parents (Social Welfare)
+  {
+    name: "SSP Pre-Matric Scholarship for Children of Unhygienic Occupation Parents – Karnataka",
+    provider: "Karnataka State Scholarship Portal (SSP)",
+    ministry: "Department of Social Welfare, Karnataka",
+    state: "Karnataka",
+    categories: ["SC", "General"],
+    incomeLimit: 0,
+    incomeLimitMin: 0,
+    minMarks: 0,
+    courseLevels: ["Pre-Matric"],
+    gender: "Any",
+    disabilityRequired: false,
+    parentProfession: "",
+    amount: "Scholarship + Stipend",
+    amountDetails: "No income limit. For children of sanitation workers, tannery workers, manual scavengers, and similar occupations. Central scheme via NSP + SSP.",
+    openDate: "2026-04-01",
+    deadline: "2026-06-30",
+    lastDateInstitute: "2026-07-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/ssppre/",
+    sourceUrl: "https://ssp.karnataka.gov.in",
+    status: "Active",
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "SATS ID", "Parent's Occupation Certificate (from local body / gram panchayat)", "School Enrollment Proof", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 Pre-Matric for children of parents in unhygienic occupations (scavenging, tannery, manual cleaning). Classes 1–10. NO income limit. Apply at ssp.karnataka.gov.in. Deadline: 30 Jun 2026."
+  },
+
+  // P3. ST Pre-Matric (Tribal Welfare) — deadline 30 Jun 2026
+  {
+    name: "SSP Pre-Matric Scholarship for ST Students – Karnataka (Tribal Welfare)",
+    provider: "Karnataka State Scholarship Portal (SSP)",
+    ministry: "Department of Tribal Welfare, Karnataka",
+    state: "Karnataka",
+    categories: ["ST"],
+    incomeLimit: 600000,
+    incomeLimitMin: 0,
+    minMarks: 0,
+    courseLevels: ["Pre-Matric"],
+    gender: "Any",
+    disabilityRequired: false,
+    parentProfession: "",
+    amount: "₹1,000–₹3,000/year",
+    amountDetails: "Classes 1–5: Boys ₹1,000 / Girls ₹1,100 | Classes 9–10: ₹3,000. Classes 1–8 income ≤₹6L. Classes 9–10 income ≤₹2.5L (Central-funded).",
+    openDate: "2026-04-01",
+    deadline: "2026-06-30",
+    lastDateInstitute: "2026-07-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/ssppre/",
+    sourceUrl: "https://ssp.karnataka.gov.in",
+    status: "Active",
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "SATS ID", "Caste Certificate (ST) – from Tahsildar", "Income Certificate", "School Enrollment Proof", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 Pre-Matric for ST students. Classes 1–8 income ≤₹6 lakh, Classes 9–10 income ≤₹2.5 lakh. Amounts: Classes 1–5 ₹1,000/₹1,100, Classes 9–10 ₹3,000. Deadline: 30 Jun 2026. Helpline: 94823004000."
+  },
+
+  // P4. OBC Pre-Matric (Backward Classes) — deadline 30 Jun 2026
+  {
+    name: "SSP Pre-Matric Scholarship for OBC Students (Classes 9–10) – Karnataka",
+    provider: "Karnataka State Scholarship Portal (SSP)",
+    ministry: "Department of Backward Classes Welfare, Karnataka",
+    state: "Karnataka",
+    categories: ["OBC"],
+    incomeLimit: 250000,
+    incomeLimitMin: 0,
+    minMarks: 0,
+    courseLevels: ["Pre-Matric"],
+    gender: "Any",
+    disabilityRequired: false,
+    parentProfession: "",
+    amount: "₹4,000/year",
+    amountDetails: "₹4,000 per annum for Classes 9 and 10 in government schools. Must secure A+/A/B+/B grade. Income ≤₹2.5 lakh. Deadline: 30 Jun 2026.",
+    openDate: "2026-04-01",
+    deadline: "2026-06-30",
+    lastDateInstitute: "2026-07-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/ssppre/",
+    sourceUrl: "https://ssp.karnataka.gov.in",
+    status: "Active",
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "SATS ID", "OBC Certificate (Karnataka)", "Income Certificate – below ₹2.5 lakh", "Grade Card / Marksheet (must show A+/A/B+/B)", "School Enrollment Proof", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 Pre-Matric for OBC students (Classes 9–10) in government schools. Income ≤₹2.5 lakh. Must have A+/A/B+/B grade. Amount: ₹4,000/year. Deadline: 30 Jun 2026. Helpline: 8050770004."
+  },
+
+  // P5. Minority Pre-Matric — deadline 30 Sep 2026
+  {
+    name: "SSP Pre-Matric Scholarship for Minority Students – Karnataka",
+    provider: "Karnataka State Scholarship Portal (SSP)",
+    ministry: "Department of Minority Welfare, Karnataka",
+    state: "Karnataka",
+    categories: ["Minority"],
+    religion: ["Muslim", "Christian", "Jain", "Sikh", "Parsi", "Buddhist", "Zoroastrian"],
+    incomeLimit: 100000,
+    incomeLimitMin: 0,
+    minMarks: 0,
+    courseLevels: ["Pre-Matric"],
+    gender: "Any",
+    disabilityRequired: false,
+    parentProfession: "",
+    amount: "Scholarship + Maintenance",
+    amountDetails: "Pre-Matric for Classes 1–10. Income ≤₹1 lakh. Minority communities: Muslim, Sikh, Christian, Buddhist, Jain, Zoroastrian. Deadline: 30 Sep 2026.",
+    openDate: "2026-04-01",
+    deadline: "2026-09-30",
+    lastDateInstitute: "2026-10-15",
+    applicationLink: "https://ssp.postmatric.karnataka.gov.in/ssppre/",
+    sourceUrl: "https://ssp.karnataka.gov.in",
+    status: "Active",
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "SATS ID", "Minority Religion Certificate", "Income Certificate – below ₹1 lakh", "School Enrollment Proof", "Domicile Certificate (Karnataka)"],
+    description: "Karnataka SSP 2026-27 Pre-Matric for Minority students (Muslim/Sikh/Christian/Buddhist/Jain/Zoroastrian). Income ≤₹1 lakh. Deadline: 30 Sep 2026. Helpline: 8277799990."
   }
 ];

@@ -42,7 +42,8 @@ PERSONAL:
 - Gender: ${val(profile.gender)}
 - State: ${val(profile.state)}, District: ${val(profile.district)}
 - Mobile: ${val(profile.mobile)}
-- Category: ${val(profile.category)}
+- Category: ${val(profile.category)}${profile.subcategory ? " / Sub-category: " + profile.subcategory : ""}
+- Parent Profession: ${val(profile.parentProfession)}
 - Annual Family Income: ${profile.annualIncome ? "₹" + profile.annualIncome : "Not provided"}
 
 ACADEMIC:
@@ -138,7 +139,17 @@ You have retrieved this student's real profile from the database. Every answer y
 - Aadhaar seeding verification: dial *99*99*1# on Aadhaar-registered mobile
 - DBT fix: visit bank branch, say "enable DBT and Aadhaar Payment Bridge on my account"
 - NPCI mapper check: pfms.nic.in → Know Your Payment → search by Aadhaar
-- NSP helpdesk: 0120-6619540 | PFMS: 1800-118-111 | UIDAI: 1947`;
+- NSP helpdesk: 0120-6619540 | PFMS: 1800-118-111 | UIDAI: 1947
+- SSP general helpline: 1902 | Portal: ssp.karnataka.gov.in (pre-matric) | ssp.postmatric.karnataka.gov.in (post-matric)
+- SSP Social Welfare (SC/ST): 94823004000 / 080-22634300 | swdcontrolroom@gmail.com
+- SSP Backward Classes (OBC): 8050770004 / 8050770005
+- SSP Minority Welfare: 8277799990
+- SSP 2026-27 key deadlines: SC post-matric 31 Jan 2027 | OBC/ST post-matric 31 Aug 2026 | Minority post-matric 30 Sep 2026 | Pre-matric most depts 30 Jun 2026 | Disability/Labour pre-matric 30 Jun 2026 | Minority pre-matric 30 Sep 2026
+- SSP DBT: funds credited Feb–Jul of the following year after application verification
+- SSP pre-matric login: https://ssp.postmatric.karnataka.gov.in/ssppre/
+- SSP post-matric login: https://ssp.postmatric.karnataka.gov.in/post_sa_2627/login
+- SSP new account creation (both pre and post-matric): https://ssp.postmatric.karnataka.gov.in/CA/
+- SSP pre-matric requires SATS ID (Student Achievement Tracking System ID from school)`;
 
 // ── POST /api/chat ─────────────────────────────────────────────────────────────
 export async function chat(req, res) {

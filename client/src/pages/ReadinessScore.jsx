@@ -3,12 +3,12 @@ import { readinessApi } from "../services/api.js";
 import { ExternalLink, AlertTriangle, CheckCircle2, ChevronRight } from "lucide-react";
 
 const NPCI_STEPS = [
-  { step: 1, text: 'Go to NPCI portal — npci.org.in' },
-  { step: 2, text: 'Click on "Consumer" tab' },
-  { step: 3, text: 'Click "Bharat Aadhaar Seeding Enabler (BASE)"' },
-  { step: 4, text: 'Select "Request for Aadhaar Seeding"' },
-  { step: 5, text: 'Enter your Aadhaar number and Bank account details' },
-  { step: 6, text: 'Submit — your Aadhaar will be linked to your bank for DBT' },
+  { step: 1, text: 'Open myAadhaar portal — myaadhaar.uidai.gov.in' },
+  { step: 2, text: 'Login with your Aadhaar number and OTP' },
+  { step: 3, text: 'Go to "Aadhaar Services" → "Bank Seeding Status"' },
+  { step: 4, text: 'Check if your bank account is already seeded' },
+  { step: 5, text: 'If not seeded, visit your bank branch with your Aadhaar card to link it' },
+  { step: 6, text: 'Once seeded, update your profile — set Aadhaar Bank Linked → Yes and NPCI Mapping → Yes' },
 ];
 
 function NPCIBaseCard({ dbtScore }) {

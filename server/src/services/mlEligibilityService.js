@@ -31,6 +31,7 @@ function deriveCourseLevel(educationLevel = "", course = "") {
   if (el.includes("degree") || el.includes("ug") || c.match(/\b(b\.tech|btech|be\b|bca|bsc|bcom|ba\b|mbbs)\b/)) return "UG";
   if (el.includes("diploma") || c.includes("diploma")) return "Diploma";
   if (el.includes("puc") || el.includes("12")) return "PostMatric";
+  if (el.includes("school") || el.includes("class") || el.includes("pre-matric")) return "Pre-Matric";
   return "UG"; // default assumption
 }
 

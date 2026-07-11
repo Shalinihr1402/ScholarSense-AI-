@@ -42,7 +42,8 @@ function deriveCourseLevel(educationLevel = "", course = "") {
     return "Diploma";
   if (el.includes("puc") || el.includes("11") || el.includes("12") || c.includes("puc"))
     return "Post-Matric";
-  if (el.includes("school") || el.includes("class 1") || el.includes("class 9") || el.includes("class 10"))
+  if (el.includes("school") || el.includes("class 1") || el.includes("class 9") || el.includes("class 10") ||
+      el.includes("pre-matric") || el.includes("prematric"))
     return "Pre-Matric";
   return null;
 }
