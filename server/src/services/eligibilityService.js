@@ -123,18 +123,47 @@ export function evaluateScholarshipEligibility(profile, scholarship) {
   }
 
   // ── 3. Income ───────────────────────────────────────────────────────────────
-  const incomeLimit = Number(scholarship.incomeLimit);
-  const income      = Number(profile.annualIncome);
+  const incomeLimit    = Number(scholarship.incomeLimit);
+  const incomeLimitMin = Number(scholarship.incomeLimitMin || 0);
+  const income         = Number(profile.annualIncome);
 
-  if (incomeLimit === 0) {
-    // 0 means no income restriction (e.g. CAPF/Police scholarships)
+  if (incomeLimit === 0 && incomeLimitMin === 0) {
     matched.push("No family income restriction for this scheme.");
   } else if (!profile.annualIncome && profile.annualIncome !== 0) {
-    warnings.push(`Income limit is ₹${incomeLimit.toLocaleString("en-IN")}. Add annual family income in profile.`);
+    if (incomeLimitMin > 0) {
+      warnings.push(`This scheme is for income between ₹${incomeLimitMin.toLocaleString("en-IN")} and ₹${incomeLimit.toLocaleString("en-IN")}. Add annual income in profile.`);
+    } else {
+      warnings.push(`Income limit is ₹${incomeLimit.toLocaleString("en-IN")}. Add annual family income in profile.`);
+    }
+  } else if (incomeLimitMin > 0) {
+    // Income must fall within a range (e.g. SSP Technical SC/ST: ₹2.5L–₹10L)
+    if (income < incomeLimitMin) {
+      failed.push(`Income ₹${income.toLocaleString("en-IN")} is below the minimum ₹${incomeLimitMin.toLocaleString("en-IN")} required. This scheme targets students whose family income is above ₹${incomeLimitMin.toLocaleString("en-IN")} (but below ₹${incomeLimit.toLocaleString("en-IN")}).`);
+    } else if (income > incomeLimit) {
+      failed.push(`Annual income ₹${income.toLocaleString("en-IN")} exceeds the limit of ₹${incomeLimit.toLocaleString("en-IN")} for this scheme.`);
+    } else {
+      matched.push(`Annual income ₹${income.toLocaleString("en-IN")} is within the required range (₹${incomeLimitMin.toLocaleString("en-IN")}–₹${incomeLimit.toLocaleString("en-IN")}).`);
+    }
   } else if (income <= incomeLimit) {
     matched.push(`Annual income ₹${income.toLocaleString("en-IN")} is within the limit of ₹${incomeLimit.toLocaleString("en-IN")}.`);
   } else {
     failed.push(`Annual income ₹${income.toLocaleString("en-IN")} exceeds the limit of ₹${incomeLimit.toLocaleString("en-IN")} for this scheme.`);
+  }
+
+  // ── 3b. Parent Profession ────────────────────────────────────────────────────
+  const reqProfession = (scholarship.parentProfession || "").trim();
+  if (reqProfession) {
+    const profProfession = (profile.parentProfession || "").toLowerCase();
+    const reqLower = reqProfession.toLowerCase();
+    // "Defence (Army/Navy/Air Force)" matches scholarship.parentProfession "Defence"
+    const normProf = profProfession.split("(")[0].trim();
+    if (!profile.parentProfession) {
+      warnings.push(`This scheme requires parent to be a ${reqProfession}. Add parent profession in profile.`);
+    } else if (normProf.includes(reqLower) || reqLower.includes(normProf)) {
+      matched.push(`Parent profession (${profile.parentProfession}) matches this scheme's requirement.`);
+    } else {
+      failed.push(`This scheme is only for children of ${reqProfession}. Your parent's profession is listed as: ${profile.parentProfession}.`);
+    }
   }
 
   // ── 4. Marks ────────────────────────────────────────────────────────────────
@@ -235,7 +264,7 @@ export function evaluateScholarshipEligibility(profile, scholarship) {
   // Hard failures = Not Eligible
   // Warnings only = Check (needs verification)
   // All matched   = Eligible
-  const hardChecks = 6; // state, category, income, marks, course, gender
+  const hardChecks = 7; // state, category, income, marks, course, gender, parentProfession
   const hardFailures = failed.length;
   const matchScore = Math.max(0, Math.round(((hardChecks - hardFailures) / hardChecks) * 100));
 

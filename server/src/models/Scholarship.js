@@ -7,6 +7,8 @@ const scholarshipSchema = new mongoose.Schema(
     state: { type: String, default: "All India", trim: true },
     categories: { type: [String], default: [] },
     incomeLimit: { type: Number, default: 0 },
+    incomeLimitMin: { type: Number, default: 0 },   // for income-range schemes (e.g. 2.5L–10L)
+    parentProfession: { type: String, default: "" }, // e.g. "Defence", "Construction Worker", "Farmer"
     minMarks: { type: Number, default: 0 },
     courseLevels: { type: [String], default: [] },
     gender: { type: String, default: "Any" },

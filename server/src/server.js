@@ -15,6 +15,7 @@ import scholarshipRoutes from "./routes/scholarshipRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import auditRoutes from "./routes/auditRoutes.js";
+import { startScheduler } from "./jobs/scheduler.js";
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ connectDatabase()
     app.listen(port, () => {
       console.log(`ScholarSense AI API running on port ${port}`);
       console.log(`Database connected: ${databaseConnected ? "yes" : "no"}`);
+      startScheduler();
     });
   })
   .catch((error) => {

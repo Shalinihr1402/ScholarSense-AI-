@@ -3,7 +3,11 @@ import { logDocumentUpload, logDocumentDelete } from "../services/auditService.j
 import { mkdir, readFile, unlink, writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const archiver = require("archiver");
 import Document from "../models/Document.js";
+import Scholarship from "../models/Scholarship.js";
 import { crossValidateDocuments, extractFieldsByDocumentType, extractTextFromImage, verifyDocumentType } from "../services/ocrAnalysisService.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -234,6 +238,100 @@ export async function getRiskReport(req, res, next) {
     });
   } catch (error) {
     next(error);
+  }
+}
+
+// ── Document Kit: match user's docs against a scholarship's requiredDocuments ──
+
+async function getUserDocs(userId) {
+  if (Document.db?.readyState === 1) {
+    return await Document.find({ userId }).lean();
+  }
+  const all = await readLocalDocs();
+  return all.filter(d => d.userId === userId);
+}
+
+export async function getDocumentKit(req, res, next) {
+  try {
+    const userId = getUserId(req);
+    const { scholarshipId } = req.params;
+
+    let scholarship;
+    if (Scholarship.db?.readyState === 1) {
+      scholarship = await Scholarship.findById(scholarshipId).lean();
+    }
+    if (!scholarship) return res.status(404).json({ message: "Scholarship not found." });
+
+    const required = scholarship.requiredDocuments || [];
+    const userDocs = await getUserDocs(userId);
+
+    const byType = {};
+    for (const doc of userDocs) {
+      if (!byType[doc.documentType]) byType[doc.documentType] = doc;
+    }
+
+    const matched = [];
+    const missing = [];
+
+    for (const docType of required) {
+      if (byType[docType]) {
+        matched.push({ type: docType, docId: byType[docType]._id || byType[docType].id, originalName: byType[docType].originalName });
+      } else {
+        missing.push(docType);
+      }
+    }
+
+    res.json({
+      scholarshipName: scholarship.name,
+      applicationLink: scholarship.applicationLink,
+      required,
+      matched,
+      missing,
+      readyToApply: missing.length === 0
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function downloadBundle(req, res, next) {
+  try {
+    const userId = getUserId(req);
+    const { scholarshipId } = req.params;
+
+    let scholarship;
+    if (Scholarship.db?.readyState === 1) {
+      scholarship = await Scholarship.findById(scholarshipId).lean();
+    }
+    if (!scholarship) return res.status(404).json({ message: "Scholarship not found." });
+
+    const required = scholarship.requiredDocuments || [];
+    const userDocs = await getUserDocs(userId);
+
+    const byType = {};
+    for (const doc of userDocs) {
+      if (!byType[doc.documentType]) byType[doc.documentType] = doc;
+    }
+
+    const toZip = required.map(t => byType[t]).filter(Boolean);
+    if (toZip.length === 0) return res.status(404).json({ message: "No matching documents to bundle." });
+
+    const zipName = `ScholarSense_ApplicationKit.zip`;
+    res.setHeader("Content-Type", "application/zip");
+    res.setHeader("Content-Disposition", `attachment; filename="${zipName}"`);
+
+    const archive = archiver("zip", { zlib: { level: 6 } });
+    archive.on("error", err => next(err));
+    archive.pipe(res);
+
+    for (const doc of toZip) {
+      const ext = path.extname(doc.originalName) || "";
+      archive.file(doc.filePath, { name: `${doc.documentType}${ext}` });
+    }
+
+    await archive.finalize();
+  } catch (err) {
+    next(err);
   }
 }
 

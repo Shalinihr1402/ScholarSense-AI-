@@ -51,6 +51,8 @@ export function normalizeProfile(input = {}) {
     nodalOfficerContact:     str(input.nodalOfficerContact),
     // Eligibility
     category:         str(input.category),
+    subcategory:      str(input.subcategory),
+    parentProfession: str(input.parentProfession),
     annualIncome:     input.annualIncome === "" || input.annualIncome == null ? "" : Number(input.annualIncome),
     disabilityStatus:     input.disabilityStatus || "Unknown",
     disabilityType:       str(input.disabilityType),

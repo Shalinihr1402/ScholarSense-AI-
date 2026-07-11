@@ -1,5 +1,83 @@
 import React from "react";
 import { readinessApi } from "../services/api.js";
+import { ExternalLink, AlertTriangle, CheckCircle2, ChevronRight } from "lucide-react";
+
+const NPCI_STEPS = [
+  { step: 1, text: 'Go to NPCI portal — npci.org.in' },
+  { step: 2, text: 'Click on "Consumer" tab' },
+  { step: 3, text: 'Click "Bharat Aadhaar Seeding Enabler (BASE)"' },
+  { step: 4, text: 'Select "Request for Aadhaar Seeding"' },
+  { step: 5, text: 'Enter your Aadhaar number and Bank account details' },
+  { step: 6, text: 'Submit — your Aadhaar will be linked to your bank for DBT' },
+];
+
+function NPCIBaseCard({ dbtScore }) {
+  const isConfirmed = dbtScore?.matched === dbtScore?.total && dbtScore?.total > 0;
+
+  return (
+    <div style={{
+      borderRadius: 14, overflow: "hidden",
+      border: `1.5px solid ${isConfirmed ? "#bbf7d0" : "#fed7aa"}`,
+      background: isConfirmed ? "#f0fdf4" : "white",
+      boxShadow: "0 2px 10px rgba(15,23,42,.07)"
+    }}>
+      <div style={{
+        padding: "14px 18px", display: "flex", alignItems: "center", gap: 12,
+        background: isConfirmed ? "#dcfce7" : "#fff7ed",
+        borderBottom: `1px solid ${isConfirmed ? "#bbf7d0" : "#fed7aa"}`
+      }}>
+        {isConfirmed
+          ? <CheckCircle2 size={22} color="#16a34a" />
+          : <AlertTriangle size={22} color="#ea580c" />}
+        <div style={{ flex: 1 }}>
+          <p style={{ margin: 0, fontWeight: 800, fontSize: 14, color: isConfirmed ? "#15803d" : "#c2410c" }}>
+            {isConfirmed ? "Aadhaar-Bank Linking Confirmed" : "Aadhaar Not Linked to Bank — Action Required"}
+          </p>
+          <p style={{ margin: 0, fontSize: 12, color: isConfirmed ? "#166534" : "#9a3412", marginTop: 2 }}>
+            {isConfirmed
+              ? "Your scholarship money will be credited directly to your bank via DBT."
+              : "Without Aadhaar-Bank linking, scholarship money (DBT) will not reach you even if selected."}
+          </p>
+        </div>
+        {!isConfirmed && (
+          <a href="https://myaadhaar.uidai.gov.in/" target="_blank" rel="noreferrer" style={{
+            display: "flex", alignItems: "center", gap: 5, padding: "8px 14px",
+            borderRadius: 8, fontSize: 12, fontWeight: 700, textDecoration: "none", flexShrink: 0,
+            background: "#ea580c", color: "white"
+          }}>
+            Fix Now <ExternalLink size={12} />
+          </a>
+        )}
+      </div>
+
+      {!isConfirmed && (
+        <div style={{ padding: "16px 18px" }}>
+          <p style={{ margin: "0 0 12px", fontSize: 12.5, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: ".06em" }}>
+            How to link Aadhaar to Bank (NPCI BASE — takes 2 minutes)
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {NPCI_STEPS.map(({ step, text }) => (
+              <div key={step} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <div style={{
+                  width: 24, height: 24, borderRadius: "50%", flexShrink: 0,
+                  background: "#2563eb", color: "white",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 800
+                }}>{step}</div>
+                <p style={{ margin: 0, fontSize: 13, color: "#374151", lineHeight: 1.5, paddingTop: 3 }}>{text}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 14, padding: "10px 14px", background: "#eff6ff", borderRadius: 8, border: "1px solid #bfdbfe" }}>
+            <p style={{ margin: 0, fontSize: 12, color: "#1e40af" }}>
+              <strong>After linking:</strong> Update your profile — set "Aadhaar Bank Linked" to Yes and "NPCI Mapping" to Yes. Your DBT readiness score will increase.
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function ComponentRow({ label, component, detail }) {
   const percent = Math.round((component.points / component.max) * 100);
@@ -98,6 +176,8 @@ export default function ReadinessScore() {
               <ComponentRow label="Deadline safety" component={components.deadline} detail="Based on matching schemes" />
             </div>
           </section>
+
+          <NPCIBaseCard dbtScore={components.dbt} />
 
           <section className="two-column">
             <div className="panel">

@@ -3,7 +3,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import { requireAuth } from "../middleware/authMiddleware.js";
-import { deleteDocument, getRiskReport, listMyDocuments, uploadDocument } from "../controllers/documentController.js";
+import { deleteDocument, getRiskReport, listMyDocuments, uploadDocument, getDocumentKit, downloadBundle } from "../controllers/documentController.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +30,8 @@ const router = Router();
 
 router.get("/mine", requireAuth, listMyDocuments);
 router.get("/risk-report", requireAuth, getRiskReport);
+router.get("/kit/:scholarshipId", requireAuth, getDocumentKit);
+router.get("/bundle/:scholarshipId", requireAuth, downloadBundle);
 router.post("/upload", requireAuth, upload.single("document"), uploadDocument);
 router.delete("/:id", requireAuth, deleteDocument);
 

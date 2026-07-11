@@ -108,6 +108,24 @@ export async function sendNotificationEmail({ user, notification }) {
   }
 }
 
+export async function sendAdminAlert({ subject, html }) {
+  if (!isEmailConfigured()) return;
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+  if (!adminEmail) return;
+  try {
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"ScholarSense AI Monitor" <${process.env.EMAIL_USER}>`,
+      to: adminEmail,
+      subject,
+      html
+    });
+    console.log(`[EmailService] Admin alert sent to ${adminEmail}`);
+  } catch (err) {
+    console.error("[EmailService] Admin alert failed:", err.message);
+  }
+}
+
 export async function getEmailStatus(userId) {
   const logs = await listEmailLogs(userId);
   return {

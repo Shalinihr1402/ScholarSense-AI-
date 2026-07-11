@@ -23,7 +23,7 @@ const initialForm = {
   currentAcademicYear:"", universityBoard:"", marksPercentage:"", admissionType:"",
   collegeName:"", instituteCode:"", instituteAddress:"",
   nodalOfficerName:"", nodalOfficerDesignation:"", nodalOfficerEmail:"", nodalOfficerContact:"",
-  category:"", annualIncome:"", disabilityStatus:"Unknown",
+  category:"", subcategory:"", parentProfession:"", annualIncome:"", disabilityStatus:"Unknown",
   disabilityType:"", disabilityPercentage:"", udidNumber:"", udidCardPath:"",
   minorityStatus:"Unknown",
   hosteller:"Unknown", orphanStatus:"Unknown", firstGraduate:"Unknown",
@@ -439,6 +439,27 @@ export default function Profile() {
               <option>EWS (Economically Weaker Section)</option><option>Minority</option>
             </select>
           </Field>
+          {form.category?.includes("OBC") && (
+            <Field label="OBC Sub-Category" hint="Karnataka OBC sub-category as on your caste certificate. Category-1 has higher income limit (₹2.5L) than 2A/3A/2B/3B (₹1L).">
+              <select style={INP} onFocus={onFocus} onBlur={onBlur} name="subcategory" value={form.subcategory} onChange={upd}>
+                <option value="">Select sub-category</option>
+                <option>Category-1</option><option>NT-SNT (Nomadic Tribes)</option>
+                <option>2A</option><option>3A</option><option>2B</option><option>3B</option>
+              </select>
+            </Field>
+          )}
+          <Field label="Parent's Profession" hint="Required for SSP Defence, Labour Welfare and Agriculture scholarships">
+            <select style={INP} onFocus={onFocus} onBlur={onBlur} name="parentProfession" value={form.parentProfession} onChange={upd}>
+              <option value="">Not specified</option>
+              <option>None</option>
+              <option>Defence (Army/Navy/Air Force)</option>
+              <option>Construction Worker</option>
+              <option>Farmer</option>
+              <option>Government Employee</option>
+              <option>Private Employee</option>
+              <option>Self Employed</option>
+            </select>
+          </Field>
           <Field label="Annual Family Income (₹)" required hint="Total income of all earning members in your family per year (as on income certificate)">
             <input style={INP} onFocus={onFocus} onBlur={onBlur} name="annualIncome" type="number" min="0" value={form.annualIncome} onChange={upd} placeholder="e.g. 150000" />
           </Field>
@@ -600,29 +621,128 @@ export default function Profile() {
           <Field label="IFSC Code" required hint="11-character code found on your bank passbook or cheque leaf (e.g. SBIN0001234)">
             <input style={INP} onFocus={onFocus} onBlur={onBlur} name="ifscCode" value={form.ifscCode} onChange={upd} placeholder="e.g. SBIN0001234" maxLength={11} />
           </Field>
-          <Field label="Aadhaar–Bank Linking Status" required hint="Is your Aadhaar number linked to this bank account? Required for DBT scholarships.">
-            <select style={INP} onFocus={onFocus} onBlur={onBlur} name="aadhaarBankLinked" value={form.aadhaarBankLinked} onChange={upd}>
-              <option>Unknown</option><option>Yes</option><option>No</option>
-            </select>
-            <LearnMore />
-          </Field>
-          <Field label="DBT Enabled" required hint="Direct Benefit Transfer must be active on your account to receive scholarship money.">
-            <select style={INP} onFocus={onFocus} onBlur={onBlur} name="dbtEnabled" value={form.dbtEnabled} onChange={upd}>
-              <option>Unknown</option><option>Yes</option><option>No</option>
-            </select>
-            <LearnMore />
-          </Field>
-          <Field label="Bank Account Active" required hint="If your account is dormant (no transactions in 2+ years), it cannot receive scholarship payments.">
+          <Field label="Bank Account Active" hint="If your account is dormant (no transactions in 2+ years), it cannot receive scholarship payments.">
             <select style={INP} onFocus={onFocus} onBlur={onBlur} name="bankAccountActive" value={form.bankAccountActive} onChange={upd}>
               <option>Unknown</option><option>Yes</option><option>No</option>
             </select>
           </Field>
-          <Field label="NPCI Mapping Status" hint="NPCI maps your Aadhaar to your bank for payment routing. Check with your bank.">
-            <select style={INP} onFocus={onFocus} onBlur={onBlur} name="npciMapping" value={form.npciMapping} onChange={upd}>
-              <option>Unknown</option><option>Yes — Mapped</option><option>No — Not mapped</option>
-            </select>
-            <LearnMore />
-          </Field>
+
+          {/* ── NPCI BASE DBT Check Widget ── */}
+          <div style={{ gridColumn: "1 / -1", borderRadius: 14, overflow: "hidden", border: "1.5px solid #bfdbfe", background: "#eff6ff" }}>
+            {/* Header */}
+            <div style={{ padding: "14px 18px", background: "linear-gradient(135deg,#1e40af,#0891b2)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: ".07em" }}>Government Portal</p>
+                <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: "white" }}>Check Aadhaar–Bank Seeding (NPCI BASE)</p>
+              </div>
+              <a
+                href="https://myaadhaar.uidai.gov.in/"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "9px 16px", borderRadius: 9, fontSize: 13, fontWeight: 700,
+                  background: "white", color: "#1e40af", textDecoration: "none", flexShrink: 0
+                }}
+              >
+                Open NPCI Portal ↗
+              </a>
+            </div>
+
+            {/* Steps */}
+            <div style={{ padding: "14px 18px", borderBottom: "1px solid #bfdbfe" }}>
+              <p style={{ margin: "0 0 10px", fontSize: 12, fontWeight: 700, color: "#1e40af" }}>Follow these steps on myAadhaar portal, then mark your status below:</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 8 }}>
+                {[
+                  "Open myaadhaar.uidai.gov.in",
+                  "Login with your Aadhaar & OTP",
+                  'Click "Aadhaar Services"',
+                  'Select "Bank Seeding Status"',
+                  "Check result — Seeded or Not Seeded",
+                  "Come back here and mark your status ↓"
+                ].map((s, i) => (
+                  <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                    <span style={{ width: 20, height: 20, borderRadius: "50%", background: "#2563eb", color: "white", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
+                    <span style={{ fontSize: 12, color: "#1e3a5f", lineHeight: 1.5 }}>{s}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Status buttons */}
+            <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 12 }}>
+              <p style={{ margin: 0, fontSize: 12.5, fontWeight: 700, color: "#1e40af" }}>After checking, mark your status:</p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+
+                {/* Aadhaar Bank Linked */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>Aadhaar–Bank Linked?</span>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {["Yes", "No"].map(val => (
+                      <button key={val} type="button"
+                        onClick={() => upd({ target: { name: "aadhaarBankLinked", value: val } })}
+                        style={{
+                          flex: 1, padding: "9px", borderRadius: 9, fontSize: 13, fontWeight: 700, cursor: "pointer", border: "2px solid",
+                          borderColor: form.aadhaarBankLinked === val ? (val === "Yes" ? "#16a34a" : "#dc2626") : "#e2e8f0",
+                          background: form.aadhaarBankLinked === val ? (val === "Yes" ? "#f0fdf4" : "#fef2f2") : "white",
+                          color: form.aadhaarBankLinked === val ? (val === "Yes" ? "#15803d" : "#dc2626") : "#64748b"
+                        }}>
+                        {val === "Yes" ? "✓ Seeded" : "✗ Not Seeded"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* DBT Enabled */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>DBT Enabled on Account?</span>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {["Yes", "No"].map(val => (
+                      <button key={val} type="button"
+                        onClick={() => upd({ target: { name: "dbtEnabled", value: val } })}
+                        style={{
+                          flex: 1, padding: "9px", borderRadius: 9, fontSize: 13, fontWeight: 700, cursor: "pointer", border: "2px solid",
+                          borderColor: form.dbtEnabled === val ? (val === "Yes" ? "#16a34a" : "#dc2626") : "#e2e8f0",
+                          background: form.dbtEnabled === val ? (val === "Yes" ? "#f0fdf4" : "#fef2f2") : "white",
+                          color: form.dbtEnabled === val ? (val === "Yes" ? "#15803d" : "#dc2626") : "#64748b"
+                        }}>
+                        {val === "Yes" ? "✓ Enabled" : "✗ Not Enabled"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* NPCI Mapping */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>NPCI Mapping Status?</span>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {[["Yes — Mapped", "✓ Mapped"], ["No — Not mapped", "✗ Not Mapped"]].map(([val, label]) => (
+                      <button key={val} type="button"
+                        onClick={() => upd({ target: { name: "npciMapping", value: val } })}
+                        style={{
+                          flex: 1, padding: "9px", borderRadius: 9, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "2px solid",
+                          borderColor: form.npciMapping === val ? (val.includes("Yes") ? "#16a34a" : "#dc2626") : "#e2e8f0",
+                          background: form.npciMapping === val ? (val.includes("Yes") ? "#f0fdf4" : "#fef2f2") : "white",
+                          color: form.npciMapping === val ? (val.includes("Yes") ? "#15803d" : "#dc2626") : "#64748b"
+                        }}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Summary status */}
+                <div style={{ display: "flex", alignItems: "center", padding: "10px 14px", borderRadius: 10, background: (form.aadhaarBankLinked === "Yes" && form.dbtEnabled === "Yes") ? "#f0fdf4" : "#fff7ed", border: `1.5px solid ${(form.aadhaarBankLinked === "Yes" && form.dbtEnabled === "Yes") ? "#bbf7d0" : "#fed7aa"}` }}>
+                  <div>
+                    <p style={{ margin: 0, fontSize: 12, fontWeight: 800, color: (form.aadhaarBankLinked === "Yes" && form.dbtEnabled === "Yes") ? "#15803d" : "#c2410c" }}>
+                      {(form.aadhaarBankLinked === "Yes" && form.dbtEnabled === "Yes") ? "✓ DBT Ready — scholarship money will reach you" : "⚠ DBT not confirmed — fix before applying"}
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
         </SectionCard>
 
         {/* ── Save button ── */}

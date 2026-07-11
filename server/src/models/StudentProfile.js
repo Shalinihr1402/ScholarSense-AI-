@@ -39,6 +39,8 @@ const studentProfileSchema = new mongoose.Schema(
 
     // Section 4 — Eligibility
     category:         { type: String, trim: true },
+    subcategory:      { type: String, trim: true },   // OBC sub-cat: Category-1, 2A, 3A, 2B, 3B
+    parentProfession: { type: String, trim: true },   // None / Defence / Construction Worker / Farmer
     annualIncome:     { type: Number, min: 0 },
     disabilityStatus:     { type: String, enum: ["Unknown", "Yes", "No"], default: "Unknown" },
     disabilityType:       { type: String, trim: true },

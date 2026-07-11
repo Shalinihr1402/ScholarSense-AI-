@@ -247,6 +247,50 @@ async function getUploadedDocs(userId) {
   }
 }
 
+// ── Batch: run document expiry check for ALL students ────────────────────────
+export async function runDocumentExpiryCheck() {
+  try {
+    const { default: SP } = await import("../models/StudentProfile.js");
+    if (SP.db?.readyState !== 1) return;
+    const profiles = await SP.find({}, { userId: 1 }).lean();
+    let total = 0;
+    for (const p of profiles) {
+      const uploadedDocs = await getUploadedDocs(p.userId?.toString());
+      const now = new Date();
+      for (const rule of EXPIRY_RULES) {
+        const match = uploadedDocs
+          .filter(d => d.documentType?.toLowerCase().includes(rule.keyword) || d.originalName?.toLowerCase().includes(rule.keyword))
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+        if (!match) continue;
+        const uploadDate = new Date(match.createdAt);
+        const expiryDate = new Date(uploadDate);
+        expiryDate.setMonth(expiryDate.getMonth() + rule.validMonths);
+        const daysToExpiry = Math.round((expiryDate - now) / 86400000);
+        if (daysToExpiry <= 60) {
+          const userId = p.userId?.toString();
+          const key = `doc_expiry_batch_${rule.keyword}_${expiryDate.getFullYear()}_${expiryDate.getMonth()}`;
+          const isDup = await isDuplicateNotification(userId, key, 6);
+          if (!isDup) {
+            await createNotification(userId, {
+              title: daysToExpiry <= 0 ? `🚨 ${rule.label} EXPIRED` : `📅 ${rule.label} expires in ${daysToExpiry} days`,
+              message: daysToExpiry <= 0
+                ? `Your ${rule.label} expired on ${expiryDate.toLocaleDateString("en-IN")}. Renew immediately — expired documents cause scholarship rejection.`
+                : `Your ${rule.label} expires on ${expiryDate.toLocaleDateString("en-IN")} (${daysToExpiry} days). Renew it before the scholarship deadline.`,
+              type: "document", category: "document",
+              priority: daysToExpiry <= 0 ? "critical" : daysToExpiry <= 14 ? "high" : rule.priority,
+              actionUrl: "/document-vault", dedupKey: key
+            });
+            total++;
+          }
+        }
+      }
+    }
+    console.log(`[SmartNotification] Document expiry check done — ${total} notification(s) created`);
+  } catch (err) {
+    console.error("[SmartNotification] runDocumentExpiryCheck error:", err.message);
+  }
+}
+
 // ── Create only if not duplicate within 7 days ────────────────────────────────
 async function maybe(userId, user, payload) {
   try {

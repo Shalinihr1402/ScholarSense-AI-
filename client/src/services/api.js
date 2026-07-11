@@ -146,5 +146,12 @@ export const documentApi = {
   },
   riskReport() {
     return apiRequest("/documents/risk-report");
+  },
+  kit(scholarshipId) {
+    return apiRequest(`/documents/kit/${scholarshipId}`);
+  },
+  bundleUrl(scholarshipId) {
+    const token = localStorage.getItem("scholarsense_token");
+    return `${API_BASE_URL}/documents/bundle/${scholarshipId}?token=${token}`;
   }
 };

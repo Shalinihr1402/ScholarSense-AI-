@@ -10,6 +10,7 @@ import {
 } from "../services/localScholarshipStore.js";
 import { getLocalProfile } from "../services/localProfileStore.js";
 import { evaluateScholarships } from "../services/eligibilityService.js";
+import { evaluateAllWithML, isModelReady } from "../services/mlEligibilityService.js";
 
 function normalizeArray(value) {
   if (Array.isArray(value)) {
@@ -33,6 +34,8 @@ function normalizeScholarship(payload) {
     state: payload.state?.trim() || "All India",
     categories: normalizeArray(payload.categories),
     incomeLimit: Number(payload.incomeLimit || 0),
+    incomeLimitMin: Number(payload.incomeLimitMin || 0),
+    parentProfession: payload.parentProfession || "",
     minMarks: Number(payload.minMarks || 0),
     courseLevels: normalizeArray(payload.courseLevels),
     gender: payload.gender || "Any",
@@ -121,7 +124,10 @@ export async function listPersonalizedScholarships(req, res, next) {
       scholarships = await getAllLocalScholarships();
     }
 
-    const results = evaluateScholarships(profile, scholarships);
+    // Use ML model if ready, fallback to rule-based
+    const results = isModelReady()
+      ? await evaluateAllWithML(profile, scholarships)
+      : evaluateScholarships(profile, scholarships);
     const summary = results.reduce(
       (acc, scholarship) => {
         acc[scholarship.eligibility.status] += 1;
