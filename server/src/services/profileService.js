@@ -24,6 +24,7 @@ export function normalizeProfile(input = {}) {
     dateOfBirth:   str(input.dateOfBirth),
     gender:        str(input.gender),
     mobile:        str(input.mobile),
+    parentPhone:   str(input.parentPhone),
     email:         str(input.email),
     aadhaarMasked: str(input.aadhaarMasked),
     state:         str(input.state),

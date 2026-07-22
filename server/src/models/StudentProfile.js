@@ -9,6 +9,7 @@ const studentProfileSchema = new mongoose.Schema(
     dateOfBirth:    { type: String, trim: true },
     gender:         { type: String, trim: true },
     mobile:         { type: String, trim: true },
+    parentPhone:    { type: String, trim: true },
     email:          { type: String, trim: true },
     aadhaarMasked:  { type: String, trim: true },
     state:          { type: String, trim: true },

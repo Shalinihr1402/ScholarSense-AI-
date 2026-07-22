@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 const archiver = require("archiver");
 import Document from "../models/Document.js";
 import Scholarship from "../models/Scholarship.js";
+import { getAllLocalScholarships } from "../services/localScholarshipStore.js";
 import { crossValidateDocuments, extractFieldsByDocumentType, extractTextFromImage, verifyDocumentType } from "../services/ocrAnalysisService.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -260,6 +261,10 @@ export async function getDocumentKit(req, res, next) {
     if (Scholarship.db?.readyState === 1) {
       scholarship = await Scholarship.findById(scholarshipId).lean();
     }
+    if (!scholarship) {
+      const all = await getAllLocalScholarships();
+      scholarship = all.find(s => s.id === scholarshipId || String(s._id) === scholarshipId);
+    }
     if (!scholarship) return res.status(404).json({ message: "Scholarship not found." });
 
     const required = scholarship.requiredDocuments || [];
@@ -302,6 +307,10 @@ export async function downloadBundle(req, res, next) {
     let scholarship;
     if (Scholarship.db?.readyState === 1) {
       scholarship = await Scholarship.findById(scholarshipId).lean();
+    }
+    if (!scholarship) {
+      const all = await getAllLocalScholarships();
+      scholarship = all.find(s => s.id === scholarshipId || String(s._id) === scholarshipId);
     }
     if (!scholarship) return res.status(404).json({ message: "Scholarship not found." });
 

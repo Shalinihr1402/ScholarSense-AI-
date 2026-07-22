@@ -1,7 +1,8 @@
 import React from "react";
-import { ExternalLink, Search, FolderOpen } from "lucide-react";
+import { ExternalLink, Search, FolderOpen, MessageCircle } from "lucide-react";
 import { scholarshipApi } from "../services/api.js";
 import DocumentKitModal from "../components/DocumentKitModal.jsx";
+import WhatsAppNotifyModal from "../components/WhatsAppNotifyModal.jsx";
 
 export default function Scholarships() {
   const [filters, setFilters] = React.useState({ search: "", state: "", category: "" });
@@ -10,6 +11,7 @@ export default function Scholarships() {
   const [mode, setMode] = React.useState("personalized");
   const [status, setStatus] = React.useState({ loading: true, error: "" });
   const [kitScholarship, setKitScholarship] = React.useState(null);
+  const [waScholarship, setWaScholarship] = React.useState(null);
 
   React.useEffect(() => {
     const timeout = setTimeout(() => {
@@ -180,9 +182,21 @@ export default function Scholarships() {
                     padding: "9px 12px", borderRadius: 9, textDecoration: "none", fontSize: 11.5, fontWeight: 700,
                     background: "#f1f5f9", color: "#475569", border: "1.5px solid #e2e8f0", whiteSpace: "nowrap"
                   }}>
-                    {s.applicationLink?.includes("ssp.karnataka") ? "SSP Portal" : "NSP Portal"}
+                    {s.applicationLink?.includes("scholarships.gov.in") ? "NSP Portal" : "SSP Portal"}
                     <ExternalLink size={12} />
                   </a>
+                  <button
+                    onClick={() => setWaScholarship(s)}
+                    title="WhatsApp ಮೂಲಕ ಪೋಷಕರಿಗೆ ತಿಳಿಸಿ"
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      padding: "9px 11px", borderRadius: 9, fontSize: 13, fontWeight: 700,
+                      cursor: "pointer", background: "#dcfce7", color: "#15803d",
+                      border: "1.5px solid #bbf7d0", whiteSpace: "nowrap"
+                    }}
+                  >
+                    <MessageCircle size={14} />
+                  </button>
                 </div>
               </div>
             </article>
@@ -194,6 +208,9 @@ export default function Scholarships() {
 
       {kitScholarship && (
         <DocumentKitModal scholarship={kitScholarship} onClose={() => setKitScholarship(null)} />
+      )}
+      {waScholarship && (
+        <WhatsAppNotifyModal scholarship={waScholarship} onClose={() => setWaScholarship(null)} />
       )}
     </div>
   );

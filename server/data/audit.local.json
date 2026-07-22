@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "id": "c10c0613-d314-4079-b59c-c0a0b33c659e",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "Central Bank of India ••••8206 · IFSC: CBIN0280860",
+    "meta": {
+      "bank": "Central Bank of India",
+      "ifsc": "CBIN0280860",
+      "masked": "••••8206"
+    },
+    "createdAt": "2026-07-22T12:44:24.023Z"
+  }
+]state",
+        "district",
+        "taluk",
+        "village",
+        "address",
+        "pinCode",
+        "educationLevel",
+        "course",
+        "semester",
+        "admissionYear",
+        "universityBoard",
+        "marksPercentage",
+        "admissionType",
+        "collegeName",
+        "category",
+        "subcategory",
+        "parentProfession",
+        "annualIncome",
+        "disabilityStatus",
+        "disabilityType",
+        "disabilityPercentage",
+        "udidNumber",
+        "minorityStatus",
+        "hosteller",
+        "orphanStatus",
+        "firstGraduate",
+        "availableDocuments"
+      ]
+    },
+    "createdAt": "2026-07-22T12:44:24.024Z"
+  }
+]

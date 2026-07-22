@@ -13,6 +13,7 @@ import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
 import Scholarship from "../models/Scholarship.js";
 import StudentProfile from "../models/StudentProfile.js";
+import { getAllLocalScholarships } from "../services/localScholarshipStore.js";
 import { createNotification, isDuplicateNotification } from "../services/notificationService.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -58,6 +59,7 @@ function daysUntil(dateStr) {
 async function launchBrowser() {
   return puppeteer.launch({
     headless: "new",
+    executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -353,10 +355,15 @@ async function notifyEligibleStudents(scholarship) {
 export async function runScholarshipMonitor() {
   console.log(`\n[Monitor] ── Scholarship deadline check started: ${new Date().toISOString()}`);
 
-  // 1. Check all scholarships in DB for upcoming deadlines
+  // 1. Check all scholarships for upcoming deadlines (MongoDB or local store)
   let deadlineNotifications = 0;
   try {
-    const scholarships = await Scholarship.find({ status: "Active" }).lean();
+    let scholarships = [];
+    if (Scholarship.db?.readyState === 1) {
+      scholarships = await Scholarship.find({ status: "Active" }).lean();
+    } else {
+      scholarships = await getAllLocalScholarships();
+    }
     for (const s of scholarships) {
       const days = daysUntil(s.deadline);
       if (days !== null && days > 0 && days <= 200) {

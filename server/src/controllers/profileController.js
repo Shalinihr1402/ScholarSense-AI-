@@ -6,6 +6,7 @@ import { evaluateScholarships } from "../services/eligibilityService.js";
 import { createProfileNotifications } from "../services/notificationService.js";
 import { getProfileInsights, normalizeProfile } from "../services/profileService.js";
 import { logProfileUpdate } from "../services/auditService.js";
+import { sendWhatsApp, isWhatsAppConfigured } from "../services/whatsappService.js";
 
 async function buildEligibilitySnapshot(profile, isMongoConnected) {
   try {
@@ -30,7 +31,8 @@ async function buildEligibilitySnapshot(profile, isMongoConnected) {
       })),
       calculatedAt: new Date().toISOString()
     };
-  } catch {
+  } catch (err) {
+    console.error("[Eligibility] buildEligibilitySnapshot failed:", err.message);
     return null;
   }
 }
@@ -48,13 +50,48 @@ function sendProfile(res, profile) {
   });
 }
 
-async function sendSavedProfile(req, res, profile, changedFields = []) {
+async function sendSavedProfile(req, res, profile, changedFields = [], computedSnapshot = null) {
   const insights = getProfileInsights(profile || {});
   await createProfileNotifications(req.user, insights);
   const userId = req.user.id || req.user._id?.toString();
   if (changedFields.length > 0) {
     logProfileUpdate(userId, changedFields, profile).catch(() => {});
   }
+
+  // Auto WhatsApp notification to parent/student number
+  const notifyPhone = profile?.parentPhone || profile?.mobile;
+  console.log("[WhatsApp] configured:", isWhatsAppConfigured(), "| phone:", notifyPhone);
+  if (isWhatsAppConfigured() && notifyPhone) {
+    const snap = computedSnapshot || profile.eligibilitySnapshot;
+    const topMatch = snap?.topMatches?.[0];
+    console.log("[WhatsApp] snap eligible:", snap?.eligible, "| topMatch:", topMatch?.name, topMatch?.status);
+    if (topMatch && (topMatch.status === "Eligible" || topMatch.status === "Check")) {
+      const isEligible = topMatch.status === "Eligible";
+      const eligibleCount = snap.eligible || 0;
+      const checkCount = snap.check || 0;
+      const message =
+        `📢 *ScholarSense AI - ವಿದ್ಯಾರ್ಥಿ ವಜೀಫ ಅಧಿಸೂಚನೆ*\n\n` +
+        `ಆತ್ಮೀಯ ಪೋಷಕರೇ,\n\n` +
+        (isEligible
+          ? `ನಿಮ್ಮ ಮಗು *${profile.fullName || "ವಿದ್ಯಾರ್ಥಿ"}* ಈ ಕೆಳಗಿನ ವಿದ್ಯಾರ್ಥಿ ವೇತನಕ್ಕೆ ಅರ್ಹರಾಗಿದ್ದಾರೆ:\n`
+          : `ನಿಮ್ಮ ಮಗು *${profile.fullName || "ವಿದ್ಯಾರ್ಥಿ"}* ಈ ಕೆಳಗಿನ ವಿದ್ಯಾರ್ಥಿ ವೇತನಕ್ಕೆ ಅರ್ಹರಾಗಬಹುದು (ಪರಿಶೀಲಿಸಿ):\n`) +
+        `🎓 *${topMatch.name}*\n\n` +
+        (eligibleCount > 0 ? `✅ ಒಟ್ಟು *${eligibleCount}* ವಿದ್ಯಾರ್ಥಿ ವೇತನಗಳಿಗೆ ಅರ್ಹರಾಗಿದ್ದಾರೆ.\n` : "") +
+        (checkCount > 0 ? `🔍 *${checkCount}* ವಿದ್ಯಾರ್ಥಿ ವೇತನಗಳನ್ನು ಪರಿಶೀಲಿಸಬೇಕಾಗಿದೆ.\n` : "") +
+        `\nದಯವಿಟ್ಟು ScholarSense AI ಅಪ್ಲಿಕೇಶನ್ ತೆರೆದು ಅರ್ಜಿ ಸಲ್ಲಿಸಿ.\n\n` +
+        `- ScholarSense AI ತಂಡ`;
+
+      console.log("[WhatsApp] Sending to:", notifyPhone);
+      sendWhatsApp({ to: notifyPhone, message })
+        .then(() => console.log("[WhatsApp] ✅ Sent successfully to", notifyPhone))
+        .catch(err => console.error("[WhatsApp] ❌ Send failed:", err.message));
+    } else {
+      console.log("[WhatsApp] Skipped — no eligible top match");
+    }
+  } else {
+    console.log("[WhatsApp] Skipped —", !isWhatsAppConfigured() ? "not configured" : "no phone number");
+  }
+
   res.json({ profile, insights });
 }
 
@@ -111,11 +148,11 @@ export async function saveMyProfile(req, res, next) {
         { new: true, upsert: true, runValidators: true }
       ).lean();
 
-      return sendSavedProfile(req, res, profile, changedFields);
+      return sendSavedProfile(req, res, profile, changedFields, eligibilitySnapshot);
     }
 
     const profile = await upsertLocalProfile(userId, updatePayload);
-    return sendSavedProfile(req, res, profile, changedFields);
+    return sendSavedProfile(req, res, profile, changedFields, eligibilitySnapshot);
   } catch (error) {
     next(error);
   }

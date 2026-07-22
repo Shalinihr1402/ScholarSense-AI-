@@ -15,6 +15,7 @@ import scholarshipRoutes from "./routes/scholarshipRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import auditRoutes from "./routes/auditRoutes.js";
+import whatsappRoutes from "./routes/whatsappRoutes.js";
 import { startScheduler } from "./jobs/scheduler.js";
 
 dotenv.config();
@@ -37,6 +38,7 @@ app.use("/api/email", emailRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/audit", auditRoutes);
+app.use("/api/whatsapp", whatsappRoutes);
 
 app.get("/", (req, res) => {
   res.json({

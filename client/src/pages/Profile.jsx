@@ -16,7 +16,7 @@ const STATES = [
 ];
 
 const initialForm = {
-  fullName:"", dateOfBirth:"", gender:"", mobile:"", email:"",
+  fullName:"", dateOfBirth:"", gender:"", mobile:"", parentPhone:"", email:"",
   aadhaarMasked:"", state:"Karnataka", district:"", taluk:"", village:"",
   address:"", pinCode:"",
   educationLevel:"", course:"", semester:"", admissionYear:"",
@@ -325,6 +325,9 @@ export default function Profile() {
           </Field>
           <Field label="Mobile Number" required hint="This number will receive OTPs on NSP/SSP portal — keep it active">
             <input style={INP} onFocus={onFocus} onBlur={onBlur} name="mobile" value={form.mobile} onChange={upd} placeholder="10-digit mobile" maxLength={10} />
+          </Field>
+          <Field label="Parent/Guardian WhatsApp Number" hint="ವಿದ್ಯಾರ್ಥಿ ವೇತನ ಅಧಿಸೂಚನೆ ಈ ನಂಬರ್‌ಗೆ WhatsApp ಮೂಲಕ ಕಳುಹಿಸಲಾಗುತ್ತದೆ">
+            <input style={INP} onFocus={onFocus} onBlur={onBlur} name="parentPhone" value={form.parentPhone} onChange={upd} placeholder="Parent's 10-digit WhatsApp number" maxLength={10} />
           </Field>
           <Field label="Email Address" hint="Used for scholarship communication and portal login">
             <input style={INP} onFocus={onFocus} onBlur={onBlur} name="email" type="email" value={form.email} onChange={upd} placeholder="your@email.com" />
