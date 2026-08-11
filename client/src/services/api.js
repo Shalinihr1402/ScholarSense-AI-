@@ -41,6 +41,18 @@ export const authApi = {
   },
   me() {
     return apiRequest("/auth/me");
+  },
+  forgotPassword(payload) {
+    return apiRequest("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+  },
+  resetPassword(payload) {
+    return apiRequest("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
   }
 };
 

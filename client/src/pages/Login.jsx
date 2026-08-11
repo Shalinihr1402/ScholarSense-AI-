@@ -45,17 +45,24 @@ export default function Login() {
               required
             />
           </label>
-          <label>
-            Password
-            <input
-              name="password"
-              type="password"
-              placeholder="Enter password"
-              value={form.password}
-              onChange={updateField}
-              required
-            />
-          </label>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            <label>
+              Password
+              <input
+                name="password"
+                type="password"
+                placeholder="Enter password"
+                value={form.password}
+                onChange={updateField}
+                required
+              />
+            </label>
+            <div style={{ textAlign: "right" }}>
+              <Link to="/forgot-password" style={{ fontSize: "0.875rem", color: "var(--primary)" }}>
+                Forgot Password?
+              </Link>
+            </div>
+          </div>
           {status.error ? <div className="form-alert error">{status.error}</div> : null}
           <button className="primary-btn" type="submit" disabled={status.loading}>
             {status.loading ? "Logging in..." : "Login"}

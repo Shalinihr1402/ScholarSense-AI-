@@ -61,7 +61,7 @@ const studentProfileSchema = new mongoose.Schema(
     aadhaarBankLinked:  { type: String, enum: ["Unknown", "Yes", "No"], default: "Unknown" },
     dbtEnabled:         { type: String, enum: ["Unknown", "Yes", "No"], default: "Unknown" },
     bankAccountActive:  { type: String, enum: ["Unknown", "Yes", "No"], default: "Unknown" },
-    npciMapping:        { type: String, enum: ["Unknown", "Yes", "No"], default: "Unknown" },
+    npciMapping:        { type: String, enum: ["Unknown", "Yes", "No", "Yes — Mapped", "No — Not mapped"], default: "Unknown" },
 
     availableDocuments: { type: [String], default: [] },
     eligibilitySnapshot:  { type: mongoose.Schema.Types.Mixed, default: null },

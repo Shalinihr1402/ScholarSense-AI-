@@ -252,6 +252,56 @@ async function getUserDocs(userId) {
   return all.filter(d => d.userId === userId);
 }
 
+// ── Document Kit Matching Helper ──────────────────────────────────────────────
+function matchRequiredDocuments(required, userDocs) {
+  const matched = [];
+  const missing = [];
+  const usedDocIds = new Set();
+
+  for (const reqDoc of required) {
+    let foundDoc = userDocs.find(d => d.documentType === reqDoc && !usedDocIds.has(d._id?.toString() || d.id));
+
+    if (!foundDoc) {
+      foundDoc = userDocs.find(d => reqDoc.toLowerCase().includes(d.documentType.toLowerCase()) && !usedDocIds.has(d._id?.toString() || d.id));
+    }
+
+    if (!foundDoc) {
+      foundDoc = userDocs.find(d => d.documentType.toLowerCase().includes(reqDoc.toLowerCase()) && !usedDocIds.has(d._id?.toString() || d.id));
+    }
+
+    if (!foundDoc) {
+      const r = reqDoc.toLowerCase();
+      let targetType = null;
+      if (r.includes("caste") || r.includes("obc") || r.includes("minority") || r.includes("brahmin") || r.includes("religion")) targetType = "Caste Certificate";
+      else if (r.includes("income")) targetType = "Income Certificate";
+      else if (r.includes("bank") || r.includes("passbook")) targetType = "Bank Passbook";
+      else if (r.includes("fee") || r.includes("receipt")) targetType = "Fee Receipt";
+      else if (r.includes("bonafide") || r.includes("admission") || r.includes("allotment")) targetType = "Bonafide Certificate";
+      else if (r.includes("disability") || r.includes("udid")) targetType = "Disability Certificate";
+      else if (r.includes("domicile") || r.includes("residence")) targetType = "Domicile Certificate";
+      else if (r.includes("marksheet") || r.includes("degree")) targetType = "Marksheet";
+      else if (r.includes("aadhaar") || r.includes("aadhar")) targetType = "Aadhaar Card";
+
+      if (targetType) {
+        foundDoc = userDocs.find(d => d.documentType === targetType && !usedDocIds.has(d._id?.toString() || d.id));
+      }
+      
+      if (!foundDoc && targetType === "Disability Certificate") {
+        foundDoc = userDocs.find(d => d.documentType === "UDID Card" && !usedDocIds.has(d._id?.toString() || d.id));
+      }
+    }
+
+    if (foundDoc) {
+      usedDocIds.add(foundDoc._id?.toString() || foundDoc.id);
+      matched.push({ type: reqDoc, doc: foundDoc, docId: foundDoc._id || foundDoc.id, originalName: foundDoc.originalName });
+    } else {
+      missing.push(reqDoc);
+    }
+  }
+
+  return { matched, missing };
+}
+
 export async function getDocumentKit(req, res, next) {
   try {
     const userId = getUserId(req);
@@ -270,21 +320,7 @@ export async function getDocumentKit(req, res, next) {
     const required = scholarship.requiredDocuments || [];
     const userDocs = await getUserDocs(userId);
 
-    const byType = {};
-    for (const doc of userDocs) {
-      if (!byType[doc.documentType]) byType[doc.documentType] = doc;
-    }
-
-    const matched = [];
-    const missing = [];
-
-    for (const docType of required) {
-      if (byType[docType]) {
-        matched.push({ type: docType, docId: byType[docType]._id || byType[docType].id, originalName: byType[docType].originalName });
-      } else {
-        missing.push(docType);
-      }
-    }
+    const { matched, missing } = matchRequiredDocuments(required, userDocs);
 
     res.json({
       scholarshipName: scholarship.name,
@@ -317,19 +353,15 @@ export async function downloadBundle(req, res, next) {
     const required = scholarship.requiredDocuments || [];
     const userDocs = await getUserDocs(userId);
 
-    const byType = {};
-    for (const doc of userDocs) {
-      if (!byType[doc.documentType]) byType[doc.documentType] = doc;
-    }
-
-    const toZip = required.map(t => byType[t]).filter(Boolean);
+    const { matched } = matchRequiredDocuments(required, userDocs);
+    const toZip = matched.map(m => m.doc);
     if (toZip.length === 0) return res.status(404).json({ message: "No matching documents to bundle." });
 
     const zipName = `ScholarSense_ApplicationKit.zip`;
     res.setHeader("Content-Type", "application/zip");
     res.setHeader("Content-Disposition", `attachment; filename="${zipName}"`);
 
-    const archive = archiver("zip", { zlib: { level: 6 } });
+    const archive = new archiver.ZipArchive({ zlib: { level: 6 } });
     archive.on("error", err => next(err));
     archive.pipe(res);
 

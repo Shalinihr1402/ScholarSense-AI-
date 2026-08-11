@@ -20,7 +20,7 @@ export const seedScholarships = [
     applicationLink: "https://scholarships.gov.in",
     sourceUrl: "https://scholarships.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Death/Disability Certificate of Police Personnel", "Service Certificate", "Income Certificate", "10th Marksheet", "12th Marksheet", "Fee Receipt", "Bonafide Certificate", "Domicile Certificate"],
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Disability Certificate of Police Personnel", "Service Certificate", "Income Certificate", "10th Marksheet", "12th Marksheet", "Fee Receipt", "Bonafide Certificate", "Domicile Certificate"],
     description: "For wards and widows of State/UT Police personnel killed or disabled in terrorist/Naxal attacks. Covers professional courses from 1st year onwards."
   },
   {
@@ -42,7 +42,7 @@ export const seedScholarships = [
     applicationLink: "https://scholarships.gov.in",
     sourceUrl: "https://scholarships.gov.in",
     status: "Active",
-    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Service Certificate of CAPF/AR Personnel", "Death/Disability Certificate", "10th Marksheet", "12th Marksheet", "Fee Receipt", "Bonafide Certificate"],
+    requiredDocuments: ["Aadhaar Card", "Bank Passbook (Aadhaar Seeded)", "Service Certificate of CAPF/AR Personnel", "Disability Certificate", "10th Marksheet", "12th Marksheet", "Fee Receipt", "Bonafide Certificate"],
     description: "For wards and widows of BSF, CRPF, CISF, ITBP, SSB, NSG and Assam Rifles personnel martyred, deceased in service, or disabled."
   },
   // ── AICTE ────────────────────────────────────────────────────────────────────

@@ -38,7 +38,7 @@ export default function DocumentKitModal({ scholarship, onClose }) {
           </button>
         </div>
 
-        <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 16, maxHeight: "calc(90vh - 80px)", overflowY: "auto" }}>
 
           {loading && (
             <div style={{ textAlign: "center", padding: "24px 0", color: "#64748b" }}>

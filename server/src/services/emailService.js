@@ -139,3 +139,65 @@ export async function getEmailStatus(userId) {
     }
   };
 }
+
+export async function sendPasswordResetEmail({ user, resetUrl }) {
+  const email = user.email;
+  const subject = "[ScholarSense AI] Password Reset Request";
+  
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="font-family:Arial,sans-serif;background:#f1f5f9;padding:32px;">
+<div style="max-width:560px;margin:0 auto;background:white;padding:32px;border-radius:16px;">
+  <h2 style="margin-top:0;">Reset Your Password</h2>
+  <p>Hello ${user.name},</p>
+  <p>We received a request to reset your ScholarSense AI password.</p>
+  <p>Click the button below to choose a new password. This link will expire in 1 hour.</p>
+  <div style="margin:32px 0;">
+    <a href="${resetUrl}" style="display:inline-block;background:#2563eb;color:white;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:8px;">Reset Password</a>
+  </div>
+  <p>If you didn't request a password reset, you can safely ignore this email.</p>
+</div>
+</body></html>`;
+
+  const text = `Reset Your Password\n\nHello ${user.name},\n\nWe received a request to reset your ScholarSense AI password. Open this link to choose a new password: ${resetUrl}\n\nThis link will expire in 1 hour. If you didn't request a password reset, you can safely ignore this email.`;
+
+  if (!isEmailConfigured()) {
+    return createEmailLog({
+      userId: user.id || user._id?.toString(),
+      toEmail: email,
+      subject,
+      status: "skipped",
+      reason: "EMAIL_USER or EMAIL_PASS is not configured.",
+      notificationTitle: "Password Reset Request"
+    });
+  }
+
+  try {
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"ScholarSense AI" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject,
+      text,
+      html
+    });
+
+    return createEmailLog({
+      userId: user.id || user._id?.toString(),
+      toEmail: email,
+      subject,
+      status: "sent",
+      reason: "",
+      notificationTitle: "Password Reset Request"
+    });
+  } catch (error) {
+    return createEmailLog({
+      userId: user.id || user._id?.toString(),
+      toEmail: email,
+      subject,
+      status: "failed",
+      reason: error.message,
+      notificationTitle: "Password Reset Request"
+    });
+  }
+}

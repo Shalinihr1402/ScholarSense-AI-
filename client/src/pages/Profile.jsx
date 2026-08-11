@@ -47,11 +47,12 @@ function sectionProgress(form, keys) {
 
 // ── Shared input style ──
 const INP = {
-  padding: "10px 13px", borderRadius: 10, fontSize: 13.5,
-  border: "1.5px solid #e2e8f0", background: "#f8fafc",
+  padding: "12px 16px", borderRadius: 12, fontSize: 14,
+  border: "1.5px solid rgba(255, 255, 255, 0.7)", background: "rgba(255, 255, 255, 0.5)",
   color: "#0f172a", width: "100%", boxSizing: "border-box",
-  outline: "none", transition: "border-color .15s, box-shadow .15s",
-  fontFamily: "inherit"
+  outline: "none", transition: "all .25s ease",
+  fontFamily: "inherit", backdropFilter: "blur(8px)",
+  boxShadow: "inset 0 2px 6px rgba(0,0,0,0.02)"
 };
 
 const GRID = { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(230px,1fr))", gap: 18 };
@@ -86,9 +87,10 @@ function SectionCard({ icon: Icon, title, subtitle, progress, color = "blue", ch
   const pct = progress ? Math.round((progress.filled / progress.total) * 100) : null;
 
   return (
-    <div style={{
-      background: "white", borderRadius: 18, overflow: "hidden",
-      boxShadow: "0 2px 16px rgba(15,23,42,.07)", border: `1.5px solid ${c.border}`
+    <div className="glass-panel" style={{
+      borderRadius: 20, overflow: "hidden",
+      border: `1.5px solid ${c.border}`,
+      background: "rgba(255, 255, 255, 0.65)"
     }}>
       {/* Colored stripe */}
       <div style={{ height: 4, background: c.bar }} />
@@ -167,16 +169,15 @@ export default function Profile() {
     setForm(s => ({ ...s, [name]: value }));
   }
 
-  // Focus/blur handlers for input glow
   function onFocus(e) {
-    e.target.style.borderColor = "#2563eb";
-    e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,.1)";
-    e.target.style.background = "#ffffff";
+    e.target.style.borderColor = "var(--blue-mid)";
+    e.target.style.boxShadow = "inset 0 2px 4px rgba(0,0,0,0.02), 0 0 0 4px rgba(59,130,246,0.15)";
+    e.target.style.background = "rgba(255, 255, 255, 0.95)";
   }
   function onBlur(e) {
-    e.target.style.borderColor = "#e2e8f0";
-    e.target.style.boxShadow = "none";
-    e.target.style.background = "#f8fafc";
+    e.target.style.borderColor = "rgba(255, 255, 255, 0.7)";
+    e.target.style.boxShadow = "inset 0 2px 6px rgba(0,0,0,0.02)";
+    e.target.style.background = "rgba(255, 255, 255, 0.5)";
   }
 
   async function handleUdidUpload(e) {
@@ -234,14 +235,14 @@ export default function Profile() {
   );
 
   return (
-    <div className="page-stack">
+    <div className="page-stack page-glass-wrapper animated-gradient-bg" style={{ padding: "28px", borderRadius: "24px", minHeight: "100vh" }}>
 
       {/* ── Page header ── */}
-      <div style={{ marginBottom: 4 }}>
-        <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: ".1em", textTransform: "uppercase", color: "#0d9488", margin: "0 0 6px" }}>
+      <div style={{ marginBottom: 12 }}>
+        <p style={{ fontSize: 11.5, fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase", color: "#0d9488", margin: "0 0 8px" }}>
           Student Profile
         </p>
-        <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0f172a", margin: "0 0 6px", letterSpacing: "-.02em" }}>
+        <h2 className="glow-text" style={{ fontSize: 32, fontWeight: 900, margin: "0 0 8px", letterSpacing: "-.02em" }}>
           Your Scholarship Application Profile
         </h2>
         <p style={{ fontSize: 13.5, color: "#64748b", margin: 0, display: "flex", alignItems: "center", gap: 6 }}>
@@ -260,10 +261,10 @@ export default function Profile() {
       </div>
 
       {/* ── Overall progress bar ── */}
-      <div style={{
-        background: "white", borderRadius: 16, padding: "18px 22px",
-        boxShadow: "0 2px 12px rgba(15,23,42,.07)", border: "1.5px solid #e2e8f0",
-        display: "flex", alignItems: "center", gap: 18
+      <div className="glass-panel" style={{
+        borderRadius: 20, padding: "20px 24px",
+        display: "flex", alignItems: "center", gap: 20,
+        background: "rgba(255, 255, 255, 0.7)"
       }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
@@ -287,7 +288,7 @@ export default function Profile() {
             }}>
               <CheckCircle2 size={20} color="#16a34a" />
             </div>
-          : <span style={{ fontSize: 12.5, fontWeight: 700, color: "#64748b", flexShrink: 0, whiteSpace: "nowrap" }}>
+          : <span style={{ fontSize: 13, fontWeight: 700, color: "#64748b", flexShrink: 0, whiteSpace: "nowrap" }}>
               {totalRequired - totalFilled} required fields left
             </span>
         }
@@ -495,9 +496,9 @@ export default function Profile() {
 
         {/* ── Disability Details (shown only when disabilityStatus === "Yes") ── */}
         {form.disabilityStatus === "Yes" && (
-          <div style={{
-            background: "white", borderRadius: 18, overflow: "hidden",
-            boxShadow: "0 2px 16px rgba(15,23,42,.07)", border: "1.5px solid #ddd6fe"
+          <div className="glass-panel" style={{
+            borderRadius: 20, overflow: "hidden", border: "1.5px solid #ddd6fe",
+            background: "rgba(255, 255, 255, 0.65)"
           }}>
             <div style={{ height: 4, background: "linear-gradient(90deg,#7c3aed,#6366f1)" }} />
             <div style={{ padding: "18px 24px 16px", display: "flex", alignItems: "center", gap: 14, borderBottom: "1px solid #f1f5f9" }}>
@@ -616,7 +617,7 @@ export default function Profile() {
             <input style={INP} onFocus={onFocus} onBlur={onBlur} name="bankName" value={form.bankName} onChange={upd} placeholder="e.g. State Bank of India" />
           </Field>
           <Field label="Account Holder Name" hint="Name on the bank account — must match your Aadhaar name exactly">
-            <input style={INP} onFocus={onFocus} onBlur={onBlur} name="accountHolderName" value={form.accountHolderName} onChange={upd} placeholder="As on bank passbook" />
+            <input className="premium-input" style={INP} onFocus={onFocus} onBlur={onBlur} name="accountHolderName" value={form.accountHolderName} onChange={upd} placeholder="As on bank passbook" />
           </Field>
           <Field label="Account Number" required hint="Your savings or current account number (not credit card number)">
             <input style={INP} onFocus={onFocus} onBlur={onBlur} name="accountNumber" value={form.accountNumber} onChange={upd} placeholder="e.g. 31234567890" />

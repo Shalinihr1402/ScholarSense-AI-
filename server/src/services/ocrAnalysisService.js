@@ -287,8 +287,18 @@ function namesMatch(name1, name2) {
   const w1 = normalizeNameWords(name1);
   const w2 = normalizeNameWords(name2);
   if (!w1.length || !w2.length) return null;
-  const overlap = w1.filter(w => w2.includes(w)).length;
-  return overlap / Math.max(w1.length, w2.length) >= 0.5;
+  
+  // Filter out 1-letter initials (like "H", "R") to prevent siblings from matching
+  const sig1 = w1.filter(w => w.length > 1);
+  const sig2 = w2.filter(w => w.length > 1);
+  
+  if (!sig1.length || !sig2.length) {
+    // If only initials exist, fallback to checking raw overlap
+    return (w1.filter(w => w2.includes(w)).length / Math.max(w1.length, w2.length)) >= 0.5;
+  }
+  
+  const overlap = sig1.filter(w => sig2.includes(w)).length;
+  return overlap / Math.max(sig1.length, sig2.length) >= 0.5;
 }
 
 function parseDateFlexible(str) {
@@ -356,15 +366,41 @@ export function extractAadhaarFields(text) {
     result.name = cleanName(nameSameLine[1]);
   } else {
     // Pattern B — "Name" label on one line, value on the NEXT line (APAAR format)
+    let found = false;
     for (let i = 0; i < lines.length - 1; i++) {
       if (/^name$/i.test(lines[i])) {
         const nextLine = lines[i + 1];
-        // Must look like a real name (letters only, 2+ words or mixed case)
         if (/^[A-Za-z][a-zA-Z\s.]{3,40}$/.test(nextLine) && !/^\d/.test(nextLine)) {
           result.name = cleanName(nextLine);
+          found = true;
           break;
         }
       }
+    }
+    
+    // Pattern C — Real Aadhaar card often has NO "Name:" label. The name is usually directly above the DOB line.
+    if (!found && result.dob) {
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].toLowerCase().includes(result.dob) || /(?:dob|year of birth|yob)/i.test(lines[i])) {
+          const prevLine = lines[i - 1];
+          // Check if previous line looks like a name (not a number, not Government of India)
+          if (/^[A-Za-z\s.]{4,40}$/.test(prevLine) && !/government of india|भारत सरकार/i.test(prevLine)) {
+            result.name = cleanName(prevLine);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // Final check: if we failed, but there is exactly one line that is ALL CAPS (or Title Case) and looks like a name, grab it.
+  if (!result.name) {
+    for (let i = 0; i < lines.length; i++) {
+       const line = lines[i];
+       if (/^[A-Z][A-Za-z\s.]{4,30}$/.test(line) && !/government|india|father|dob|address|unique/i.test(line)) {
+          result.name = cleanName(line);
+          break;
+       }
     }
   }
 
@@ -373,6 +409,10 @@ export function extractAadhaarFields(text) {
 
 export function extractBankFields(text) {
   const result = { accountHolderName: null, ifscCode: null, accountNumber: null, bankName: null };
+
+  // Bank name (common Indian banks) — extract this FIRST to ignore it later
+  const bankMatch = text.match(/(state bank|sbi|punjab national|pnb|canara|union bank|axis|hdfc|icici|kotak|bank of baroda|bank of india|karnataka bank|vijaya bank|syndicate|central bank of india)[^\n,]{0,40}/i);
+  if (bankMatch) result.bankName = bankMatch[0].trim().slice(0, 60);
 
   // IFSC: 4 uppercase letters + "0" + 6 alphanumeric — e.g. KARB0000123
   const ifscMatch = text.match(/\b([A-Z]{4}0[A-Z0-9]{6})\b/i);
@@ -384,13 +424,29 @@ export function extractBankFields(text) {
   if (acMatch) result.accountNumber = acMatch[1].replace(/\s/g, "");
 
   // Account holder name — strip "To " prefix common in passbooks
-  const nameMatch = text.match(/(?:account\s*holder(?:\s*name)?|in\s*favour\s*of)[:\s]+([A-Za-z\s.]{3,40})/i)
-    || text.match(/(?:^|\n)\s*(?:To\s+)?([A-Z][A-Za-z\s.]{4,40})\s*(?:\n|$)/m);
-  if (nameMatch) result.accountHolderName = cleanName(nameMatch[1]);
-
-  // Bank name (common Indian banks)
-  const bankMatch = text.match(/(state bank|sbi|punjab national|pnb|canara|union bank|axis|hdfc|icici|kotak|bank of baroda|bank of india|karnataka bank|vijaya bank|syndicate)[^\n,]{0,40}/i);
-  if (bankMatch) result.bankName = bankMatch[0].trim().slice(0, 60);
+  const nameMatch = text.match(/(?:account\s*holder|acc\s*holder|name|in\s*favour\s*of)[:\s]+([A-Za-z\s.]{3,40})/i);
+  
+  if (nameMatch) {
+    result.accountHolderName = cleanName(nameMatch[1]);
+  } else {
+    // Fallback: look for a capitalized line that isn't the bank name
+    const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+    for (const line of lines) {
+      if (line.length > 5 && line.length < 50) {
+         const isBankName = /bank|branch|state|india|national|punjab|canara|syndicate|limited|ltd/i.test(line);
+         const isLabel = /ifsc|account|address|date|code|name|customer|cif/i.test(line);
+         const words = line.split(/\s+/);
+         
+         if (!isBankName && !isLabel && words.length >= 2 && words.length <= 6) {
+            const possibleName = cleanName(line);
+            if (possibleName) {
+              result.accountHolderName = possibleName;
+              break;
+            }
+         }
+      }
+    }
+  }
 
   return result;
 }
@@ -446,6 +502,52 @@ export function extractCasteFields(text) {
 
   const dateMatch = text.match(/(?:date|issued)[:\s]+(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/i);
   if (dateMatch) result.issueDate = dateMatch[1];
+
+  return result;
+}
+
+export function extractUdidFields(text) {
+  const result = { applicantName: null, udidNumber: null, disabilityType: null, disabilityPercentage: null, issueDate: null };
+
+  // UDID Number: usually starts with state code e.g. KA + 16 digits
+  const udidMatch = text.match(/\b([A-Z]{2}\d{16})\b/i) || text.match(/(?:udid|ud\s*id)[:\s]*([A-Z0-9]{15,20})/i);
+  if (udidMatch) result.udidNumber = udidMatch[1].replace(/\s/g, "").toUpperCase();
+
+  // Disability Type
+  const typeMatch = text.match(/(?:disability\s*type)[:\s]*([A-Za-z\s]+)(?:\n|$|year)/i);
+  if (typeMatch) result.disabilityType = typeMatch[1].trim();
+
+  // Disability Percentage
+  const pctMatch = text.match(/(?:percentage|percent)[^\d]*(\d{1,3})\s*%/i) || text.match(/\b(\d{1,3})\s*%(?:\s*\(.*?\))?/);
+  if (pctMatch) result.disabilityPercentage = parseInt(pctMatch[1], 10);
+
+  // Date of Issue
+  const dateMatch = text.match(/(?:date\s*of\s*issue|issued\s*on)[:\s]*(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})/i);
+  if (dateMatch) result.issueDate = dateMatch[1];
+
+  // Name: usually after "Name" label or above UDID
+  const nameMatch = text.match(/(?:name|नाम)[\s/]*\n*(?:[^\n]+\n)?([A-Z][A-Za-z\s.]{3,40})/i);
+  if (nameMatch) {
+    // avoid grabbing Kannada text or generic labels
+    const possibleName = nameMatch[1].trim();
+    if (!/udid|disability/i.test(possibleName)) {
+      result.applicantName = cleanName(possibleName);
+    }
+  }
+
+  // Fallback for name: look for line above UDID
+  if (!result.applicantName && result.udidNumber) {
+    const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+    for (let i = 1; i < lines.length; i++) {
+      if (lines[i].replace(/\s/g, "").toUpperCase().includes(result.udidNumber)) {
+        const prevLine = lines[i - 1];
+        if (/^[A-Za-z\s.]{3,40}$/.test(prevLine) && !/udid|name/i.test(prevLine)) {
+          result.applicantName = cleanName(prevLine);
+        }
+        break;
+      }
+    }
+  }
 
   return result;
 }
@@ -515,7 +617,8 @@ export function verifyDocumentType(text, documentType) {
       "Bank Passbook":        "a bank passbook (should show account number and bank name)",
       "Marksheet":            "a marksheet (should show marks, percentage, or grade)",
       "Bonafide Certificate": "a bonafide certificate",
-      "Fee Receipt":          "a fee receipt (should show payment amount)"
+      "Fee Receipt":          "a fee receipt (should show payment amount)",
+      "UDID Card":            "a UDID card (should contain your UDID number or disability type)"
     };
     return {
       verified: false,
@@ -528,14 +631,21 @@ export function verifyDocumentType(text, documentType) {
 }
 
 export function extractFieldsByDocumentType(text, documentType) {
+  let fields = null;
   switch (documentType) {
-    case "Aadhaar Card":        return extractAadhaarFields(text);
-    case "Bank Passbook":       return extractBankFields(text);
-    case "Income Certificate":  return extractIncomeFields(text);
-    case "Marksheet":           return extractMarksheetFields(text);
-    case "Caste Certificate":   return extractCasteFields(text);
-    default:                    return null;
+    case "Aadhaar Card":        fields = extractAadhaarFields(text); break;
+    case "Bank Passbook":       fields = extractBankFields(text); break;
+    case "Income Certificate":  fields = extractIncomeFields(text); break;
+    case "Marksheet":           fields = extractMarksheetFields(text); break;
+    case "Caste Certificate":   fields = extractCasteFields(text); break;
+    case "UDID Card":           fields = extractUdidFields(text); break;
   }
+  
+  if (fields) {
+    fields._rawText = text;
+  }
+  
+  return fields;
 }
 
 // ── Cross-document validator ───────────────────────────────────────────────────
@@ -551,27 +661,49 @@ export function crossValidateDocuments(extractedByType) {
   const marks   = extractedByType["Marksheet"];
 
   // ── Rule 1: Aadhaar name vs Bank name (most common rejection cause) ──
-  if (aadhaar?.name && bank?.accountHolderName) {
-    const match = namesMatch(aadhaar.name, bank.accountHolderName);
-    if (match === false) {
+  if (aadhaar?.name) {
+    if (bank) {
+      if (bank.accountHolderName) {
+        const match = namesMatch(aadhaar.name, bank.accountHolderName);
+        if (match === false) {
+          risks.push({
+            severity: "Critical",
+            check: "Name Mismatch: Aadhaar ↔ Bank Passbook",
+            status: "FAIL",
+            detail: `Aadhaar name: "${aadhaar.name}" | Bank name: "${bank.accountHolderName}"`,
+            impact: "Bank validation will FAIL — NSP/SSP cannot send payment to your account",
+            action: "Visit your bank branch with original Aadhaar and request a name correction to exactly match your Aadhaar"
+          });
+        }
+      } else if (bank._rawText) {
+        // Smart Fallback: Check if the Aadhaar name exists anywhere in the raw passbook text
+        // We filter out 1-letter initials so siblings (e.g. Shalini H R vs Kavya H R) are correctly rejected
+        const aadhaarWords = normalizeNameWords(aadhaar.name).filter(w => w.length > 1);
+        const passbookWords = normalizeNameWords(bank._rawText);
+        const overlap = aadhaarWords.filter(w => passbookWords.includes(w)).length;
+        
+        // If less than half of the significant Aadhaar name words appear anywhere in the passbook, it's a mismatch
+        if (aadhaarWords.length > 0 && (overlap / aadhaarWords.length < 0.5)) {
+          risks.push({
+            severity: "Critical",
+            check: "Name Mismatch: Aadhaar ↔ Bank Passbook",
+            status: "FAIL",
+            detail: `Your Aadhaar name "${aadhaar.name}" was not found in your Bank Passbook`,
+            impact: "Bank validation will FAIL — NSP/SSP cannot send payment to your account",
+            action: "Visit your bank branch with original Aadhaar and request a name correction to exactly match your Aadhaar"
+          });
+        }
+      }
+    } else {
       risks.push({
-        severity: "Critical",
-        check: "Name: Aadhaar ↔ Bank Passbook",
-        status: "FAIL",
-        detail: `Aadhaar name: "${aadhaar.name}" | Bank name: "${bank.accountHolderName}"`,
-        impact: "Bank validation will FAIL — NSP/SSP cannot send payment to your account",
-        action: "Visit your bank branch with original Aadhaar and request a name correction to exactly match your Aadhaar"
+        severity: "High",
+        check: "Bank Passbook not uploaded",
+        status: "MISSING",
+        detail: "Bank passbook is required for scholarship payment processing",
+        impact: "Cannot verify IFSC, account number, or name match",
+        action: "Upload your bank passbook first page in Document Vault"
       });
     }
-  } else if (!bank) {
-    risks.push({
-      severity: "High",
-      check: "Bank Passbook not uploaded",
-      status: "MISSING",
-      detail: "Bank passbook is required for scholarship payment processing",
-      impact: "Cannot verify IFSC, account number, or name match",
-      action: "Upload your bank passbook first page in Document Vault"
-    });
   }
 
   // ── Rule 2: Aadhaar name vs Income Certificate name ──
@@ -638,6 +770,18 @@ export function crossValidateDocuments(extractedByType) {
       detail: "Account number was not detected clearly from the uploaded image",
       impact: "Scholarship portal may fail account validation",
       action: "Re-upload a clearer photo of the passbook page showing account number"
+    });
+  }
+
+  // ── Rule 6.5: Account holder name not readable (and fallback failed) ──
+  if (bank && !bank.accountHolderName && (!aadhaar?.name || !bank._rawText)) {
+    risks.push({
+      severity: "Medium",
+      check: "Account Holder Name Not Clear — Bank Passbook",
+      status: "WARN",
+      detail: "We could not read the account holder name from the passbook",
+      impact: "Cannot verify if bank name matches Aadhaar name",
+      action: "Re-upload a clearer photo of the passbook page showing your name clearly"
     });
   }
 

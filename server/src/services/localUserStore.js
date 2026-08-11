@@ -68,3 +68,21 @@ export async function findLocalUserByEmail(email) {
 export function safeLocalUser(user) {
   return sanitizeUser(user);
 }
+
+export async function findLocalUserById(id) {
+  const users = await readUsers();
+  return users.find((user) => user.id === id) || null;
+}
+
+export async function updateLocalUser(id, updates) {
+  const users = await readUsers();
+  const index = users.findIndex((user) => user.id === id);
+  
+  if (index === -1) {
+    throw new Error("User not found");
+  }
+
+  users[index] = { ...users[index], ...updates };
+  await writeUsers(users);
+  return sanitizeUser(users[index]);
+}

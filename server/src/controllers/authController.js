@@ -1,9 +1,11 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import StudentProfile from "../models/StudentProfile.js";
-import { createLocalUser, findLocalUserByEmail, safeLocalUser } from "../services/localUserStore.js";
+import { createLocalUser, findLocalUserByEmail, safeLocalUser, updateLocalUser } from "../services/localUserStore.js";
 import { upsertLocalProfile } from "../services/localProfileStore.js";
 import { signAuthToken } from "../utils/token.js";
+import crypto from "crypto";
+import { sendPasswordResetEmail } from "../services/emailService.js";
 
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -125,4 +127,96 @@ export async function login(req, res, next) {
 
 export async function getMe(req, res) {
   res.json({ user: req.user });
+}
+
+export async function forgotPassword(req, res, next) {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required." });
+    }
+
+    let user = null;
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (User.db.readyState === 1) {
+      user = await User.findOne({ email: normalizedEmail });
+    } else {
+      user = await findLocalUserByEmail(normalizedEmail);
+    }
+
+    if (!user) {
+      // Don't leak whether user exists or not for security
+      return res.status(200).json({ message: "If that email is in our system, we've sent a password reset link." });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+
+    if (User.db.readyState === 1) {
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordExpires = resetPasswordExpires;
+      await user.save();
+    } else {
+      await updateLocalUser(user.id, { resetPasswordToken: resetToken, resetPasswordExpires: resetPasswordExpires.toISOString() });
+    }
+
+    const appUrl = process.env.APP_URL || "http://localhost:5173";
+    const resetUrl = `${appUrl}/reset-password?token=${resetToken}`;
+
+    await sendPasswordResetEmail({ user, resetUrl });
+
+    res.status(200).json({ message: "If that email is in our system, we've sent a password reset link." });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function resetPassword(req, res, next) {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({ message: "Token and new password are required." });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must contain at least 6 characters." });
+    }
+
+    let user = null;
+
+    if (User.db.readyState === 1) {
+      user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() }
+      });
+    } else {
+      const users = await import("fs/promises").then(fs => fs.readFile(new URL("../../data/users.local.json", import.meta.url), "utf8")).then(JSON.parse).catch(() => []);
+      user = users.find(u => u.resetPasswordToken === token && new Date(u.resetPasswordExpires) > new Date());
+    }
+
+    if (!user) {
+      return res.status(400).json({ message: "Password reset token is invalid or has expired." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    if (User.db.readyState === 1) {
+      user.password = hashedPassword;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+    } else {
+      await updateLocalUser(user.id, {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null
+      });
+    }
+
+    res.status(200).json({ message: "Password has been successfully reset. You can now log in." });
+  } catch (error) {
+    next(error);
+  }
 }

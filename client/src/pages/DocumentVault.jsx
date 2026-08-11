@@ -86,6 +86,15 @@ const DOC_CHECKLIST = {
     ],
     warning: "A challan number alone or a screenshot of payment without a college stamp is NOT accepted.",
   },
+  "UDID Card": {
+    mustContain: [
+      "Your full name",
+      "Your UDID number",
+      "Disability type and percentage",
+      "Issue date",
+    ],
+    warning: "A medical certificate from a private hospital is NOT a UDID card.",
+  },
   "Other": {
     mustContain: ["Relevant personal or academic information as required by the scholarship"],
     warning: "Upload only documents specifically asked for by the scholarship you are applying to.",
@@ -123,6 +132,9 @@ function ExtractedFields({ fields, docType }) {
   if (fields.bankName)          items.push({ label: "Bank",            value: fields.bankName });
   if (fields.annualIncome)      items.push({ label: "Annual Income",   value: `₹${fields.annualIncome}` });
   if (fields.category)          items.push({ label: "Category",        value: fields.category });
+  if (fields.udidNumber)        items.push({ label: "UDID",            value: fields.udidNumber });
+  if (fields.disabilityType)    items.push({ label: "Disability",      value: fields.disabilityType });
+  if (fields.disabilityPercentage) items.push({ label: "Percentage",   value: `${fields.disabilityPercentage}%` });
   if (fields.issueDate)         items.push({ label: "Issue Date",      value: fields.issueDate });
 
   if (items.length === 0) return null;

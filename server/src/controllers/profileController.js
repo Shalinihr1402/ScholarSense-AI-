@@ -69,17 +69,22 @@ async function sendSavedProfile(req, res, profile, changedFields = [], computedS
       const isEligible = topMatch.status === "Eligible";
       const eligibleCount = snap.eligible || 0;
       const checkCount = snap.check || 0;
+      const totalMatched = eligibleCount + checkCount;
       const message =
-        `📢 *ScholarSense AI - ವಿದ್ಯಾರ್ಥಿ ವಜೀಫ ಅಧಿಸೂಚನೆ*\n\n` +
+        `🎓📚 *ScholarSense AI*\n` +
+        `━━━━━━━━━━━━━━━━━━━━\n` +
+        `📢 *ವಿದ್ಯಾರ್ಥಿ ವೇತನ ಅಧಿಸೂಚನೆ*\n\n` +
         `ಆತ್ಮೀಯ ಪೋಷಕರೇ,\n\n` +
-        (isEligible
-          ? `ನಿಮ್ಮ ಮಗು *${profile.fullName || "ವಿದ್ಯಾರ್ಥಿ"}* ಈ ಕೆಳಗಿನ ವಿದ್ಯಾರ್ಥಿ ವೇತನಕ್ಕೆ ಅರ್ಹರಾಗಿದ್ದಾರೆ:\n`
-          : `ನಿಮ್ಮ ಮಗು *${profile.fullName || "ವಿದ್ಯಾರ್ಥಿ"}* ಈ ಕೆಳಗಿನ ವಿದ್ಯಾರ್ಥಿ ವೇತನಕ್ಕೆ ಅರ್ಹರಾಗಬಹುದು (ಪರಿಶೀಲಿಸಿ):\n`) +
+        `ನಿಮ್ಮ ಮಗು *${profile.fullName || "ವಿದ್ಯಾರ್ಥಿ"}* ಅವರಿಗೆ ಕೆಳಗಿನ ವಿದ್ಯಾರ್ಥಿ ವೇತನಕ್ಕೆ ` +
+        (isEligible ? `ಅರ್ಹತೆ ಇದೆ:\n\n` : `ಅರ್ಹತೆ ಇರುವ ಸಾಧ್ಯತೆ ಇದೆ:\n\n`) +
         `🎓 *${topMatch.name}*\n\n` +
-        (eligibleCount > 0 ? `✅ ಒಟ್ಟು *${eligibleCount}* ವಿದ್ಯಾರ್ಥಿ ವೇತನಗಳಿಗೆ ಅರ್ಹರಾಗಿದ್ದಾರೆ.\n` : "") +
-        (checkCount > 0 ? `🔍 *${checkCount}* ವಿದ್ಯಾರ್ಥಿ ವೇತನಗಳನ್ನು ಪರಿಶೀಲಿಸಬೇಕಾಗಿದೆ.\n` : "") +
-        `\nದಯವಿಟ್ಟು ScholarSense AI ಅಪ್ಲಿಕೇಶನ್ ತೆರೆದು ಅರ್ಜಿ ಸಲ್ಲಿಸಿ.\n\n` +
-        `- ScholarSense AI ತಂಡ`;
+        (totalMatched > 0
+          ? `🔎 ಒಟ್ಟು *${totalMatched}* ವಿದ್ಯಾರ್ಥಿ ವೇತನಗಳು ನಿಮ್ಮ ಮಗುವಿನ ಪ್ರೊಫೈಲ್‌ಗೆ ಹೊಂದಿಕೆಯಾಗುವ ಸಾಧ್ಯತೆಯಿದ್ದು, ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ.\n\n`
+          : "") +
+        `✅ ದಯವಿಟ್ಟು ScholarSense AI ಅಪ್ಲಿಕೇಶನ್‌ಗೆ ಲಾಗಿನ್ ಮಾಡಿ, ಅರ್ಹತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಕೊನೆಯ ದಿನಾಂಕಕ್ಕೂ ಮುನ್ನ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ.\n\n` +
+        `📌 *ಸೂಚನೆ:* ಅಂತಿಮ ಅರ್ಹತೆ ಸಂಬಂಧಿತ ವಿದ್ಯಾರ್ಥಿ ವೇತನದ ಅಧಿಕೃತ ಮಾರ್ಗಸೂಚಿಗಳು ಹಾಗೂ ಸಲ್ಲಿಸಿದ ದಾಖಲೆಗಳ ಪರಿಶೀಲನೆಯ ಆಧಾರದ ಮೇಲೆ ನಿರ್ಧರಿಸಲಾಗುತ್ತದೆ.\n\n` +
+        `━━━━━━━━━━━━━━━━━━━━\n` +
+        `— *ScholarSense AI ತಂಡ* 🎓`;
 
       console.log("[WhatsApp] Sending to:", notifyPhone);
       sendWhatsApp({ to: notifyPhone, message })
