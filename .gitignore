@@ -10,3 +10,6 @@ server/data/scholarships.local.json
 server/data/notifications.local.json
 server/data/email-logs.local.json
 *.log
+.env.*
+*.bak
+server/data/*.bak

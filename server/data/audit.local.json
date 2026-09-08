@@ -328,5 +328,94 @@
       ]
     },
     "createdAt": "2026-09-07T14:34:54.383Z"
+  },
+  {
+    "id": "1fbfec9f-cc93-48d2-ac40-1b97bf398549",
+    "userId": "a3c69a2a-4556-4425-b93b-d22e1b91911c",
+    "category": "bank",
+    "action": "aadhaar_linked",
+    "title": "Aadhaar linked to bank account",
+    "detail": "Aadhaar seeding confirmed for Central Bank of India",
+    "meta": {
+      "bank": "Central Bank of India"
+    },
+    "createdAt": "2026-09-08T05:16:14.570Z"
+  },
+  {
+    "id": "40f5e8b0-4c9a-4db1-a6a9-11c0be05e699",
+    "userId": "a3c69a2a-4556-4425-b93b-d22e1b91911c",
+    "category": "bank",
+    "action": "dbt_enabled",
+    "title": "DBT enabled on bank account",
+    "detail": "Direct Benefit Transfer activated on Central Bank of India",
+    "meta": {
+      "bank": "Central Bank of India"
+    },
+    "createdAt": "2026-09-08T05:16:14.575Z"
+  },
+  {
+    "id": "47276b90-beb0-4dac-ac6c-da8571e625ac",
+    "userId": "a3c69a2a-4556-4425-b93b-d22e1b91911c",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "Central Bank of India ••••8206 · IFSC: CBIN0280860",
+    "meta": {
+      "bank": "Central Bank of India",
+      "ifsc": "CBIN0280860",
+      "masked": "••••8206"
+    },
+    "createdAt": "2026-09-08T05:16:14.575Z"
+  },
+  {
+    "id": "25de837f-26f6-4621-abf5-64f6f048fc17",
+    "userId": "a3c69a2a-4556-4425-b93b-d22e1b91911c",
+    "category": "profile",
+    "action": "profile_updated",
+    "title": "Profile information updated",
+    "detail": "Fields updated: fullName, dateOfBirth, gender, mobile and 34 more",
+    "meta": {
+      "fields": [
+        "fullName",
+        "dateOfBirth",
+        "gender",
+        "mobile",
+        "parentPhone",
+        "email",
+        "aadhaarMasked",
+        "state",
+        "district",
+        "taluk",
+        "village",
+        "address",
+        "pinCode",
+        "educationLevel",
+        "course",
+        "semester",
+        "admissionYear",
+        "currentAcademicYear",
+        "universityBoard",
+        "marksPercentage",
+        "admissionType",
+        "collegeName",
+        "instituteCode",
+        "instituteAddress",
+        "nodalOfficerName",
+        "nodalOfficerDesignation",
+        "nodalOfficerEmail",
+        "nodalOfficerContact",
+        "category",
+        "subcategory",
+        "parentProfession",
+        "annualIncome",
+        "disabilityStatus",
+        "minorityStatus",
+        "hosteller",
+        "orphanStatus",
+        "firstGraduate",
+        "availableDocuments"
+      ]
+    },
+    "createdAt": "2026-09-08T05:16:14.575Z"
   }
 ]
