@@ -111,5 +111,63 @@
       "isExpired": true
     },
     "ocrConfidence": 85
+  },
+  {
+    "id": "b2f9d8ab-f6e1-45d2-a241-376711d13e53",
+    "userId": "a3c69a2a-4556-4425-b93b-d22e1b91911c",
+    "originalName": "Adharcard.jpeg",
+    "documentType": "Aadhaar Card",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1788790279787-16280-Adharcard.jpeg",
+    "fileHash": "29ca9b59f122f2194aec11316510a118e40b97ba13a3acb9204f3ff1c3b2c415",
+    "fileSize": 192945,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-09-07T14:11:19.825Z",
+    "extractedFields": {
+      "name": "Shalini H R",
+      "dob": null,
+      "aadhaarVisible": true,
+      "hasUIDAI": true,
+      "_rawText": "Government of India\nUnique Identification Authority of India\n20cone3 7023/ Enrolment No.: 0804/16296/98491\nTo\nShalini H R\nD/O Ramachandrappa,\n#10,\n2ND MAIN 16TH CROSS,\nBehind millath school,\nAzad nagar,\nVTC: Davanagere,\nPO: Davangere,\nDistrict: Davanagere,\nState: Kamataka,\nPIN Code: 577001,\nMobile: 7411156526\nSignat\nVerified\nDãD, 00008 / Your Aadhaar No. :\n6897 4795 4121\nVID: 9195 6311 4894 8469\nGovernment of India\ndadhaar no. issued: 27/11/2011\nShalini H R\n25000D0: 14/02/2002\n3/ FEMALE\nSorfer dad, avided\nAadhaar is proof of identity, not of citizenship or date of\nbirth. It should be used only with verification (online\nauthentication or scanning of QR code / offline XML)\n6897 4795 4121\n83000'.\nGovemment of India\nAADHAAR\ndad / INFORMATION\n• Aadhaar is proof of identity, not of citizenship or date of birth (DOB).\nDOB is based on information supported by proof of DOB document\nspecified in regulations, submitted by Aadhaar number holder.\n• This Aadhaar letter should be verified through either online\nauthentication by UIDAl-appointed authentication agency or QR code\nscanning using mAadhaar or Aadhaar QR Scanner app available in\napp stores or using secure QR code reader app available on\nwww.uidai.gov.in.\n• Aadhaar is unique and secure.\n• Documents to support identity and address should be updated in\nAadhaar after every 10 years from date of enrolment for Aadhaar.\n• Aadhaar helps you avail of various Goverment and Non-\nGovernment benefits/services\n• Keep your mobile number and email id updated in Aadhaar.\n• Download mAadhaar app to avail of Aadhaar services\nUse the feature of Lock/Unlock Aadhaar/biometrics to ensure\nsecurity when not using Aadhaar/biometrics.\nEntities seeking Aadhaar are obligated to seek consent.\nUnique Identification Authority of India\nDetails as on: 27/11/2025\nsex:\n800F88 - 577001\nAddress:\nD/O Ramachandrappa, #10, 2ND MAIN 16TH\nCROSS, Behind millath school, Azad nagar,\nDavanagere, PO: Davangere, DIST: Davanagere\nKarataka - 577001\n฿ 1947\n6897 4795 4121\nVID: 9195 6311 4894 8469\n• heip @uidai.gov.in\nwww.uidai.gov.in"
+    },
+    "ocrConfidence": 85
+  },
+  {
+    "id": "e94b3fa8-101e-406e-893e-886f98756632",
+    "userId": "a3c69a2a-4556-4425-b93b-d22e1b91911c",
+    "originalName": "Incomecertificate.jpeg",
+    "documentType": "Income Certificate",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1788790334580-661023-Incomecertificate.jpeg",
+    "fileHash": "4f82b88221c543cfb5108199f591cc1b7c9fab7f4f95096209ee0b4d2f123c87",
+    "fileSize": 168747,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-09-07T14:12:14.618Z",
+    "extractedFields": {
+      "applicantName": null,
+      "annualIncome": null,
+      "issueDate": "01/01/2021",
+      "issuingAuthority": null,
+      "isExpired": true,
+      "_rawText": "Sabon-ou\n00600000202: 00038332914706\nофа»\nodas\n0N300: 01/01/2021\nadade\nPage 1 of 1\ncadord sacad\nВзов 01/01/2021\nrd: B M SHASHIDHARATAH\nVer:4.1\n05-01-2021"
+    },
+    "ocrConfidence": 85
+  },
+  {
+    "id": "d271deaa-1c7c-4561-a48b-092004b81e63",
+    "userId": "a3c69a2a-4556-4425-b93b-d22e1b91911c",
+    "originalName": "Ranjupassbook.jpeg",
+    "documentType": "Bank Passbook",
+    "filePath": "D:\\ScholarSense AI\\server\\uploads\\documents\\1788790370974-42210-Ranjupassbook.jpeg",
+    "fileHash": "ec66ac60d3e0299ff8862d58288f832d8ebcd06b85140ac67dd2ecfa80d499d0",
+    "fileSize": 163389,
+    "mimeType": "image/jpeg",
+    "createdAt": "2026-09-07T14:12:51.020Z",
+    "extractedFields": {
+      "accountHolderName": null,
+      "ifscCode": "KARB0000182",
+      "accountNumber": "1822500102633001",
+      "bankName": "Karnataka Bank Ltd.",
+      "_rawText": "@x Karnataka Bank Ltd.\nFACILITIES FOR SB ACCOUNT HOLDERS\n• Nomination facility is available in case of individuals. If a person is nominated, it would be easier\nfavour of the nominee in case of unforeseen event i.e. death of the account holder. Otherwise all the\nsubmit claim application and settlement of account in such case will be as per legal procedure.\n• For the delay in the collection of Local/Outstation Cheques, beyond the specified number of wi\nworking days) interest will be paid as per Cheque Collection Policy / Compensation Policy of the B\n• On request, immediate credit, upto an aggregate limit of? 15,000/- is given in respect of all outst\ninstruments drawn in your favour, on collecting cheque purchase charges, subject to certair\nspecified in the Cheque Collection Policy.\n• Insurance Cover available under insurance Linked Saving Bank Account Scheme (IL SB).\nFREE\nDEBIT\nCARD\nINTERNET\nBANKING\nMOBILE\nBANKING\n13-7-15\nSeal on it\nSMS\nALERT\nKarnataka Bank Ltd.\n* Conditions apply\nKarnataka Bank Ltd.\nDAVANGERE - H.M ROAD MAIN\nBranch Name & Address\nBusiness Hours, Weekly Holidays, Telephone Nos.\nSAVINGS BANK A/C No.: 1822500102633001\nNAME AND ADDRESS OF THE ACCOUNT HOLDER/S:\nTHE KARNATAKA BANA LID\nS51 Bons S\n2.100\n4 Road\"\nload\n1. KUM RANJINI H R MGM MANJULA\nD/O RAMACHNDRAPPA H K #16 TH CROSS\nMILLATH SCHOOL MAHAVEER NAGR\nDAVANGERE\n577001 INDIA\nCustomer-id: 11182072408\nNAI\n0 PM\nOperational Instructions: MINOR AND NAT\nNomination Registration No:\nTFSC Code: KARB0000182\nMICR CODE: 57\nSP\nZ CHARDYA\n1-00 PM\nRULIDAY\nC8192-25P432\nP. BRANCH MANAGER"
+    },
+    "ocrConfidence": 85
   }
 ]

@@ -1,8 +1,9 @@
 import { randomUUID } from "crypto";
-import { mkdir, readFile, writeFile } from "fs/promises";
+import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { seedScholarships } from "../data/seedScholarships.js";
+import { readJsonArray, writeJsonAtomic } from "../utils/atomicJson.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,18 +17,16 @@ function withIds(records) {
 }
 
 async function ensureStore() {
-  await mkdir(path.dirname(storePath), { recursive: true });
   try {
     await readFile(storePath, "utf8");
   } catch {
-    await writeFile(storePath, JSON.stringify(withIds(seedScholarships), null, 2), "utf8");
+    await writeJsonAtomic(storePath, withIds(seedScholarships));
   }
 }
 
 async function readScholarships() {
   await ensureStore();
-  const raw = await readFile(storePath, "utf8");
-  return JSON.parse(raw);
+  return readJsonArray(storePath);
 }
 
 export async function getAllLocalScholarships() {
@@ -35,8 +34,7 @@ export async function getAllLocalScholarships() {
 }
 
 async function writeScholarships(records) {
-  await ensureStore();
-  await writeFile(storePath, JSON.stringify(records, null, 2), "utf8");
+  await writeJsonAtomic(storePath, records);
 }
 
 export async function listLocalScholarships(filters = {}) {

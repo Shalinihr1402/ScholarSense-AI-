@@ -15,7 +15,7 @@ export default function WhatsAppNotifyModal({ scholarship, onClose }) {
     setState("sending");
     setErrorMsg("");
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("scholarsense_token");
       const res = await fetch(`${API}/api/whatsapp/send`, {
         method: "POST",
         headers: {

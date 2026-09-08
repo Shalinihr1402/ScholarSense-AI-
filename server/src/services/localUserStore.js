@@ -1,32 +1,15 @@
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
-import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { readJsonArray, writeJsonAtomic } from "../utils/atomicJson.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const storePath = path.resolve(__dirname, "../../data/users.local.json");
 
-async function ensureStore() {
-  await mkdir(path.dirname(storePath), { recursive: true });
-  try {
-    await readFile(storePath, "utf8");
-  } catch {
-    await writeFile(storePath, "[]", "utf8");
-  }
-}
-
-async function readUsers() {
-  await ensureStore();
-  const raw = await readFile(storePath, "utf8");
-  return JSON.parse(raw);
-}
-
-async function writeUsers(users) {
-  await ensureStore();
-  await writeFile(storePath, JSON.stringify(users, null, 2), "utf8");
-}
+const readUsers = () => readJsonArray(storePath);
+const writeUsers = (users) => writeJsonAtomic(storePath, users);
 
 function sanitizeUser(user) {
   const { password, ...safeUser } = user;

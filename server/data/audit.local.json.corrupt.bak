@@ -1,0 +1,32 @@
+[
+  {
+    "id": "c10c0613-d314-4079-b59c-c0a0b33c659e",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "Central Bank of India ••••8206 · IFSC: CBIN0280860",
+    "meta": {
+      "bank": "Central Bank of India",
+      "ifsc": "CBIN0280860",
+      "masked": "••••8206"
+    },
+    "createdAt": "2026-07-22T12:44:24.023Z"
+  },
+  {
+    "id": "9f2ea63a-b708-40cd-b0cc-e9fdfc730dd3",
+    "userId": "a3c69a2a-4556-4425-b93b-d22e1b91911c",
+    "category": "bank",
+    "action": "aadhaar_linked",
+    "title": "Aadhaar linked to bank account",
+    "detail": "Aadhaar seeding confirmed for Central Bank of India",
+    "meta": {
+      "bank": "Central Bank of India"
+    },
+    "createdAt": "2026-09-07T14:07:54.951Z"
+  }
+]�••8206"
+    },
+    "createdAt": "2026-09-07T14:07:54.954Z"
+  }
+]

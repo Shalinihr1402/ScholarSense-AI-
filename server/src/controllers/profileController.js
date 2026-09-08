@@ -1,6 +1,6 @@
 import StudentProfile from "../models/StudentProfile.js";
 import Scholarship from "../models/Scholarship.js";
-import { getLocalProfile, upsertLocalProfile } from "../services/localProfileStore.js";
+import { getLocalProfile, patchLocalProfile, upsertLocalProfile } from "../services/localProfileStore.js";
 import { getAllLocalScholarships } from "../services/localScholarshipStore.js";
 import { evaluateScholarships } from "../services/eligibilityService.js";
 import { createProfileNotifications } from "../services/notificationService.js";
@@ -181,7 +181,9 @@ export async function uploadUdidCard(req, res, next) {
       return res.json({ profile, message: "UDID card uploaded successfully." });
     }
 
-    const profile = await upsertLocalProfile(userId, { udidCardPath });
+    // patch, not upsert — upsertLocalProfile runs normalizeProfile which would
+    // blank every other field on the profile.
+    const profile = await patchLocalProfile(userId, { udidCardPath });
     return res.json({ profile, message: "UDID card uploaded successfully." });
   } catch (error) {
     next(error);

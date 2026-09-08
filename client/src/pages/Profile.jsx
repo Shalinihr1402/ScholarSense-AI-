@@ -189,7 +189,7 @@ export default function Profile() {
       fd.append("udidCard", file);
       const res = await fetch("/api/profile/me/udid-card", {
         method: "POST",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem("scholarsense_token")}` },
         body: fd
       });
       const data = await res.json();

@@ -8,6 +8,7 @@
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import crypto from "crypto";
+import fs from "fs";
 import path from "path";
 import { readFile } from "fs/promises";
 import { fileURLToPath } from "url";
@@ -56,10 +57,25 @@ function daysUntil(dateStr) {
 }
 
 // ─── Launch browser (shared instance) ────────────────────────────────────────
+// Resolve a Chrome/Chromium binary: honour CHROME_PATH, then common install
+// locations, else fall back to the copy Puppeteer downloaded with itself.
+function resolveChromePath() {
+  const candidates = [
+    process.env.CHROME_PATH,
+    process.env.PUPPETEER_EXECUTABLE_PATH,
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium-browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  ];
+  return candidates.find((p) => p && fs.existsSync(p)) || undefined;
+}
+
 async function launchBrowser() {
   return puppeteer.launch({
-    headless: "new",
-    executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    headless: true,
+    executablePath: resolveChromePath(), // undefined → use Puppeteer's bundled Chromium
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",

@@ -1,8 +1,9 @@
 import { createHash, randomUUID } from "crypto";
 import { logDocumentUpload, logDocumentDelete } from "../services/auditService.js";
-import { mkdir, readFile, unlink, writeFile } from "fs/promises";
+import { readFile, unlink } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { readJsonArray, writeJsonAtomic } from "../utils/atomicJson.js";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const archiver = require("archiver");
@@ -25,20 +26,12 @@ function computeHash(buffer) {
   return createHash("sha256").update(buffer).digest("hex");
 }
 
-async function ensureLocalStore() {
-  await mkdir(path.dirname(LOCAL_STORE), { recursive: true });
-  try { await readFile(LOCAL_STORE, "utf8"); }
-  catch { await writeFile(LOCAL_STORE, "[]", "utf8"); }
-}
-
 async function readLocalDocs() {
-  await ensureLocalStore();
-  return JSON.parse(await readFile(LOCAL_STORE, "utf8"));
+  return readJsonArray(LOCAL_STORE);
 }
 
 async function writeLocalDocs(docs) {
-  await ensureLocalStore();
-  await writeFile(LOCAL_STORE, JSON.stringify(docs, null, 2), "utf8");
+  await writeJsonAtomic(LOCAL_STORE, docs);
 }
 
 const IMAGE_MIMES = ["image/jpeg", "image/png", "image/webp"];

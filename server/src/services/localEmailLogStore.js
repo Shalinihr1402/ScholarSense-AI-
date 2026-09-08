@@ -1,30 +1,14 @@
 import { randomUUID } from "crypto";
-import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { readJsonArray, writeJsonAtomic } from "../utils/atomicJson.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const storePath = path.resolve(__dirname, "../../data/email-logs.local.json");
 
-async function ensureStore() {
-  await mkdir(path.dirname(storePath), { recursive: true });
-  try {
-    await readFile(storePath, "utf8");
-  } catch {
-    await writeFile(storePath, "[]", "utf8");
-  }
-}
-
-async function readLogs() {
-  await ensureStore();
-  return JSON.parse(await readFile(storePath, "utf8"));
-}
-
-async function writeLogs(logs) {
-  await ensureStore();
-  await writeFile(storePath, JSON.stringify(logs, null, 2), "utf8");
-}
+const readLogs = () => readJsonArray(storePath);
+const writeLogs = (logs) => writeJsonAtomic(storePath, logs);
 
 export async function createEmailLog(payload) {
   const logs = await readLogs();

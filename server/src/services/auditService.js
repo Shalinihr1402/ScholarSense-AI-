@@ -1,20 +1,14 @@
-import { mkdir, readFile, writeFile } from "fs/promises";
 import { randomUUID } from "crypto";
 import path from "path";
 import { fileURLToPath } from "url";
+import { readJsonArray, updateJsonArray } from "../utils/atomicJson.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const LOCAL_PATH = path.resolve(__dirname, "../../data/audit.local.json");
 
 // ── Local JSON fallback ───────────────────────────────────────────────────────
-async function ensureLocal() {
-  await mkdir(path.dirname(LOCAL_PATH), { recursive: true });
-  try { await readFile(LOCAL_PATH, "utf8"); }
-  catch { await writeFile(LOCAL_PATH, "[]", "utf8"); }
-}
-async function readLocal() { await ensureLocal(); return JSON.parse(await readFile(LOCAL_PATH, "utf8")); }
-async function writeLocal(data) { await ensureLocal(); await writeFile(LOCAL_PATH, JSON.stringify(data, null, 2), "utf8"); }
+async function readLocal() { return readJsonArray(LOCAL_PATH); }
 
 // ── Core log function ─────────────────────────────────────────────────────────
 export async function logAudit(userId, { category, action, title, detail = "", meta = {} }) {
@@ -29,10 +23,11 @@ export async function logAudit(userId, { category, action, title, detail = "", m
     }
   } catch { /* fall through to local */ }
 
-  // Local fallback
-  const all = await readLocal();
-  all.push({ id: randomUUID(), ...entry });
-  await writeLocal(all);
+  // Local fallback — serialized + atomic so concurrent log calls (a single
+  // profile save fires several) can't tear the file or drop each other.
+  await updateJsonArray(LOCAL_PATH, (all) => {
+    all.push({ id: randomUUID(), ...entry });
+  });
 }
 
 // ── Get audit trail for user ──────────────────────────────────────────────────

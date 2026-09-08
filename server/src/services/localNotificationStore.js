@@ -1,30 +1,14 @@
 import { randomUUID } from "crypto";
-import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { readJsonArray, writeJsonAtomic } from "../utils/atomicJson.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const storePath = path.resolve(__dirname, "../../data/notifications.local.json");
 
-async function ensureStore() {
-  await mkdir(path.dirname(storePath), { recursive: true });
-  try {
-    await readFile(storePath, "utf8");
-  } catch {
-    await writeFile(storePath, "[]", "utf8");
-  }
-}
-
-async function readNotifications() {
-  await ensureStore();
-  return JSON.parse(await readFile(storePath, "utf8"));
-}
-
-async function writeNotifications(notifications) {
-  await ensureStore();
-  await writeFile(storePath, JSON.stringify(notifications, null, 2), "utf8");
-}
+const readNotifications = () => readJsonArray(storePath);
+const writeNotifications = (notifications) => writeJsonAtomic(storePath, notifications);
 
 export async function listLocalNotifications(userId) {
   const notifications = await readNotifications();

@@ -186,9 +186,14 @@ export async function chat(req, res) {
       { role: "user", content: message }
     ];
 
+    // Model is configurable via GROQ_MODEL. Default targets a model that is
+    // broadly available on current Groq keys. reasoning_effort keeps the
+    // reasoning-style models (gpt-oss / qwen3) from spending the whole token
+    // budget on hidden reasoning and returning an empty content field.
+    const model = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
     const groqRes = await httpsPost(
       "https://api.groq.com/openai/v1/chat/completions",
-      { model: "llama-3.3-70b-versatile", messages: groqMessages, temperature: 0.2, max_tokens: 250 },
+      { model, messages: groqMessages, temperature: 0.2, max_tokens: 1024, reasoning_effort: "low" },
       { "Authorization": `Bearer ${apiKey}` }
     );
 

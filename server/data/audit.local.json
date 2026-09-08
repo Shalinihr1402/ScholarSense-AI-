@@ -12,29 +12,48 @@
       "masked": "••••8206"
     },
     "createdAt": "2026-07-22T12:44:24.023Z"
-  }
-]state",
-        "district",
-        "taluk",
-        "village",
-        "address",
-        "pinCode",
-        "educationLevel",
+  },
+  {
+    "id": "9f2ea63a-b708-40cd-b0cc-e9fdfc730dd3",
+    "userId": "a3c69a2a-4556-4425-b93b-d22e1b91911c",
+    "category": "bank",
+    "action": "aadhaar_linked",
+    "title": "Aadhaar linked to bank account",
+    "detail": "Aadhaar seeding confirmed for Central Bank of India",
+    "meta": {
+      "bank": "Central Bank of India"
+    },
+    "createdAt": "2026-09-07T14:07:54.951Z"
+  },
+  {
+    "id": "2362dae2-c0a1-4035-80ff-aac445eb530b",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "B5  · IFSC: IFSC5",
+    "meta": {
+      "bank": "B5",
+      "ifsc": "IFSC5",
+      "masked": ""
+    },
+    "createdAt": "2026-09-07T14:34:54.175Z"
+  },
+  {
+    "id": "6c7aa7c2-87fe-4458-9051-53825a46c216",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "profile",
+    "action": "profile_updated",
+    "title": "Profile information updated",
+    "detail": "Fields updated: fullName, course, category, subcategory and 7 more",
+    "meta": {
+      "fields": [
+        "fullName",
         "course",
-        "semester",
-        "admissionYear",
-        "universityBoard",
-        "marksPercentage",
-        "admissionType",
-        "collegeName",
         "category",
         "subcategory",
-        "parentProfession",
         "annualIncome",
         "disabilityStatus",
-        "disabilityType",
-        "disabilityPercentage",
-        "udidNumber",
         "minorityStatus",
         "hosteller",
         "orphanStatus",
@@ -42,6 +61,272 @@
         "availableDocuments"
       ]
     },
-    "createdAt": "2026-07-22T12:44:24.024Z"
+    "createdAt": "2026-09-07T14:34:54.179Z"
+  },
+  {
+    "id": "a8b9d52a-97d3-4c0c-9efe-55af6a63b5d5",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "B4  · IFSC: IFSC4",
+    "meta": {
+      "bank": "B4",
+      "ifsc": "IFSC4",
+      "masked": ""
+    },
+    "createdAt": "2026-09-07T14:34:54.192Z"
+  },
+  {
+    "id": "1c8b285a-bb82-49b4-bd8d-9c6da765be8a",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "profile",
+    "action": "profile_updated",
+    "title": "Profile information updated",
+    "detail": "Fields updated: fullName, course, category, subcategory and 7 more",
+    "meta": {
+      "fields": [
+        "fullName",
+        "course",
+        "category",
+        "subcategory",
+        "annualIncome",
+        "disabilityStatus",
+        "minorityStatus",
+        "hosteller",
+        "orphanStatus",
+        "firstGraduate",
+        "availableDocuments"
+      ]
+    },
+    "createdAt": "2026-09-07T14:34:54.193Z"
+  },
+  {
+    "id": "91eb6ac5-e314-4b7b-a7c5-84bb03ecf5d0",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "B6  · IFSC: IFSC6",
+    "meta": {
+      "bank": "B6",
+      "ifsc": "IFSC6",
+      "masked": ""
+    },
+    "createdAt": "2026-09-07T14:34:54.202Z"
+  },
+  {
+    "id": "bdd18007-41ea-4759-99b8-4a91cd9eadd0",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "profile",
+    "action": "profile_updated",
+    "title": "Profile information updated",
+    "detail": "Fields updated: fullName, course, category, subcategory and 7 more",
+    "meta": {
+      "fields": [
+        "fullName",
+        "course",
+        "category",
+        "subcategory",
+        "annualIncome",
+        "disabilityStatus",
+        "minorityStatus",
+        "hosteller",
+        "orphanStatus",
+        "firstGraduate",
+        "availableDocuments"
+      ]
+    },
+    "createdAt": "2026-09-07T14:34:54.202Z"
+  },
+  {
+    "id": "30d9674a-d656-4376-a5db-417200e59ee5",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "B1  · IFSC: IFSC1",
+    "meta": {
+      "bank": "B1",
+      "ifsc": "IFSC1",
+      "masked": ""
+    },
+    "createdAt": "2026-09-07T14:34:54.247Z"
+  },
+  {
+    "id": "4daebdf3-153c-4244-96ac-84b29a241d3f",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "profile",
+    "action": "profile_updated",
+    "title": "Profile information updated",
+    "detail": "Fields updated: fullName, course, category, subcategory and 7 more",
+    "meta": {
+      "fields": [
+        "fullName",
+        "course",
+        "category",
+        "subcategory",
+        "annualIncome",
+        "disabilityStatus",
+        "minorityStatus",
+        "hosteller",
+        "orphanStatus",
+        "firstGraduate",
+        "availableDocuments"
+      ]
+    },
+    "createdAt": "2026-09-07T14:34:54.247Z"
+  },
+  {
+    "id": "c2d6993e-24ab-4ef1-8d31-d2ab3089e58a",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "B2  · IFSC: IFSC2",
+    "meta": {
+      "bank": "B2",
+      "ifsc": "IFSC2",
+      "masked": ""
+    },
+    "createdAt": "2026-09-07T14:34:54.272Z"
+  },
+  {
+    "id": "0e5157e4-0d87-4699-a609-fab7e165dd18",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "profile",
+    "action": "profile_updated",
+    "title": "Profile information updated",
+    "detail": "Fields updated: fullName, course, category, subcategory and 7 more",
+    "meta": {
+      "fields": [
+        "fullName",
+        "course",
+        "category",
+        "subcategory",
+        "annualIncome",
+        "disabilityStatus",
+        "minorityStatus",
+        "hosteller",
+        "orphanStatus",
+        "firstGraduate",
+        "availableDocuments"
+      ]
+    },
+    "createdAt": "2026-09-07T14:34:54.272Z"
+  },
+  {
+    "id": "0ef5ee55-8cd2-42be-b5f7-85619886142e",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "B7  · IFSC: IFSC7",
+    "meta": {
+      "bank": "B7",
+      "ifsc": "IFSC7",
+      "masked": ""
+    },
+    "createdAt": "2026-09-07T14:34:54.318Z"
+  },
+  {
+    "id": "f84b2e25-a0b7-4400-b8f9-de5cc41690ef",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "profile",
+    "action": "profile_updated",
+    "title": "Profile information updated",
+    "detail": "Fields updated: fullName, course, category, subcategory and 7 more",
+    "meta": {
+      "fields": [
+        "fullName",
+        "course",
+        "category",
+        "subcategory",
+        "annualIncome",
+        "disabilityStatus",
+        "minorityStatus",
+        "hosteller",
+        "orphanStatus",
+        "firstGraduate",
+        "availableDocuments"
+      ]
+    },
+    "createdAt": "2026-09-07T14:34:54.318Z"
+  },
+  {
+    "id": "4958ad41-0cfe-4b6e-9bac-8c72258b0b9e",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "B8  · IFSC: IFSC8",
+    "meta": {
+      "bank": "B8",
+      "ifsc": "IFSC8",
+      "masked": ""
+    },
+    "createdAt": "2026-09-07T14:34:54.370Z"
+  },
+  {
+    "id": "1f684ce0-78ba-467e-b107-be2ab2c02872",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "profile",
+    "action": "profile_updated",
+    "title": "Profile information updated",
+    "detail": "Fields updated: fullName, course, category, subcategory and 7 more",
+    "meta": {
+      "fields": [
+        "fullName",
+        "course",
+        "category",
+        "subcategory",
+        "annualIncome",
+        "disabilityStatus",
+        "minorityStatus",
+        "hosteller",
+        "orphanStatus",
+        "firstGraduate",
+        "availableDocuments"
+      ]
+    },
+    "createdAt": "2026-09-07T14:34:54.370Z"
+  },
+  {
+    "id": "c05c7d65-0dfd-49a7-91d6-30984b24ea72",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "bank",
+    "action": "bank_details_updated",
+    "title": "Bank details updated",
+    "detail": "B3  · IFSC: IFSC3",
+    "meta": {
+      "bank": "B3",
+      "ifsc": "IFSC3",
+      "masked": ""
+    },
+    "createdAt": "2026-09-07T14:34:54.383Z"
+  },
+  {
+    "id": "ef8e87ca-abe4-42a5-996d-e28be342aca5",
+    "userId": "7623dc93-a5e1-437b-b615-6255cd468975",
+    "category": "profile",
+    "action": "profile_updated",
+    "title": "Profile information updated",
+    "detail": "Fields updated: fullName, course, category, subcategory and 7 more",
+    "meta": {
+      "fields": [
+        "fullName",
+        "course",
+        "category",
+        "subcategory",
+        "annualIncome",
+        "disabilityStatus",
+        "minorityStatus",
+        "hosteller",
+        "orphanStatus",
+        "firstGraduate",
+        "availableDocuments"
+      ]
+    },
+    "createdAt": "2026-09-07T14:34:54.383Z"
   }
 ]

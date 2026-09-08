@@ -1,5 +1,5 @@
 import React from "react";
-import { Bell, LogOut, Mic, Search } from "lucide-react";
+import { Bell, LogOut, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { notificationApi } from "../services/api.js";
@@ -58,9 +58,6 @@ export default function Topbar() {
           <Search size={16} color="#94a3b8" />
           <input placeholder="Search scholarships, documents…" />
         </label>
-        <button className="icon-btn" type="button" aria-label="Voice assistant">
-          <Mic size={17} />
-        </button>
         <Link
           className={`icon-btn ${summary.unread > 0 ? "notification-dot" : ""}`}
           to="/notifications"
